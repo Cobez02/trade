@@ -1,0 +1,54 @@
+name: SPX-Beater options bot
+
+# Runs hourly during US market hours (10:00–16:00 ET), Mon–Fri.
+# Cron is in UTC; 14:00–20:00 UTC = 10:00–16:00 ET (EDT). GitHub may delay
+# scheduled runs a few minutes under load — fine for an hourly bot.
+on:
+  schedule:
+    - cron: "0 14-20 * * 1-5"
+  workflow_dispatch: {}          # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write                # so the run can commit state.json + dashboard.html back
+
+concurrency:
+  group: spxbot
+  cancel-in-progress: false
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the bot
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          SPXBOT_STARTED: "2026-07-24"
+          SPXBOT_BENCH_START: "738.06"
+          SPXBOT_BASELINE: "100000"
+        run: |
+          python main.py | tee run.log
+          python reporting.py state.json > digest.txt
+          {
+            echo '## SPX-Beater — latest run'
+            echo '```'
+            cat digest.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Persist state + dashboard
+        run: |
+          git config user.name  "spx-beater-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A state.json dashboard.html
+          git commit -m "run $(date -u +%Y-%m-%dT%H:%MZ)" || echo "nothing to commit"
+          git push || echo "push skipped"

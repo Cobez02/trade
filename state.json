@@ -1,0 +1,27 @@
+{
+  "started": "2026-07-24",
+  "start_equity": 10000.0,
+  "benchmark_start_price": 738.06,
+  "account_baseline": 100000.0,
+  "positions": {},
+  "closed": [],
+  "journal": [],
+  "equity_history": [
+    {
+      "date": "2026-07-24",
+      "equity": 10000.0,
+      "benchmark_equity": 10000.0,
+      "spy": 738.06
+    }
+  ],
+  "run_log": [],
+  "last_signals": {},
+  "learning": {
+    "updated": "2026-07-24",
+    "n_trades": 0,
+    "sleeve": {},
+    "features": {},
+    "gates": [],
+    "lessons": []
+  }
+}
