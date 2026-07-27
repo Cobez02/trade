@@ -1,651 +1,966 @@
 {
- "started": "2026-07-24",
- "start_equity": 10000.0,
- "benchmark_start_price": 738.06,
- "positions": {
-  "GOOGL260731C00332500": {
-   "sleeve": "tech",
-   "underlying": "GOOGL",
-   "direction": "bull",
-   "type": "call",
-   "strike": 332.5,
-   "expiration": "2026-07-31",
-   "qty": 1,
-   "entry_price": 3.45,
-   "entry_cost": 345.0,
-   "features": {
-    "sleeve": "tech",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 31.0,
-    "dte": 4,
-    "trend_up": false,
-    "macd_rising": true,
-    "spread_pct": 0.07,
-    "signal_score": 8.48
-   },
-   "entry_date": "2026-07-27"
-  },
-  "NFLX260731C00071000": {
-   "sleeve": "tech",
-   "underlying": "NFLX",
-   "direction": "bull",
-   "type": "call",
-   "strike": 71.0,
-   "expiration": "2026-07-31",
-   "qty": 1,
-   "entry_price": 1.03,
-   "entry_cost": 103.0,
-   "features": {
-    "sleeve": "tech",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 29.0,
-    "dte": 4,
-    "trend_up": false,
-    "macd_rising": null,
-    "spread_pct": null,
-    "signal_score": 10.08
-   },
-   "entry_date": "2026-07-27"
-  },
-  "NVDA260731P00200000": {
-   "sleeve": "wsb",
-   "underlying": "NVDA",
-   "direction": "bear",
-   "type": "put",
-   "strike": 200.0,
-   "expiration": "2026-07-31",
-   "qty": 1,
-   "entry_price": 3.15,
-   "entry_cost": 315.0,
-   "features": {
-    "sleeve": "wsb",
-    "direction": "bear",
-    "type": "put",
-    "rsi": 54.0,
-    "dte": 4,
-    "trend_up": false,
-    "macd_rising": false,
-    "spread_pct": 0.04,
-    "signal_score": 0.08
-   },
-   "entry_date": "2026-07-27"
-  },
-  "SPY260730P00729000": {
-   "sleeve": "wsb",
-   "underlying": "SPY",
-   "direction": "bear",
-   "type": "put",
-   "strike": 729.0,
-   "expiration": "2026-07-30",
-   "qty": 1,
-   "entry_price": 2.05,
-   "entry_cost": 205.0,
-   "entry_date": "2026-07-27",
-   "thesis": "WSB Bearish (15 comments, score -0.18)",
-   "spot_at_entry": 739.675,
-   "features": {
-    "sleeve": "wsb",
-    "direction": "bear",
-    "signal_score": 0.197,
-    "rsi": 42.5,
-    "macd_hist": -1.522,
-    "macd_rising": false,
-    "trend_up": false,
-    "dte": 3,
-    "moneyness_pct": -0.0144,
-    "spread_pct": 0.005,
-    "type": "put"
-   }
-  },
-  "VZ260731C00048000": {
-   "sleeve": "news",
-   "underlying": "VZ",
-   "direction": "bull",
-   "type": "call",
-   "strike": 48.0,
-   "expiration": "2026-07-31",
-   "qty": 12,
-   "entry_price": 0.28,
-   "entry_cost": 336.0,
-   "entry_date": "2026-07-27",
-   "thesis": "News flow +3 across 2 articles (keyword sentiment)",
-   "spot_at_entry": 47.26,
-   "features": {
-    "sleeve": "news",
-    "direction": "bull",
-    "signal_score": 3,
-    "rsi": 80.6,
-    "macd_hist": 0.579,
-    "macd_rising": true,
-    "trend_up": false,
-    "dte": 4,
-    "moneyness_pct": 0.0157,
-    "spread_pct": 0.113,
-    "type": "call"
-   }
-  }
- },
- "closed": [
-  {
-   "symbol": "NVDA260731C00205000",
-   "sleeve": "news",
-   "pnl": -119.0,
-   "pnl_pct": -0.35,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27"
-  },
-  {
-   "symbol": "SPY260730P00733000",
-   "sleeve": "wsb",
-   "pnl": 109.0,
-   "pnl_pct": 0.6089,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27"
-  },
-  {
-   "symbol": "AI260731C00008500",
-   "sleeve": "wsb",
-   "pnl": -75.0,
-   "pnl_pct": -0.5,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27"
-  },
-  {
-   "symbol": "AMZN260727C00237500",
-   "sleeve": "flow",
-   "pnl": -47.0,
-   "pnl_pct": -0.5402,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27"
-  },
-  {
-   "symbol": "NFLX260731C00069000",
-   "sleeve": "tech",
-   "pnl": 70.0,
-   "pnl_pct": 0.5645,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27"
-  }
- ],
- "equity_history": [
-  {
-   "date": "2026-07-24",
-   "equity": 9905.86,
-   "benchmark_equity": 10012.6,
-   "spy": 738.99
-  },
-  {
-   "date": "2026-07-25",
-   "equity": 9918.86,
-   "benchmark_equity": 10011.38,
-   "spy": 738.9
-  },
-  {
-   "date": "2026-07-27",
-   "equity": 10000.2,
-   "benchmark_equity": 10021.88,
-   "spy": 739.675
-  }
- ],
- "run_log": [
-  {
-   "date": "2026-07-24",
-   "time": "2026-07-24T13:36:32.923538+00:00",
-   "notes": [
-    "Initialized $10k experiment (account baseline $100000), SPY 738.06",
-    "OPENED 5x AI260731C00008500 [wsb] @ $0.29 ($145, w1.0) \u2014 WSB Bullish (68 comments, score +0.23)",
-    "no liquid contract for IMAX [news]",
-    "no liquid contract for TMP [news]"
-   ]
-  },
-  {
-   "date": "2026-07-25",
-   "time": "2026-07-25T00:54:48.514120+00:00",
-   "notes": [
-    "close-failed AI260731C00008500: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
-    "close-failed AMZN260727C00237500: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
-    "close-failed NFLX260731C00069000: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
-    "Market closed \u2014 signals recorded, no orders placed this run."
-   ]
-  },
-  {
-   "date": "2026-07-27",
-   "time": "2026-07-27T13:31:16.124091+00:00",
-   "notes": [
-    "CLOSED AI260731C00008500 [wsb] LOSS stop-loss -50%, P&L $-75 \u2014 entry was: RSI 20.0, counter_trend, DTE 7, score 0.3",
-    "CLOSED AMZN260727C00237500 [flow] LOSS stop-loss -54%, P&L $-47 \u2014 entry was: RSI 38.0, counter_trend, DTE 3, score 2.6",
-    "CLOSED NFLX260731C00069000 [tech] WIN take-profit +56%, P&L $+70 \u2014 entry was: RSI 22.0, counter_trend, DTE 7, score 17.91",
-    "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-    "SKIP AI bull [wsb] \u2014 bid/ask spread 48% > 15% (illiquid)",
-    "SKIP SKHY bull [news] \u2014 bid/ask spread 18% > 15% (illiquid)",
-    "no liquid contract for IGPT [news]",
-    "OPENED 1x NFLX260731C00071000 [tech] @ $1.12 ($112, w1.0) \u2014 Technical: RSI 30 oversold + MACD turning up"
-   ]
-  },
-  {
-   "date": "2026-07-27",
-   "time": "2026-07-27T13:48:49.261178+00:00",
-   "notes": [
-    "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-    "SKIP AI bull [wsb] \u2014 bid/ask spread 25% > 15% (illiquid)",
-    "SKIP LW bull [news] \u2014 bid/ask spread 76% > 15% (illiquid)",
-    "no liquid contract for IGPT [news]"
-   ]
-  },
-  {
-   "date": "2026-07-27",
-   "time": "2026-07-27T13:50:40.654694+00:00",
-   "notes": [
-    "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-    "OPENED 12x AI260731C00008500 [wsb] @ $0.29 ($348, w1.0) \u2014 WSB Bullish (76 comments, score +0.15)",
-    "OPENED 1x SPY260730P00733000 [wsb] @ $1.83 ($183, w1.0) \u2014 WSB Bearish (15 comments, score -0.18)",
-    "OPENED 1x NVDA260731C00205000 [news] @ $3.38 ($338, w1.0) \u2014 News flow +4 across 3 articles (keyword sentiment)",
-    "SKIP LW bull [news] \u2014 bid/ask spread 66% > 15% (illiquid)",
-    "no liquid contract for IGPT [news]",
-    "OPENED 1x GOOGL260731C00332500 [tech] @ $3.50 ($350, w1.0) \u2014 Technical: RSI 32 oversold + MACD turning up"
-   ]
-  },
-  {
-   "date": "2026-07-27",
-   "time": "2026-07-27T13:52:29.684209+00:00",
-   "notes": [
-    "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-    "SKIP AI bull [wsb] \u2014 bid/ask spread 48% > 15% (illiquid)",
-    "OPENED 1x NVDA260731P00200000 [wsb] @ $3.13 ($313, w1.0) \u2014 WSB Bearish (8 comments, score -0.07)",
-    "SKIP LW bull [news] \u2014 bid/ask spread 80% > 15% (illiquid)",
-    "no liquid contract for IGPT [news]"
-   ]
-  },
-  {
-   "date": "2026-07-27",
-   "time": "2026-07-27T14:26:54.868628+00:00",
-   "notes": [
-    "CLOSED NVDA260731C00205000 [news] LOSS stop-loss -35%, P&L $-119 \u2014 entry was: RSI 54.0, counter_trend, DTE 4, score 4.0",
-    "CLOSED SPY260730P00733000 [wsb] WIN take-profit +61%, P&L $+109 \u2014 entry was: RSI 46.0, with_trend, DTE 3, score 0.2",
-    "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-    "SKIP AI bull [wsb] \u2014 bid/ask spread 16% > 15% (illiquid)",
-    "OPENED 1x SPY260730P00729000 [wsb] @ $2.05 ($205, w1.0) \u2014 WSB Bearish (15 comments, score -0.18)",
-    "no liquid contract for OVV [news]",
-    "no liquid contract for CNI [news]",
-    "OPENED 12x VZ260731C00048000 [news] @ $0.28 ($336, w1.0) \u2014 News flow +3 across 2 articles (keyword sentiment)",
-    "no liquid contract for HCA [news]"
-   ]
-  }
- ],
- "account_baseline": 100000.0,
- "learning": {
-  "updated": "2026-07-27",
-  "n_trades": 5,
-  "sleeve": {
-   "wsb": {
-    "n": 2,
-    "wins": 1,
-    "win_rate": 0.5,
-    "avg_pnl_pct": 0.0544,
-    "total_pnl": 34.0,
-    "weight": 1.0
-   },
-   "news": {
-    "n": 1,
-    "wins": 0,
-    "win_rate": 0.0,
-    "avg_pnl_pct": -0.35,
-    "total_pnl": -119.0,
-    "weight": 1.0
-   },
-   "tech": {
-    "n": 1,
-    "wins": 1,
-    "win_rate": 1.0,
-    "avg_pnl_pct": 0.5645,
-    "total_pnl": 70.0,
-    "weight": 1.0
-   },
-   "flow": {
-    "n": 1,
-    "wins": 0,
-    "win_rate": 0.0,
-    "avg_pnl_pct": -0.5402,
-    "total_pnl": -47.0,
-    "weight": 1.0
-   }
-  },
-  "features": {
-   "direction": {
-    "call": {
-     "n": 4,
-     "wins": 1,
-     "win_rate": 0.25,
-     "avg_pnl_pct": -0.2064,
-     "total_pnl": -171.0
+  "started": "2026-07-24",
+  "start_equity": 10000.0,
+  "benchmark_start_price": 738.06,
+  "positions": {
+    "DRAM260731C00052000": {
+      "sleeve": "wsb",
+      "underlying": "DRAM",
+      "direction": "bull",
+      "type": "call",
+      "strike": 52.0,
+      "expiration": "2026-07-31",
+      "qty": 1,
+      "entry_price": 2.62,
+      "entry_cost": 262.0,
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 38.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.12,
+        "signal_score": 0.08
+      },
+      "entry_date": "2026-07-27"
     },
-    "put": {
-     "n": 1,
-     "wins": 1,
-     "win_rate": 1.0,
-     "avg_pnl_pct": 0.6089,
-     "total_pnl": 109.0
-    }
-   },
-   "entry_rsi": {
-    "rsi45-55": {
-     "n": 2,
-     "wins": 1,
-     "win_rate": 0.5,
-     "avg_pnl_pct": 0.1295,
-     "total_pnl": -10.0
+    "GOOGL260731C00332500": {
+      "sleeve": "tech",
+      "underlying": "GOOGL",
+      "direction": "bull",
+      "type": "call",
+      "strike": 332.5,
+      "expiration": "2026-07-31",
+      "qty": 1,
+      "entry_price": 3.45,
+      "entry_cost": 345.0,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 31.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.07,
+        "signal_score": 8.48
+      },
+      "entry_date": "2026-07-27"
     },
-    "rsi<30": {
-     "n": 2,
-     "wins": 1,
-     "win_rate": 0.5,
-     "avg_pnl_pct": 0.0323,
-     "total_pnl": -5.0
+    "NFLX260731C00071000": {
+      "sleeve": "tech",
+      "underlying": "NFLX",
+      "direction": "bull",
+      "type": "call",
+      "strike": 71.0,
+      "expiration": "2026-07-31",
+      "qty": 1,
+      "entry_price": 1.03,
+      "entry_cost": 103.0,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 29.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 10.08
+      },
+      "entry_date": "2026-07-27"
     },
-    "rsi30-45": {
-     "n": 1,
-     "wins": 0,
-     "win_rate": 0.0,
-     "avg_pnl_pct": -0.5402,
-     "total_pnl": -47.0
-    }
-   },
-   "dte": {
-    "dte<=4": {
-     "n": 3,
-     "wins": 1,
-     "win_rate": 0.333,
-     "avg_pnl_pct": -0.0938,
-     "total_pnl": -57.0
+    "SPY260730P00729000": {
+      "sleeve": "wsb",
+      "underlying": "SPY",
+      "direction": "bear",
+      "type": "put",
+      "strike": 729.0,
+      "expiration": "2026-07-30",
+      "qty": 1,
+      "entry_price": 2.05,
+      "entry_cost": 205.0,
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bear",
+        "type": "put",
+        "rsi": 42.0,
+        "dte": 3,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.0,
+        "signal_score": 0.2
+      },
+      "entry_date": "2026-07-27"
     },
-    "dte5-8": {
-     "n": 2,
-     "wins": 1,
-     "win_rate": 0.5,
-     "avg_pnl_pct": 0.0323,
-     "total_pnl": -5.0
+    "VZ260731C00048000": {
+      "sleeve": "news",
+      "underlying": "VZ",
+      "direction": "bull",
+      "type": "call",
+      "strike": 48.0,
+      "expiration": "2026-07-31",
+      "qty": 12,
+      "entry_price": 0.26,
+      "entry_cost": 312.0,
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 80.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.11,
+        "signal_score": 3.0
+      },
+      "entry_date": "2026-07-27"
     }
-   },
-   "spread": {
-    "spread_tight": {
-     "n": 2,
-     "wins": 1,
-     "win_rate": 0.5,
-     "avg_pnl_pct": 0.1295,
-     "total_pnl": -10.0
-    }
-   },
-   "trend_align": {
-    "counter_trend": {
-     "n": 4,
-     "wins": 1,
-     "win_rate": 0.25,
-     "avg_pnl_pct": -0.2064,
-     "total_pnl": -171.0
-    },
-    "with_trend": {
-     "n": 1,
-     "wins": 1,
-     "win_rate": 1.0,
-     "avg_pnl_pct": 0.6089,
-     "total_pnl": 109.0
-    }
-   },
-   "macd_rising": {
-    "macd_down": {
-     "n": 1,
-     "wins": 0,
-     "win_rate": 0.0,
-     "avg_pnl_pct": -0.35,
-     "total_pnl": -119.0
-    },
-    "macd_up": {
-     "n": 1,
-     "wins": 1,
-     "win_rate": 1.0,
-     "avg_pnl_pct": 0.6089,
-     "total_pnl": 109.0
-    }
-   }
   },
-  "gates": [],
-  "lessons": [
-   "Weak signal \u2014 call: 25% win, avg -21% (4).",
-   "Weak signal \u2014 counter_trend: 25% win, avg -21% (4)."
+  "closed": [
+    {
+      "symbol": "SLB260731C00053000",
+      "sleeve": "news",
+      "underlying": "SLB",
+      "type": "call",
+      "strike": 53.0,
+      "expiration": "2026-07-31",
+      "pnl": -165.0,
+      "pnl_pct": -0.5077,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 77.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.02,
+        "signal_score": 3.0
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi>70",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "counter_trend",
+        "macd_rising": "macd_up"
+      }
+    },
+    {
+      "symbol": "NVDA260731P00200000",
+      "sleeve": "wsb",
+      "underlying": "NVDA",
+      "type": "put",
+      "strike": 200.0,
+      "expiration": "2026-07-31",
+      "pnl": 290.0,
+      "pnl_pct": 0.9206,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bear",
+        "type": "put",
+        "rsi": 54.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.04,
+        "signal_score": 0.08
+      },
+      "buckets": {
+        "direction": "put",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "with_trend",
+        "macd_rising": "macd_down"
+      }
+    },
+    {
+      "symbol": "NVDA260731C00205000",
+      "sleeve": "news",
+      "underlying": "NVDA",
+      "type": "call",
+      "strike": 205.0,
+      "expiration": "2026-07-31",
+      "pnl": -119.0,
+      "pnl_pct": -0.35,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 54.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.04,
+        "signal_score": 4.0
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "counter_trend",
+        "macd_rising": "macd_down"
+      }
+    },
+    {
+      "symbol": "SPY260730P00733000",
+      "sleeve": "wsb",
+      "underlying": "SPY",
+      "type": "put",
+      "strike": 733.0,
+      "expiration": "2026-07-30",
+      "pnl": 109.0,
+      "pnl_pct": 0.6089,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bear",
+        "type": "put",
+        "rsi": 46.0,
+        "dte": 3,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.01,
+        "signal_score": 0.2
+      },
+      "buckets": {
+        "direction": "put",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "with_trend",
+        "macd_rising": "macd_up"
+      }
+    },
+    {
+      "symbol": "AI260731C00008500",
+      "sleeve": "wsb",
+      "underlying": "AI",
+      "type": "call",
+      "strike": 8.5,
+      "expiration": "2026-07-31",
+      "pnl": -75.0,
+      "pnl_pct": -0.5,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 20.0,
+        "dte": 7,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 0.3
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi<30",
+        "dte": "dte5-8",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    },
+    {
+      "symbol": "AMZN260727C00237500",
+      "sleeve": "flow",
+      "underlying": "AMZN",
+      "type": "call",
+      "strike": 237.5,
+      "expiration": "2026-07-27",
+      "pnl": -47.0,
+      "pnl_pct": -0.5402,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "flow",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 38.0,
+        "dte": 3,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 2.6
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi30-45",
+        "dte": "dte<=4",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    },
+    {
+      "symbol": "NFLX260731C00069000",
+      "sleeve": "tech",
+      "underlying": "NFLX",
+      "type": "call",
+      "strike": 69.0,
+      "expiration": "2026-07-31",
+      "pnl": 70.0,
+      "pnl_pct": 0.5645,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 22.0,
+        "dte": 7,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 17.91
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi<30",
+        "dte": "dte5-8",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    }
+  ],
+  "equity_history": [
+    {
+      "date": "2026-07-24",
+      "equity": 9905.86,
+      "benchmark_equity": 10012.6,
+      "spy": 738.99
+    },
+    {
+      "date": "2026-07-25",
+      "equity": 9918.86,
+      "benchmark_equity": 10011.38,
+      "spy": 738.9
+    },
+    {
+      "date": "2026-07-27",
+      "equity": 9996.96,
+      "benchmark_equity": 10008.81,
+      "spy": 738.71
+    }
+  ],
+  "run_log": [
+    {
+      "date": "2026-07-24",
+      "time": "2026-07-24T13:36:32.923538+00:00",
+      "notes": [
+        "Initialized $10k experiment (account baseline $100000), SPY 738.06",
+        "OPENED 5x AI260731C00008500 [wsb] @ $0.29 ($145, w1.0) \u2014 WSB Bullish (68 comments, score +0.23)",
+        "no liquid contract for IMAX [news]",
+        "no liquid contract for TMP [news]"
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "time": "2026-07-25T00:54:48.514120+00:00",
+      "notes": [
+        "close-failed AI260731C00008500: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
+        "close-failed AMZN260727C00237500: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
+        "close-failed NFLX260731C00069000: {\"code\":42210000,\"message\":\"options market orders are only allowed during market hours\"}",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T13:31:16.124091+00:00",
+      "notes": [
+        "CLOSED AI260731C00008500 [wsb] LOSS stop-loss -50%, P&L $-75 \u2014 entry was: RSI 20.0, counter_trend, DTE 7, score 0.3",
+        "CLOSED AMZN260727C00237500 [flow] LOSS stop-loss -54%, P&L $-47 \u2014 entry was: RSI 38.0, counter_trend, DTE 3, score 2.6",
+        "CLOSED NFLX260731C00069000 [tech] WIN take-profit +56%, P&L $+70 \u2014 entry was: RSI 22.0, counter_trend, DTE 7, score 17.91",
+        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 48% > 15% (illiquid)",
+        "SKIP SKHY bull [news] \u2014 bid/ask spread 18% > 15% (illiquid)",
+        "no liquid contract for IGPT [news]",
+        "OPENED 1x NFLX260731C00071000 [tech] @ $1.12 ($112, w1.0) \u2014 Technical: RSI 30 oversold + MACD turning up"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T13:48:49.261178+00:00",
+      "notes": [
+        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 25% > 15% (illiquid)",
+        "SKIP LW bull [news] \u2014 bid/ask spread 76% > 15% (illiquid)",
+        "no liquid contract for IGPT [news]"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T13:50:40.654694+00:00",
+      "notes": [
+        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "OPENED 12x AI260731C00008500 [wsb] @ $0.29 ($348, w1.0) \u2014 WSB Bullish (76 comments, score +0.15)",
+        "OPENED 1x SPY260730P00733000 [wsb] @ $1.83 ($183, w1.0) \u2014 WSB Bearish (15 comments, score -0.18)",
+        "OPENED 1x NVDA260731C00205000 [news] @ $3.38 ($338, w1.0) \u2014 News flow +4 across 3 articles (keyword sentiment)",
+        "SKIP LW bull [news] \u2014 bid/ask spread 66% > 15% (illiquid)",
+        "no liquid contract for IGPT [news]",
+        "OPENED 1x GOOGL260731C00332500 [tech] @ $3.50 ($350, w1.0) \u2014 Technical: RSI 32 oversold + MACD turning up"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T13:52:29.684209+00:00",
+      "notes": [
+        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 48% > 15% (illiquid)",
+        "OPENED 1x NVDA260731P00200000 [wsb] @ $3.13 ($313, w1.0) \u2014 WSB Bearish (8 comments, score -0.07)",
+        "SKIP LW bull [news] \u2014 bid/ask spread 80% > 15% (illiquid)",
+        "no liquid contract for IGPT [news]"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T14:26:54.868628+00:00",
+      "notes": [
+        "CLOSED NVDA260731C00205000 [news] LOSS stop-loss -35%, P&L $-119 \u2014 entry was: RSI 54.0, counter_trend, DTE 4, score 4.0",
+        "CLOSED SPY260730P00733000 [wsb] WIN take-profit +61%, P&L $+109 \u2014 entry was: RSI 46.0, with_trend, DTE 3, score 0.2",
+        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 16% > 15% (illiquid)",
+        "OPENED 1x SPY260730P00729000 [wsb] @ $2.05 ($205, w1.0) \u2014 WSB Bearish (15 comments, score -0.18)",
+        "no liquid contract for OVV [news]",
+        "no liquid contract for CNI [news]",
+        "OPENED 12x VZ260731C00048000 [news] @ $0.28 ($336, w1.0) \u2014 News flow +3 across 2 articles (keyword sentiment)",
+        "no liquid contract for HCA [news]"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T15:27:58.253276+00:00",
+      "notes": [
+        "CLOSED NVDA260731P00200000 [wsb] WIN take-profit +92%, P&L $+290 \u2014 entry was: RSI 54.0, with_trend, DTE 4, score 0.08",
+        "Learner: 5 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 30% > 15% (illiquid)",
+        "no liquid contract for EBC [news]",
+        "no liquid contract for JMSB [news]",
+        "no liquid contract for FMBH [news]"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T16:25:06.154242+00:00",
+      "notes": [
+        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP AI bull [wsb] \u2014 bid/ask spread 17% > 15% (illiquid)",
+        "OPENED 1x DRAM260731C00052000 [wsb] @ $2.65 ($265, w1.0) \u2014 WSB Bullish (11 comments, score +0.07)",
+        "no liquid contract for WSFS [news]",
+        "no liquid contract for TMP [news]",
+        "no liquid contract for MPB [news]"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T17:21:50.392945+00:00",
+      "notes": [
+        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "OPENED 5x SLB260731C00053000 [news] @ $0.63 ($315, w1.0) \u2014 News flow +3 across 2 articles (keyword sentiment)"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T18:18:13.532466+00:00",
+      "notes": [
+        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T19:13:36.947538+00:00",
+      "notes": [
+        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0"
+      ]
+    },
+    {
+      "date": "2026-07-27",
+      "time": "2026-07-27T19:54:17.116380+00:00",
+      "notes": [
+        "CLOSED SLB260731C00053000 [news] LOSS stop-loss -51%, P&L $-165 \u2014 entry was: RSI 77.0, counter_trend, DTE 4, score 3.0",
+        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SKIP PSX bull [news] \u2014 bid/ask spread 38% > 15% (illiquid)",
+        "no liquid contract for SXT [news]",
+        "no liquid contract for MRSH [news]",
+        "no liquid contract for GSHD [news]"
+      ]
+    }
+  ],
+  "account_baseline": 100000.0,
+  "learning": {
+    "updated": "2026-07-27",
+    "n_trades": 7,
+    "sleeve": {
+      "wsb": {
+        "n": 3,
+        "wins": 2,
+        "win_rate": 0.667,
+        "avg_pnl_pct": 0.3432,
+        "total_pnl": 324.0,
+        "weight": 1.0
+      },
+      "news": {
+        "n": 2,
+        "wins": 0,
+        "win_rate": 0.0,
+        "avg_pnl_pct": -0.4289,
+        "total_pnl": -284.0,
+        "weight": 1.0
+      },
+      "tech": {
+        "n": 1,
+        "wins": 1,
+        "win_rate": 1.0,
+        "avg_pnl_pct": 0.5645,
+        "total_pnl": 70.0,
+        "weight": 1.0
+      },
+      "flow": {
+        "n": 1,
+        "wins": 0,
+        "win_rate": 0.0,
+        "avg_pnl_pct": -0.5402,
+        "total_pnl": -47.0,
+        "weight": 1.0
+      }
+    },
+    "features": {
+      "direction": {
+        "call": {
+          "n": 5,
+          "wins": 1,
+          "win_rate": 0.2,
+          "avg_pnl_pct": -0.2667,
+          "total_pnl": -336.0
+        },
+        "put": {
+          "n": 2,
+          "wins": 2,
+          "win_rate": 1.0,
+          "avg_pnl_pct": 0.7648,
+          "total_pnl": 399.0
+        }
+      },
+      "entry_rsi": {
+        "rsi>70": {
+          "n": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "avg_pnl_pct": -0.5077,
+          "total_pnl": -165.0
+        },
+        "rsi45-55": {
+          "n": 3,
+          "wins": 2,
+          "win_rate": 0.667,
+          "avg_pnl_pct": 0.3932,
+          "total_pnl": 280.0
+        },
+        "rsi<30": {
+          "n": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.0323,
+          "total_pnl": -5.0
+        },
+        "rsi30-45": {
+          "n": 1,
+          "wins": 0,
+          "win_rate": 0.0,
+          "avg_pnl_pct": -0.5402,
+          "total_pnl": -47.0
+        }
+      },
+      "dte": {
+        "dte<=4": {
+          "n": 5,
+          "wins": 2,
+          "win_rate": 0.4,
+          "avg_pnl_pct": 0.0263,
+          "total_pnl": 68.0
+        },
+        "dte5-8": {
+          "n": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.0323,
+          "total_pnl": -5.0
+        }
+      },
+      "spread": {
+        "spread_tight": {
+          "n": 4,
+          "wins": 2,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.1679,
+          "total_pnl": 115.0
+        }
+      },
+      "trend_align": {
+        "counter_trend": {
+          "n": 5,
+          "wins": 1,
+          "win_rate": 0.2,
+          "avg_pnl_pct": -0.2667,
+          "total_pnl": -336.0
+        },
+        "with_trend": {
+          "n": 2,
+          "wins": 2,
+          "win_rate": 1.0,
+          "avg_pnl_pct": 0.7648,
+          "total_pnl": 399.0
+        }
+      },
+      "macd_rising": {
+        "macd_up": {
+          "n": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.0506,
+          "total_pnl": -56.0
+        },
+        "macd_down": {
+          "n": 2,
+          "wins": 1,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.2853,
+          "total_pnl": 171.0
+        }
+      }
+    },
+    "gates": [
+      {
+        "dim": "direction",
+        "bucket": "call",
+        "n": 5,
+        "win_rate": 0.2,
+        "avg_pnl_pct": -0.2667
+      },
+      {
+        "dim": "trend_align",
+        "bucket": "counter_trend",
+        "n": 5,
+        "win_rate": 0.2,
+        "avg_pnl_pct": -0.2667
+      }
+    ],
+    "lessons": [
+      "Best signal so far \u2014 spread_tight: 50% win, avg +17% (4).",
+      "Best signal so far \u2014 dte<=4: 40% win, avg +3% (5).",
+      "Weak signal \u2014 call: 20% win, avg -27% (5).",
+      "Weak signal \u2014 counter_trend: 20% win, avg -27% (5).",
+      "GATED call (direction): 20% win over 5 \u2014 blocking new entries that match.",
+      "GATED counter_trend (trend_align): 20% win over 5 \u2014 blocking new entries that match."
+    ]
+  },
+  "last_signals": {
+    "wsb": [
+      {
+        "underlying": "AI",
+        "direction": "bull",
+        "thesis": "WSB Bullish (121 comments, score +0.14)"
+      },
+      {
+        "underlying": "SPY",
+        "direction": "bear",
+        "thesis": "WSB Bearish (29 comments, score -0.09)"
+      },
+      {
+        "underlying": "MSFT",
+        "direction": "bull",
+        "thesis": "WSB Bullish (12 comments, score +0.21)"
+      },
+      {
+        "underlying": "DRAM",
+        "direction": "bull",
+        "thesis": "WSB Bullish (11 comments, score +0.07)"
+      }
+    ],
+    "news": [
+      {
+        "underlying": "PSX",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SXT",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "MRSH",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "GSHD",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      }
+    ],
+    "tech": [
+      {
+        "underlying": "NFLX",
+        "direction": "bull",
+        "thesis": "Technical: RSI 31 oversold + MACD turning up"
+      },
+      {
+        "underlying": "GOOGL",
+        "direction": "bull",
+        "thesis": "Technical: RSI 31 oversold + MACD turning up"
+      }
+    ],
+    "flow": [
+      {
+        "underlying": "MSFT",
+        "direction": "bull",
+        "thesis": "Options flow: call/put OI skew 3.1 (bullish positioning)"
+      },
+      {
+        "underlying": "AMZN",
+        "direction": "bull",
+        "thesis": "Options flow: call/put OI skew 2.3 (bullish positioning)"
+      },
+      {
+        "underlying": "TSLA",
+        "direction": "bull",
+        "thesis": "Options flow: call/put OI skew 1.9 (bullish positioning)"
+      }
+    ]
+  },
+  "journal": [
+    {
+      "symbol": "SLB260731C00053000",
+      "sleeve": "news",
+      "underlying": "SLB",
+      "type": "call",
+      "strike": 53.0,
+      "expiration": "2026-07-31",
+      "pnl": -165.0,
+      "pnl_pct": -0.5077,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 77.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.02,
+        "signal_score": 3.0
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi>70",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "counter_trend",
+        "macd_rising": "macd_up"
+      }
+    },
+    {
+      "symbol": "NVDA260731P00200000",
+      "sleeve": "wsb",
+      "underlying": "NVDA",
+      "type": "put",
+      "strike": 200.0,
+      "expiration": "2026-07-31",
+      "pnl": 290.0,
+      "pnl_pct": 0.9206,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bear",
+        "type": "put",
+        "rsi": 54.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.04,
+        "signal_score": 0.08
+      },
+      "buckets": {
+        "direction": "put",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "with_trend",
+        "macd_rising": "macd_down"
+      }
+    },
+    {
+      "symbol": "NVDA260731C00205000",
+      "sleeve": "news",
+      "underlying": "NVDA",
+      "type": "call",
+      "strike": 205.0,
+      "expiration": "2026-07-31",
+      "pnl": -119.0,
+      "pnl_pct": -0.35,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 54.0,
+        "dte": 4,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.04,
+        "signal_score": 4.0
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "counter_trend",
+        "macd_rising": "macd_down"
+      }
+    },
+    {
+      "symbol": "SPY260730P00733000",
+      "sleeve": "wsb",
+      "underlying": "SPY",
+      "type": "put",
+      "strike": 733.0,
+      "expiration": "2026-07-30",
+      "pnl": 109.0,
+      "pnl_pct": 0.6089,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bear",
+        "type": "put",
+        "rsi": 46.0,
+        "dte": 3,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.01,
+        "signal_score": 0.2
+      },
+      "buckets": {
+        "direction": "put",
+        "entry_rsi": "rsi45-55",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "with_trend",
+        "macd_rising": "macd_up"
+      }
+    },
+    {
+      "symbol": "AI260731C00008500",
+      "sleeve": "wsb",
+      "underlying": "AI",
+      "type": "call",
+      "strike": 8.5,
+      "expiration": "2026-07-31",
+      "pnl": -75.0,
+      "pnl_pct": -0.5,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "wsb",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 20.0,
+        "dte": 7,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 0.3
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi<30",
+        "dte": "dte5-8",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    },
+    {
+      "symbol": "AMZN260727C00237500",
+      "sleeve": "flow",
+      "underlying": "AMZN",
+      "type": "call",
+      "strike": 237.5,
+      "expiration": "2026-07-27",
+      "pnl": -47.0,
+      "pnl_pct": -0.5402,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "flow",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 38.0,
+        "dte": 3,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 2.6
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi30-45",
+        "dte": "dte<=4",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    },
+    {
+      "symbol": "NFLX260731C00069000",
+      "sleeve": "tech",
+      "underlying": "NFLX",
+      "type": "call",
+      "strike": 69.0,
+      "expiration": "2026-07-31",
+      "pnl": 70.0,
+      "pnl_pct": 0.5645,
+      "exit_reason": "closed",
+      "closed_on": "2026-07-27",
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 22.0,
+        "dte": 7,
+        "trend_up": false,
+        "macd_rising": null,
+        "spread_pct": null,
+        "signal_score": 17.91
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi<30",
+        "dte": "dte5-8",
+        "spread": "na",
+        "trend_align": "counter_trend",
+        "macd_rising": "na"
+      }
+    }
   ]
- },
- "last_signals": {
-  "wsb": [
-   {
-    "underlying": "AI",
-    "direction": "bull",
-    "thesis": "WSB Bullish (76 comments, score +0.15)"
-   },
-   {
-    "underlying": "SPY",
-    "direction": "bear",
-    "thesis": "WSB Bearish (15 comments, score -0.18)"
-   },
-   {
-    "underlying": "MSFT",
-    "direction": "bull",
-    "thesis": "WSB Bullish (10 comments, score +0.15)"
-   },
-   {
-    "underlying": "NVDA",
-    "direction": "bear",
-    "thesis": "WSB Bearish (8 comments, score -0.07)"
-   }
-  ],
-  "news": [
-   {
-    "underlying": "OVV",
-    "direction": "bull",
-    "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-   },
-   {
-    "underlying": "CNI",
-    "direction": "bull",
-    "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-   },
-   {
-    "underlying": "VZ",
-    "direction": "bull",
-    "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-   },
-   {
-    "underlying": "HCA",
-    "direction": "bull",
-    "thesis": "News flow +2 across 2 articles (keyword sentiment)"
-   }
-  ],
-  "tech": [
-   {
-    "underlying": "NFLX",
-    "direction": "bull",
-    "thesis": "Technical: RSI 31 oversold + MACD turning up"
-   },
-   {
-    "underlying": "GOOGL",
-    "direction": "bull",
-    "thesis": "Technical: RSI 32 oversold + MACD turning up"
-   }
-  ],
-  "flow": [
-   {
-    "underlying": "MSFT",
-    "direction": "bull",
-    "thesis": "Options flow: call/put OI skew 3.1 (bullish positioning)"
-   },
-   {
-    "underlying": "AMZN",
-    "direction": "bull",
-    "thesis": "Options flow: call/put OI skew 2.3 (bullish positioning)"
-   },
-   {
-    "underlying": "TSLA",
-    "direction": "bull",
-    "thesis": "Options flow: call/put OI skew 1.9 (bullish positioning)"
-   }
-  ]
- },
- "journal": [
-  {
-   "symbol": "NVDA260731C00205000",
-   "sleeve": "news",
-   "underlying": "NVDA",
-   "type": "call",
-   "strike": 205.0,
-   "expiration": "2026-07-31",
-   "pnl": -119.0,
-   "pnl_pct": -0.35,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27",
-   "features": {
-    "sleeve": "news",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 54.0,
-    "dte": 4,
-    "trend_up": false,
-    "macd_rising": false,
-    "spread_pct": 0.04,
-    "signal_score": 4.0
-   },
-   "buckets": {
-    "direction": "call",
-    "entry_rsi": "rsi45-55",
-    "dte": "dte<=4",
-    "spread": "spread_tight",
-    "trend_align": "counter_trend",
-    "macd_rising": "macd_down"
-   }
-  },
-  {
-   "symbol": "SPY260730P00733000",
-   "sleeve": "wsb",
-   "underlying": "SPY",
-   "type": "put",
-   "strike": 733.0,
-   "expiration": "2026-07-30",
-   "pnl": 109.0,
-   "pnl_pct": 0.6089,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27",
-   "features": {
-    "sleeve": "wsb",
-    "direction": "bear",
-    "type": "put",
-    "rsi": 46.0,
-    "dte": 3,
-    "trend_up": false,
-    "macd_rising": true,
-    "spread_pct": 0.01,
-    "signal_score": 0.2
-   },
-   "buckets": {
-    "direction": "put",
-    "entry_rsi": "rsi45-55",
-    "dte": "dte<=4",
-    "spread": "spread_tight",
-    "trend_align": "with_trend",
-    "macd_rising": "macd_up"
-   }
-  },
-  {
-   "symbol": "AI260731C00008500",
-   "sleeve": "wsb",
-   "underlying": "AI",
-   "type": "call",
-   "strike": 8.5,
-   "expiration": "2026-07-31",
-   "pnl": -75.0,
-   "pnl_pct": -0.5,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27",
-   "features": {
-    "sleeve": "wsb",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 20.0,
-    "dte": 7,
-    "trend_up": false,
-    "macd_rising": null,
-    "spread_pct": null,
-    "signal_score": 0.3
-   },
-   "buckets": {
-    "direction": "call",
-    "entry_rsi": "rsi<30",
-    "dte": "dte5-8",
-    "spread": "na",
-    "trend_align": "counter_trend",
-    "macd_rising": "na"
-   }
-  },
-  {
-   "symbol": "AMZN260727C00237500",
-   "sleeve": "flow",
-   "underlying": "AMZN",
-   "type": "call",
-   "strike": 237.5,
-   "expiration": "2026-07-27",
-   "pnl": -47.0,
-   "pnl_pct": -0.5402,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27",
-   "features": {
-    "sleeve": "flow",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 38.0,
-    "dte": 3,
-    "trend_up": false,
-    "macd_rising": null,
-    "spread_pct": null,
-    "signal_score": 2.6
-   },
-   "buckets": {
-    "direction": "call",
-    "entry_rsi": "rsi30-45",
-    "dte": "dte<=4",
-    "spread": "na",
-    "trend_align": "counter_trend",
-    "macd_rising": "na"
-   }
-  },
-  {
-   "symbol": "NFLX260731C00069000",
-   "sleeve": "tech",
-   "underlying": "NFLX",
-   "type": "call",
-   "strike": 69.0,
-   "expiration": "2026-07-31",
-   "pnl": 70.0,
-   "pnl_pct": 0.5645,
-   "exit_reason": "closed",
-   "closed_on": "2026-07-27",
-   "features": {
-    "sleeve": "tech",
-    "direction": "bull",
-    "type": "call",
-    "rsi": 22.0,
-    "dte": 7,
-    "trend_up": false,
-    "macd_rising": null,
-    "spread_pct": null,
-    "signal_score": 17.91
-   },
-   "buckets": {
-    "direction": "call",
-    "entry_rsi": "rsi<30",
-    "dte": "dte5-8",
-    "spread": "na",
-    "trend_align": "counter_trend",
-    "macd_rising": "na"
-   }
-  }
- ]
 }
