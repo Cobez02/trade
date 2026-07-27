@@ -1,0 +1,250 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPX-Beater — options paper trading</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0d0d0d; color:#ffffff;
+         font-family: system-ui,-apple-system,"Segoe UI",sans-serif; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+  h1 { font-size: 22px; margin:0 0 2px; letter-spacing:-0.02em; }
+  .sub { color:#898781; font-size:13px; margin-bottom:22px; }
+  .banner { background:#1a1a19; border:1px solid rgba(255,255,255,.10);
+             border-radius:14px; padding:16px 20px; margin-bottom:18px;
+             display:flex; align-items:center; gap:14px; }
+  .banner .big { font-size:26px; font-weight:700; }
+  .grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .tile { background:#1a1a19; border:1px solid rgba(255,255,255,.10);
+           border-radius:14px; padding:14px 16px; }
+  .tile-label { color:#898781; font-size:12px; }
+  .tile-value { font-size:24px; font-weight:700; margin-top:4px; font-variant-numeric:tabular-nums; }
+  .tile-sub { color:#c3c2b7; font-size:12px; margin-top:2px; }
+  .card { background:#1a1a19; border:1px solid rgba(255,255,255,.10);
+           border-radius:14px; padding:18px 20px; margin-bottom:18px; }
+  .card h2 { font-size:14px; margin:0 0 12px; color:#c3c2b7; font-weight:600;
+             text-transform:uppercase; letter-spacing:.06em; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; color:#898781; font-weight:500; padding:6px 8px;
+        border-bottom:1px solid #383835; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+  td { padding:8px; border-bottom:1px solid #2c2c2a; vertical-align:top; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.mono { font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; }
+  td.lbl { color:#c3c2b7; }
+  td.thesis { color:#898781; font-size:12px; }
+  .legend { display:flex; gap:18px; font-size:12px; color:#c3c2b7; margin:6px 0 4px; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:middle; }
+  .empty { color:#898781; text-align:center; padding:16px; }
+  ul.notes { margin:0; padding-left:18px; color:#c3c2b7; font-size:13px; }
+  ul.notes li { margin:3px 0; }
+  .wbars { display:flex; flex-direction:column; gap:8px; }
+  .wbar { display:grid; grid-template-columns: 190px 1fr 64px; align-items:center; gap:10px; }
+  .wbar-lbl { font-size:12px; color:#c3c2b7; }
+  .wbar-track { height:8px; background:#2c2c2a; border-radius:5px; overflow:hidden; }
+  .wbar-fill { height:100%; border-radius:5px; }
+  .wbar-val { font-size:12px; text-align:right; font-variant-numeric:tabular-nums; }
+  .disc { color:#898781; font-size:11px; margin-top:22px; line-height:1.5; }
+</style></head>
+<body><div class="wrap">
+  <h1>SPX-Beater · autonomous options paper trading</h1>
+  <div class="sub">As of 2026-07-27 · Alpaca paper account · $10k conservative · benchmark = S&amp;P 500 (SPY)</div>
+
+  <div class="banner">
+    <div class="dot" style="width:14px;height:14px;background:#d03b3b"></div>
+    <div><span class="big" style="color:#d03b3b">TRAILING the S&amp;P 500</span>
+    &nbsp;by -0.22%</div>
+  </div>
+
+  <div class="grid"><div class="tile">
+      <div class="tile-label">Portfolio value</div>
+      <div class="tile-value" style="color:#ffffff">$10,000</div>
+      <div class="tile-sub">from $10,000 start</div>
+    </div><div class="tile">
+      <div class="tile-label">Bot return</div>
+      <div class="tile-value" style="color:#0ca30c">+0.00%</div>
+      <div class="tile-sub">options, 4 sleeves</div>
+    </div><div class="tile">
+      <div class="tile-label">S&amp;P 500 (SPY)</div>
+      <div class="tile-value" style="color:#0ca30c">+0.22%</div>
+      <div class="tile-sub">buy &amp; hold benchmark</div>
+    </div><div class="tile">
+      <div class="tile-label">Alpha vs S&amp;P</div>
+      <div class="tile-value" style="color:#d03b3b">-0.22%</div>
+      <div class="tile-sub">TRAILING</div>
+    </div><div class="tile">
+      <div class="tile-label">Open positions</div>
+      <div class="tile-value" style="color:#ffffff">5</div>
+      <div class="tile-sub">5 closed</div>
+    </div><div class="tile">
+      <div class="tile-label">Win rate</div>
+      <div class="tile-value" style="color:#ffffff">40%</div>
+      <div class="tile-sub">5 settled trades</div>
+    </div></div>
+
+  <div class="card">
+    <h2>Equity vs S&amp;P 500</h2>
+    <div class="legend">
+      <span><span class="dot" style="background:#3987e5"></span>Bot (options)</span>
+      <span><span class="dot" style="background:#d95926"></span>S&amp;P 500 buy &amp; hold</span>
+    </div>
+    <svg viewBox="0 0 920 280" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Equity vs S&P 500">
+      <line x1="44" y1="44.0" x2="876" y2="44.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="48.0" text-anchor="end" fill="#898781" font-size="11">$10,031</text><line x1="44" y1="92.0" x2="876" y2="92.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="96.0" text-anchor="end" fill="#898781" font-size="11">$9,998</text><line x1="44" y1="140.0" x2="876" y2="140.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="144.0" text-anchor="end" fill="#898781" font-size="11">$9,964</text><line x1="44" y1="188.0" x2="876" y2="188.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="192.0" text-anchor="end" fill="#898781" font-size="11">$9,930</text><line x1="44" y1="236.0" x2="876" y2="236.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="240.0" text-anchor="end" fill="#898781" font-size="11">$9,897</text>
+      <line x1="44" y1="236" x2="876" y2="236" stroke="#383835" stroke-width="1"/>
+      <path d="M44.0,70.5 L460.0,72.2 L876.0,57.2" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M44.0,222.8 L460.0,204.2 L876.0,88.2" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="876.0" cy="88.2" r="4" fill="#3987e5"/><circle cx="876.0" cy="57.2" r="4" fill="#d95926"/>
+      <text x="44.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-24</text><text x="460.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-25</text><text x="876.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-27</text>
+    </svg>
+  </div>
+
+  <div class="card">
+    <h2>Strategy sleeves — which method is winning</h2>
+    <table>
+      <tr><th>Sleeve</th><th style="text-align:right">Open</th><th style="text-align:right">Realized P&amp;L</th>
+      <th style="text-align:right">Return</th><th style="text-align:right">Trades</th><th style="text-align:right">Win %</th></tr>
+      <tr>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num">2</td>
+          <td class="num" style="color:#0ca30c">$34.00</td>
+          <td class="num" style="color:#0ca30c">+1.36%</td>
+          <td class="num">2</td>
+          <td class="num">50%</td>
+        </tr><tr>
+          <td class="lbl">News catalysts</td>
+          <td class="num">1</td>
+          <td class="num" style="color:#d03b3b">$-119</td>
+          <td class="num" style="color:#d03b3b">-4.76%</td>
+          <td class="num">1</td>
+          <td class="num">0%</td>
+        </tr><tr>
+          <td class="lbl">Technical indicators</td>
+          <td class="num">2</td>
+          <td class="num" style="color:#0ca30c">$70.00</td>
+          <td class="num" style="color:#0ca30c">+2.80%</td>
+          <td class="num">1</td>
+          <td class="num">100%</td>
+        </tr><tr>
+          <td class="lbl">Options-flow copy</td>
+          <td class="num">0</td>
+          <td class="num" style="color:#d03b3b">$-47.00</td>
+          <td class="num" style="color:#d03b3b">-1.88%</td>
+          <td class="num">1</td>
+          <td class="num">0%</td>
+        </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Recursive learning — what's working, what's gated</h2>
+    <div class="wbars"><div class="wbar">
+          <div class="wbar-lbl">Reddit / WSB sentiment <span style="color:#898781">(2)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
+          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+        </div><div class="wbar">
+          <div class="wbar-lbl">News catalysts <span style="color:#898781">(1)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
+          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+        </div><div class="wbar">
+          <div class="wbar-lbl">Technical indicators <span style="color:#898781">(1)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
+          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+        </div><div class="wbar">
+          <div class="wbar-lbl">Options-flow copy <span style="color:#898781">(1)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
+          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+        </div></div>
+      <div style="color:#898781;font-size:11px;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
+      <ul class="notes"><li>Weak signal — call: 25% win, avg -21% (4).</li><li>Weak signal — counter_trend: 25% win, avg -21% (4).</li></ul>
+  </div>
+
+  <div class="card">
+    <h2>Open positions</h2>
+    <table>
+      <tr><th>Contract</th><th>Sleeve</th><th style="text-align:right">Qty</th>
+      <th style="text-align:right">Entry</th><th style="text-align:right">Expiry</th><th>Thesis</th></tr>
+      <tr>
+          <td class="mono">GOOGL CALL $332.5</td>
+          <td class="lbl">Technical indicators</td>
+          <td class="num">1</td>
+          <td class="num">$3.45</td>
+          <td class="num">2026-07-31 (4d)</td>
+          <td class="thesis"></td>
+        </tr><tr>
+          <td class="mono">NFLX CALL $71.0</td>
+          <td class="lbl">Technical indicators</td>
+          <td class="num">1</td>
+          <td class="num">$1.03</td>
+          <td class="num">2026-07-31 (4d)</td>
+          <td class="thesis"></td>
+        </tr><tr>
+          <td class="mono">NVDA PUT $200.0</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num">1</td>
+          <td class="num">$3.15</td>
+          <td class="num">2026-07-31 (4d)</td>
+          <td class="thesis"></td>
+        </tr><tr>
+          <td class="mono">SPY PUT $729.0</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num">1</td>
+          <td class="num">$2.05</td>
+          <td class="num">2026-07-30 (3d)</td>
+          <td class="thesis">WSB Bearish (15 comments, score -0.18)</td>
+        </tr><tr>
+          <td class="mono">VZ CALL $48.0</td>
+          <td class="lbl">News catalysts</td>
+          <td class="num">12</td>
+          <td class="num">$0.28</td>
+          <td class="num">2026-07-31 (4d)</td>
+          <td class="thesis">News flow +3 across 2 articles (keyword sentiment)</td>
+        </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Recent closed trades</h2>
+    <table>
+      <tr><th>Contract</th><th>Sleeve</th><th style="text-align:right">P&amp;L</th><th>Reason</th><th style="text-align:right">Closed</th></tr>
+      <tr>
+          <td class="mono">  $</td>
+          <td class="lbl">Technical indicators</td>
+          <td class="num" style="color:#0ca30c">$70.00</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-27</td>
+        </tr><tr>
+          <td class="mono">  $</td>
+          <td class="lbl">Options-flow copy</td>
+          <td class="num" style="color:#d03b3b">$-47.00</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-27</td>
+        </tr><tr>
+          <td class="mono">  $</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num" style="color:#d03b3b">$-75.00</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-27</td>
+        </tr><tr>
+          <td class="mono">  $</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num" style="color:#0ca30c">$109</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-27</td>
+        </tr><tr>
+          <td class="mono">  $</td>
+          <td class="lbl">News catalysts</td>
+          <td class="num" style="color:#d03b3b">$-119</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-27</td>
+        </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Last run activity</h2>
+    <ul class="notes"><li>CLOSED NVDA260731C00205000 [news] LOSS stop-loss -35%, P&amp;L $-119 — entry was: RSI 54.0, counter_trend, DTE 4, score 4.0</li><li>CLOSED SPY260730P00733000 [wsb] WIN take-profit +61%, P&amp;L $+109 — entry was: RSI 46.0, with_trend, DTE 3, score 0.2</li><li>Learner: 3 settled trades | wsb=w1.0 · tech=w1.0 · flow=w1.0</li><li>SKIP AI bull [wsb] — bid/ask spread 16% &gt; 15% (illiquid)</li><li>OPENED 1x SPY260730P00729000 [wsb] @ $2.05 ($205, w1.0) — WSB Bearish (15 comments, score -0.18)</li><li>no liquid contract for OVV [news]</li><li>no liquid contract for CNI [news]</li><li>OPENED 12x VZ260731C00048000 [news] @ $0.28 ($336, w1.0) — News flow +3 across 2 articles (keyword sentiment)</li><li>no liquid contract for HCA [news]</li></ul>
+  </div>
+
+  <div class="disc">Experimental / educational paper-trading system. Trades are simulated on an Alpaca
+  paper account with no real money. Signals are generated autonomously from public sentiment, news
+  keywords, technical indicators, and options open-interest — none of this is investment advice, and
+  paper-trading results do not reflect real-world fills, slippage, or liquidity.</div>
+</div></body></html>

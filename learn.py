@@ -57,7 +57,11 @@ def feature_keys(feat: dict):
         "dte": dte_bucket(feat.get("dte")),
         "spread": spread_bucket(feat.get("spread_pct")),
         "trend_align": align_bucket(feat),
-        "macd_rising": "macd_up" if feat.get("macd_rising") else "macd_down",
+        # NB: must distinguish "MACD was falling" from "we never recorded MACD".
+        # Collapsing None into macd_down puts every trade in one fake bucket, which
+        # would eventually gate that bucket and halt ALL trading.
+        "macd_rising": ("na" if feat.get("macd_rising") is None
+                        else ("macd_up" if feat.get("macd_rising") else "macd_down")),
     }
 
 
@@ -119,8 +123,14 @@ def learn(state: dict) -> dict:
             buckets.setdefault(key, []).append(j)
         out["features"][dim] = {k: _stat(v) for k, v in buckets.items()}
 
-    # gates: feature buckets that reliably lose
+    # gates: feature buckets that reliably lose.
+    # A dimension where every trade landed in the SAME bucket carries no
+    # information -- it is a constant, not a signal. Gating it would block
+    # 100% of future trades and silently freeze the bot. Require the dimension
+    # to have at least one contrasting bucket before it can gate anything.
     for dim, buckets in out["features"].items():
+        if len(buckets) < 2:
+            continue
         for key, st in buckets.items():
             if st["n"] >= MIN_SAMPLES_GATE and st["win_rate"] is not None \
                and st["win_rate"] <= GATE_WINRATE and (st["avg_pnl_pct"] or 0) < 0:
@@ -157,7 +167,10 @@ def _lessons(learning: dict):
             if st["n"] >= 4 and st["avg_pnl_pct"] is not None:
                 flat.append((dim, key, st))
     flat.sort(key=lambda t: t[2]["avg_pnl_pct"], reverse=True)
-    for dim, key, st in flat[:2]:
+    # Only call something "best" if it actually made money. Ranking an all-losing
+    # set and printing the top of it as the best signal tells Connor a -21% bucket
+    # is what's working, which is the opposite of the truth.
+    for dim, key, st in [t for t in flat if t[2]["avg_pnl_pct"] > 0][:2]:
         lessons.append(f"Best signal so far — {key}: {st['win_rate']*100:.0f}% win, "
                        f"avg {st['avg_pnl_pct']*100:+.0f}% ({st['n']}).")
     for dim, key, st in [t for t in flat if t[2]['avg_pnl_pct'] < 0][-2:]:

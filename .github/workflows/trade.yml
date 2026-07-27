@@ -35,6 +35,8 @@ jobs:
           SPXBOT_STARTED: "2026-07-24"
           SPXBOT_BENCH_START: "738.06"
           SPXBOT_BASELINE: "100000"
+          SPXBOT_MAX_PREM: "350"
+          SPXBOT_MAX_OPEN: "2"
         run: |
           python main.py | tee run.log
           python reporting.py state.json > digest.txt

@@ -60,8 +60,14 @@ def _envf(name, default):
     try: return float(os.environ.get(name, default))
     except Exception: return default
 
-MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 150.0)  # max $ risked per position (~1.5%)
-MAX_OPEN_PER_SLEEVE   = int(_envf("SPXBOT_MAX_OPEN", 3)) # cap concurrent positions per sleeve
+# A $150/trade cap sounds conservative but adverse-selects: it prices out every
+# liquid quality contract (SPY/NVDA/GOOGL run $180-340) and leaves only sub-$1
+# wide-spread junk -- which is exactly what lost money. Raising the per-trade cap
+# while cutting slots per sleeve keeps total deployment conservative:
+#   new  $350 x 2 x 4 sleeves = $2,800 of $10k (28%)
+#   old  $150 x 3 x 4 sleeves = $1,800 of $10k (18%)
+MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 350.0)  # max $ risked per position
+MAX_OPEN_PER_SLEEVE   = int(_envf("SPXBOT_MAX_OPEN", 2)) # cap concurrent positions per sleeve
 MIN_OPEN_INTEREST     = 100        # liquidity filter
 MAX_SPREAD_PCT        = _envf("SPXBOT_MAX_SPREAD", 0.15)  # skip if bid/ask spread wider than this
 TARGET_DTE_MIN = int(_envf("SPXBOT_DTE_MIN", 3))
@@ -243,6 +249,10 @@ class Broker:
         order = MarketOrderRequest(symbol=occ_symbol, qty=qty, side=OrderSide.SELL,
                                    time_in_force=TimeInForce.DAY)
         return self.trading.submit_order(order)
+
+    def cancel(self, order_id):
+        """Pull a working order (e.g. a limit that has gone stale as the spread widened)."""
+        return self.trading.cancel_order_by_id(order_id)
 
     def closed_orders(self, limit: int = 500):
         """All filled/closed orders (both sides), newest first."""

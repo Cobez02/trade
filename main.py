@@ -57,7 +57,13 @@ def build_tag(sleeve: str, feat: dict) -> str:
     aligned = (dirn == "bull" and tu is True) or (dirn == "bear" and tu is False)
     tr = "1" if aligned else "0"
     sc = int(round((feat.get("signal_score") or 0) * 100))
-    return f"SPXB-{sleeve}-{d}-{rsi}-{dtev}-{tr}-{sc}"
+    # a negative score would emit a stray "-" and corrupt the hyphen split
+    scv = f"n{abs(sc)}" if sc < 0 else str(sc)
+    mr = feat.get("macd_rising")
+    m = "1" if mr is True else ("0" if mr is False else "na")
+    sp = feat.get("spread_pct")
+    spv = str(int(round(sp * 100))) if isinstance(sp, (int, float)) else "na"
+    return f"SPXB-{sleeve}-{d}-{rsi}-{dtev}-{tr}-{scv}-{m}-{spv}"
 
 def parse_coid(coid: str) -> dict:
     if not coid or not coid.startswith("SPXB-"):
@@ -69,13 +75,28 @@ def parse_coid(coid: str) -> dict:
     direction = "bull" if d == "b" else "bear"
     aligned = (tr == "1")
     def num(x):
-        try: return float(x)
+        try:
+            if isinstance(x, str) and x.startswith("n"):
+                return -float(x[1:])
+            return float(x)
         except Exception: return None
+    # v2 tags carry MACD + entry spread: SPXB-slv-d-rsi-dte-tr-sc-macd-spread-<epoch>
+    # v1 tags stop at <sc> and leave both as None (bucketed "na", not learned from).
+    macd, spread = None, None
+    if len(p) >= 10:
+        mv, spv = p[7], p[8]
+        if mv in ("0", "1"):
+            macd = (mv == "1")
+        sv = num(spv)
+        if sv is not None:
+            spread = sv / 100
     return {"sleeve": sleeve, "direction": direction,
             "type": "call" if d == "b" else "put",
             "rsi": num(rsi),
             "dte": (int(float(dtev)) if num(dtev) is not None else None),
             "trend_up": (aligned == (direction == "bull")),
+            "macd_rising": macd,
+            "spread_pct": spread,
             "signal_score": (num(sc) / 100 if num(sc) is not None else 0)}
 
 def rebuild_from_alpaca(broker: Broker):
@@ -92,8 +113,13 @@ def rebuild_from_alpaca(broker: Broker):
         if not filled:
             continue
         sym, side = o.symbol, str(o.side).upper()
+        # Orders arrive newest-first, so the FIRST one seen is the newest. An
+        # unconditional assignment would leave the OLDEST buy in place, which on a
+        # re-entered contract would pair an old entry price with a new exit and
+        # book a fabricated P&L into the learning journal.
         if "BUY" in side:
-            buys[sym] = o        # newest buy per symbol
+            if sym not in buys:
+                buys[sym] = o
         elif "SELL" in side and sym not in sells:
             sells[sym] = o
     journal, pos_feat = [], {}
@@ -101,6 +127,14 @@ def rebuild_from_alpaca(broker: Broker):
         feat = parse_coid(getattr(b, "client_order_id", "") or "")
         pos_feat[sym] = feat
         if sym in sells:
+            # If the newest buy came AFTER the newest sell, the contract was
+            # re-entered and is open right now -- there is no settled round trip
+            # to learn from yet. Journaling it would invent an exit.
+            try:
+                if str(getattr(b, "filled_at", "") or "") > str(getattr(sells[sym], "filled_at", "") or ""):
+                    continue
+            except Exception:
+                pass
             try:
                 ep = float(b.filled_avg_price); xp = float(sells[sym].filled_avg_price)
                 q = float(b.filled_qty or 1)
@@ -399,6 +433,20 @@ def run():
         notes.append(f"Learner: {lrn['n_trades']} settled trades | "
                      + " · ".join(f"{s}=w{v['weight']}" for s, v in lrn["sleeve"].items()
                                   if v["n"] > 0))
+    # Sweep stale working orders. A limit priced off a quote that has since gone
+    # illiquid will either sit forever or fill at a price the spread gate would
+    # now reject, so pull anything whose spread has widened past the gate.
+    for o in broker.open_orders():
+        try:
+            q = broker.option_quote(o.symbol) or {}
+            sp = q.get("spread_pct")
+            if sp is not None and sp > MAX_SPREAD_PCT:
+                broker.cancel(o.id)
+                notes.append(f"CANCELLED working order {o.symbol} qty={o.qty} — "
+                             f"spread widened to {sp*100:.0f}% (> {MAX_SPREAD_PCT*100:.0f}%)")
+        except Exception:
+            pass
+
     # names that already have a WORKING (unfilled) order — don't re-submit them
     pending = set()
     for o in broker.open_orders():
