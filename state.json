@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10044.17,
-      "spy": 741.32
+      "benchmark_equity": 10048.64,
+      "spy": 741.65
     }
   ],
   "run_log": [
@@ -509,6 +509,14 @@
         "no liquid contract for ITW [news]",
         "no liquid contract for SHW [news]",
         "no liquid contract for TFII [news]"
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T17:13:10.058766+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
     }
   ],
@@ -904,24 +912,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "SSB",
+        "underlying": "AMKR",
         "direction": "bull",
-        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "ITW",
+        "underlying": "TREX",
         "direction": "bull",
-        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "SHW",
+        "underlying": "BRX",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "TFII",
+        "underlying": "AMZN",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [],
