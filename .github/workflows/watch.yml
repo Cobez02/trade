@@ -68,5 +68,7 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-# schedule-poke 2026-07-28: neither cron fired on first registration
-# (13:31 and 14:00 both missed); editing this file re-registers the schedule.
+# schedule-poke 2026-07-28 (2nd): first poke got 4 firings, then the hourly
+# cron went quiet again after 16:30 and the 19:45/50/55 flatten trio missed.
+# New-repo scheduling is notoriously erratic in week one; each edit of this
+# file re-registers. The reliable stabiliser remains one manual dispatch.
