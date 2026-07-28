@@ -2,6 +2,11 @@ __pycache__/
 *.pyc
 run.log
 watcher.log
+# Per-process runtime receipt, written by every watcher on exit — including
+# GitHub runners, which discard theirs with the VM. The durable record of the
+# same exits is state.json's journal, rebuilt from Alpaca's own order history;
+# committing one process's snapshot would just go stale and mislead.
+watcher_exits.json
 
 # The Alpaca keys live here and must never be committed. They are paper-trading
 # keys, but the habit is the point: this file is sourced at runtime and supplied
