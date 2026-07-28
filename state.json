@@ -24,7 +24,7 @@
         "spread_pct": 0.12,
         "signal_score": 0.08
       },
-      "entry_date": "2026-07-27"
+      "entry_date": "2026-07-28"
     },
     "GOOGL260731C00332500": {
       "sleeve": "tech",
@@ -47,7 +47,7 @@
         "spread_pct": 0.07,
         "signal_score": 8.48
       },
-      "entry_date": "2026-07-27"
+      "entry_date": "2026-07-28"
     },
     "NFLX260731C00071000": {
       "sleeve": "tech",
@@ -70,7 +70,7 @@
         "spread_pct": null,
         "signal_score": 10.08
       },
-      "entry_date": "2026-07-27"
+      "entry_date": "2026-07-28"
     },
     "SPY260730P00729000": {
       "sleeve": "wsb",
@@ -93,7 +93,7 @@
         "spread_pct": 0.0,
         "signal_score": 0.2
       },
-      "entry_date": "2026-07-27"
+      "entry_date": "2026-07-28"
     },
     "VZ260731C00048000": {
       "sleeve": "news",
@@ -116,7 +116,7 @@
         "spread_pct": 0.11,
         "signal_score": 3.0
       },
-      "entry_date": "2026-07-27"
+      "entry_date": "2026-07-28"
     }
   },
   "closed": [
@@ -131,6 +131,7 @@
       "pnl_pct": -0.5077,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "news",
         "direction": "bull",
@@ -141,14 +142,6 @@
         "macd_rising": true,
         "spread_pct": 0.02,
         "signal_score": 3.0
-      },
-      "buckets": {
-        "direction": "call",
-        "entry_rsi": "rsi>70",
-        "dte": "dte<=4",
-        "spread": "spread_tight",
-        "trend_align": "counter_trend",
-        "macd_rising": "macd_up"
       }
     },
     {
@@ -162,6 +155,7 @@
       "pnl_pct": 0.9206,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "wsb",
         "direction": "bear",
@@ -172,14 +166,6 @@
         "macd_rising": false,
         "spread_pct": 0.04,
         "signal_score": 0.08
-      },
-      "buckets": {
-        "direction": "put",
-        "entry_rsi": "rsi45-55",
-        "dte": "dte<=4",
-        "spread": "spread_tight",
-        "trend_align": "with_trend",
-        "macd_rising": "macd_down"
       }
     },
     {
@@ -193,6 +179,7 @@
       "pnl_pct": -0.35,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "news",
         "direction": "bull",
@@ -203,14 +190,6 @@
         "macd_rising": false,
         "spread_pct": 0.04,
         "signal_score": 4.0
-      },
-      "buckets": {
-        "direction": "call",
-        "entry_rsi": "rsi45-55",
-        "dte": "dte<=4",
-        "spread": "spread_tight",
-        "trend_align": "counter_trend",
-        "macd_rising": "macd_down"
       }
     },
     {
@@ -224,6 +203,7 @@
       "pnl_pct": 0.6089,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "wsb",
         "direction": "bear",
@@ -234,14 +214,6 @@
         "macd_rising": true,
         "spread_pct": 0.01,
         "signal_score": 0.2
-      },
-      "buckets": {
-        "direction": "put",
-        "entry_rsi": "rsi45-55",
-        "dte": "dte<=4",
-        "spread": "spread_tight",
-        "trend_align": "with_trend",
-        "macd_rising": "macd_up"
       }
     },
     {
@@ -255,6 +227,7 @@
       "pnl_pct": -0.5,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "wsb",
         "direction": "bull",
@@ -265,14 +238,6 @@
         "macd_rising": null,
         "spread_pct": null,
         "signal_score": 0.3
-      },
-      "buckets": {
-        "direction": "call",
-        "entry_rsi": "rsi<30",
-        "dte": "dte5-8",
-        "spread": "na",
-        "trend_align": "counter_trend",
-        "macd_rising": "na"
       }
     },
     {
@@ -286,6 +251,7 @@
       "pnl_pct": -0.5402,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "flow",
         "direction": "bull",
@@ -296,14 +262,6 @@
         "macd_rising": null,
         "spread_pct": null,
         "signal_score": 2.6
-      },
-      "buckets": {
-        "direction": "call",
-        "entry_rsi": "rsi30-45",
-        "dte": "dte<=4",
-        "spread": "na",
-        "trend_align": "counter_trend",
-        "macd_rising": "na"
       }
     },
     {
@@ -317,6 +275,7 @@
       "pnl_pct": 0.5645,
       "exit_reason": "closed",
       "closed_on": "2026-07-27",
+      "thesis": "",
       "features": {
         "sleeve": "tech",
         "direction": "bull",
@@ -327,14 +286,6 @@
         "macd_rising": null,
         "spread_pct": null,
         "signal_score": 17.91
-      },
-      "buckets": {
-        "direction": "call",
-        "entry_rsi": "rsi<30",
-        "dte": "dte5-8",
-        "spread": "na",
-        "trend_align": "counter_trend",
-        "macd_rising": "na"
       }
     }
   ],
@@ -356,6 +307,12 @@
       "equity": 9996.96,
       "benchmark_equity": 10008.81,
       "spy": 738.71
+    },
+    {
+      "date": "2026-07-28",
+      "equity": 10022.96,
+      "benchmark_equity": 10010.7,
+      "spy": 738.85
     }
   ],
   "run_log": [
@@ -499,11 +456,27 @@
         "no liquid contract for MRSH [news]",
         "no liquid contract for GSHD [news]"
       ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T00:35:05.868528+00:00",
+      "notes": [
+        "Learner: 7 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T00:35:13.090521+00:00",
+      "notes": [
+        "Learner: 7 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-07-27",
+    "updated": "2026-07-28",
     "n_trades": 7,
     "sleeve": {
       "wsb": {
@@ -674,51 +647,51 @@
       {
         "underlying": "AI",
         "direction": "bull",
-        "thesis": "WSB Bullish (121 comments, score +0.14)"
+        "thesis": "WSB Bullish (297 comments, score +0.13)"
       },
       {
-        "underlying": "SPY",
+        "underlying": "SNDK",
         "direction": "bear",
-        "thesis": "WSB Bearish (29 comments, score -0.09)"
+        "thesis": "WSB Bearish (32 comments, score -0.17)"
       },
       {
-        "underlying": "MSFT",
+        "underlying": "AAPL",
         "direction": "bull",
-        "thesis": "WSB Bullish (12 comments, score +0.21)"
+        "thesis": "WSB Bullish (19 comments, score +0.30)"
       },
       {
         "underlying": "DRAM",
         "direction": "bull",
-        "thesis": "WSB Bullish (11 comments, score +0.07)"
+        "thesis": "WSB Bullish (18 comments, score +0.14)"
       }
     ],
     "news": [
       {
-        "underlying": "PSX",
+        "underlying": "CLS",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
       },
       {
-        "underlying": "SXT",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "underlying": "VIV",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "MRSH",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "underlying": "CINF",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "GSHD",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "underlying": "BRO",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "NFLX",
         "direction": "bull",
-        "thesis": "Technical: RSI 31 oversold + MACD turning up"
+        "thesis": "Technical: RSI 30 oversold + MACD turning up"
       },
       {
         "underlying": "GOOGL",

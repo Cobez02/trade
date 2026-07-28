@@ -5,7 +5,17 @@ name: SPX-Beater options bot
 # scheduled runs a few minutes under load — fine for an hourly bot.
 on:
   schedule:
+    # Hourly trading runs, 10:00–16:00 ET.
     - cron: "0 14-20 * * 1-5"
+    # Close-the-book runs. Nothing is carried overnight, so a run MUST land in
+    # the final 15 minutes or the flatten never fires. GitHub routinely delays
+    # scheduled runs under load, so three attempts are scheduled rather than one
+    # — a single 19:45 job delayed past the bell would strand the whole book.
+    - cron: "45,50,55 19 * * 1-5"
+    # Same, for early-close sessions (13:00 ET bell: July 3rd, Black Friday,
+    # Christmas Eve). On a normal day these land ~3 hours before the close and
+    # do nothing; SPXBOT_FLATTEN_ONLY stops them churning entries.
+    - cron: "45,50,55 16 * * 1-5"
   workflow_dispatch: {}          # lets you run it manually from the Actions tab
 
 permissions:
@@ -37,6 +47,11 @@ jobs:
           SPXBOT_BASELINE: "100000"
           SPXBOT_MAX_PREM: "350"
           SPXBOT_MAX_OPEN: "2"
+          SPXBOT_EOD_FLATTEN_MIN: "15"
+          SPXBOT_NO_NEW_ENTRY_MIN: "90"
+          # The close-the-book crons manage exits only. Any other trigger
+          # (hourly schedule, or a manual Actions run) does a full cycle.
+          SPXBOT_FLATTEN_ONLY: ${{ (github.event.schedule == '45,50,55 19 * * 1-5' || github.event.schedule == '45,50,55 16 * * 1-5') && '1' || '0' }}
         run: |
           python main.py | tee run.log
           python reporting.py state.json > digest.txt

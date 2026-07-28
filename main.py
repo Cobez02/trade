@@ -25,6 +25,35 @@ import learn
 
 OCC_RE = re.compile(r'^([A-Z]+)(\d{6})([CP])(\d{8})$')
 
+# --- end-of-day flat rule ----------------------------------------------------
+# Connor's requirement: carry NOTHING overnight. Two cooperating limits:
+#   NO_NEW_ENTRY_MIN — stop opening once the remaining session is too short for a
+#     thesis to beat its own round-trip spread (entries may cost up to
+#     MAX_SPREAD_PCT going in and the same coming out).
+#   EOD_FLATTEN_MIN  — force-close everything still open inside this window.
+# Both are minutes-to-close, read from Alpaca's own clock rather than a hardcoded
+# 20:00 UTC, so early closes (July 3rd, Christmas Eve, etc.) flatten correctly
+# instead of leaving the book open through a 13:00 ET bell.
+EOD_FLATTEN_MIN   = int(os.environ.get("SPXBOT_EOD_FLATTEN_MIN", "15"))
+NO_NEW_ENTRY_MIN  = int(os.environ.get("SPXBOT_NO_NEW_ENTRY_MIN", "90"))
+
+
+def minutes_to_close(broker: Broker):
+    """Minutes left in the current session, or None if it can't be determined.
+
+    Both timestamps come off the SAME clock object, so a skewed container clock
+    cannot make the bot think it has more (or less) runway than it really has.
+    Returns None on failure, and every caller treats None as 'do not act' —
+    guessing here would either strand positions overnight or dump the book at noon.
+    """
+    try:
+        ck = broker.clock()
+        if not ck.is_open:
+            return None
+        return (ck.next_close - ck.timestamp).total_seconds() / 60.0
+    except Exception:
+        return None
+
 def parse_occ(sym: str):
     m = OCC_RE.match(sym)
     if not m:
@@ -163,6 +192,10 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
             return
     except Exception:
         pass
+    mins = minutes_to_close(broker)
+    flatten = mins is not None and mins <= EOD_FLATTEN_MIN
+    if flatten:
+        notes.append(f"EOD FLATTEN — {mins:.0f} min to close, closing every open position.")
     live = {p.symbol: p for p in broker.positions()}
     # 1) close positions per rules
     for sym, pos in list(live.items()):
@@ -181,6 +214,14 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
             reason = f"stop-loss {plpc:+.0%}"
         elif d <= TIME_STOP_DTE:
             reason = f"time-stop ({d} DTE)"
+        elif flatten:
+            # Last in the chain on purpose. If take-profit or a stop would have
+            # fired anyway, record THAT as the cause — the learner's lessons are
+            # only as good as the attribution, and labelling a genuine +45%
+            # take-profit as "eod-flatten" would hide the signal that worked.
+            # No spread check here: the whole point is to end the day flat, so a
+            # wide book gets closed at whatever it costs rather than carried.
+            reason = f"eod-flatten {plpc:+.0%}"
         if reason:
             try:
                 qty = abs(int(float(pos.qty)))
@@ -257,6 +298,25 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
         ]
     if not market_open:
         notes.append("Market closed — signals recorded, no orders placed this run.")
+        return
+
+    # Nothing is carried overnight, so anything opened now must be closed by the
+    # bell. Inside NO_NEW_ENTRY_MIN there isn't enough session left for a move to
+    # clear the round-trip spread, and the trade would be a near-guaranteed loss
+    # taken purely to satisfy the scan. Record the signals, place nothing.
+    # Dedicated close-the-book runs (see trade.yml) manage exits and stop there.
+    # Without this, the extra runs scheduled to catch an early-close bell would
+    # also fire a full entry scan on ordinary days, churning trades at 16:45 UTC
+    # for no reason other than that the cron existed.
+    if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1":
+        notes.append("Flatten-only run — exits managed, entry scan skipped.")
+        return
+
+    mins_left = minutes_to_close(broker)
+    if mins_left is not None and mins_left <= NO_NEW_ENTRY_MIN:
+        notes.append(f"NO NEW ENTRIES — {mins_left:.0f} min to close "
+                     f"(cutoff {NO_NEW_ENTRY_MIN}); positions will be flattened at "
+                     f"{EOD_FLATTEN_MIN} min.")
         return
 
     # apply learning: process sleeves best-weight first; skip paused sleeves
