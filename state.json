@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10048.78,
-      "spy": 741.66
+      "benchmark_equity": 10044.17,
+      "spy": 741.32
     }
   ],
   "run_log": [
@@ -498,6 +498,17 @@
         "no liquid contract for RCL [news]",
         "SCREENED OUT MU bear [news] \u2014 spread: spread 4.5% > 4% \u2014 modelled round trip 3.3% of premium vs a best-documented edge of 0.5%/month",
         "SCREENED OUT SKHY bear [news] \u2014 spread: spread 4.2% > 4% \u2014 modelled round trip 3.1% of premium vs a best-documented edge of 0.5%/month"
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T16:30:33.791405+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for SSB [news]",
+        "no liquid contract for ITW [news]",
+        "no liquid contract for SHW [news]",
+        "no liquid contract for TFII [news]"
       ]
     }
   ],
@@ -893,30 +904,31 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "BKR",
+        "underlying": "SSB",
+        "direction": "bull",
+        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "ITW",
+        "direction": "bull",
+        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SHW",
+        "direction": "bull",
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "TFII",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "RCL",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "MU",
-        "direction": "bear",
-        "thesis": "News flow -2 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "SKHY",
-        "direction": "bear",
-        "thesis": "News flow -2 across 2 articles (keyword sentiment)"
       }
     ],
     "tech": [],
     "flow": [],
     "_crowd_veto": {
-      "AI": "80 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "121 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "52 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
