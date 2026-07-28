@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10004.2,
-      "spy": 738.37
+      "benchmark_equity": 10048.78,
+      "spy": 741.66
     }
   ],
   "run_log": [
@@ -487,6 +487,17 @@
         "no liquid contract for BKR [news]",
         "no liquid contract for UDR [news]",
         "SCREENED OUT GOOGL bull [tech] \u2014 spread: spread 9.9% > 4% \u2014 modelled round trip 7.3% of premium vs a best-documented edge of 0.5%/month"
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T15:44:00.364403+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for BKR [news]",
+        "no liquid contract for RCL [news]",
+        "SCREENED OUT MU bear [news] \u2014 spread: spread 4.5% > 4% \u2014 modelled round trip 3.3% of premium vs a best-documented edge of 0.5%/month",
+        "SCREENED OUT SKHY bear [news] \u2014 spread: spread 4.2% > 4% \u2014 modelled round trip 3.1% of premium vs a best-documented edge of 0.5%/month"
       ]
     }
   ],
@@ -882,33 +893,27 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "PHG",
-        "direction": "bear",
-        "thesis": "News flow -3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "KO",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
         "underlying": "BKR",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "UDR",
+        "underlying": "RCL",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      }
-    ],
-    "tech": [
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
       {
-        "underlying": "GOOGL",
-        "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "underlying": "MU",
+        "direction": "bear",
+        "thesis": "News flow -2 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SKHY",
+        "direction": "bear",
+        "thesis": "News flow -2 across 2 articles (keyword sentiment)"
       }
     ],
+    "tech": [],
     "flow": [],
     "_crowd_veto": {
       "AI": "80 WSB comments (Bullish) \u2014 attention-inflated premium"
