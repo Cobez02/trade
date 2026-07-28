@@ -5,13 +5,20 @@ from the durable state file. Self-contained (inline SVG chart, no CDN).
 from __future__ import annotations
 import datetime as dt, html, json
 
-from engine import SLEEVES, SLEEVE_ALLOCATION, START_EQUITY
+from engine import SLEEVES, RETIRED_SLEEVES, SLEEVE_ALLOCATION, START_EQUITY
 
 SLEEVE_LABEL = {
     "wsb":  "Reddit / WSB sentiment",
     "news": "News catalysts",
     "tech": "Technical indicators",
     "flow": "Options-flow copy",
+}
+
+# Retired sleeves stay on the dashboard: their history is part of the record,
+# and a row that silently vanished would read as a broken feed, not a decision.
+RETIRED_NOTE = {
+    "wsb":  "retired — entry signal replaced by the crowd veto",
+    "flow": "retired — OI skew is unsigned; no signal without open/close data",
 }
 
 # dark-mode palette (validated slots)
@@ -71,6 +78,7 @@ def sleeve_rows(state: dict):
             "ret": pnl / SLEEVE_ALLOCATION, "open": open_ct, "open_cost": open_cost,
             "trades": len(realized),
             "win_rate": (len(wins) / len(realized)) if realized else None,
+            "retired": s in RETIRED_SLEEVES,
         })
     return rows
 
@@ -115,32 +123,99 @@ def _svg_equity(hist, w=920, h=280, pad=44):
     </svg>'''
 
 
+# The learner emits a sizing multiplier bounded to [GATE_FLOOR, GATE_CEIL] =
+# [0.25, 1.25]. It is never zero and it never blocks. Two things follow for this
+# panel, and both were wrong before:
+#
+#   * "paused" is unreachable. The old code tested `w == 0.0`, which no longer
+#     occurs, so the dashboard would have silently stopped reporting the state it
+#     was built to report. Worse, it would have implied a capability the bot
+#     deliberately does not have.
+#   * The bar was scaled `w / 1.8`, a leftover from an unbounded weight. Against
+#     a 1.25 ceiling every bar would render between 14% and 69% of the track and
+#     a maxed-out sleeve would look two-thirds full.
+#
+# Bars are now scaled against GATE_CEIL, so full width means "as encouraged as
+# the learner is permitted to be", and a tick marks neutral (1.0) at 80%.
+W_FLOOR, W_CEIL = 0.25, 1.25
+W_NEUTRAL = 1.0
+
+
+def _weight_style(w: float, n: int):
+    """(fill fraction, colour, label) for a sleeve weight."""
+    try:
+        w = float(w)
+    except (TypeError, ValueError, OverflowError):
+        w = W_NEUTRAL
+    if not (w == w) or w in (float("inf"), float("-inf")):   # NaN / inf
+        w = W_NEUTRAL
+    w = max(W_FLOOR, min(W_CEIL, w))
+    frac = max(0.03, min(1.0, w / W_CEIL))
+    if not n:
+        return frac, MUTED, "exploring"
+    if w < 0.999:
+        return frac, (C_BAD if w <= 0.5 else C_BOT), f"×{w:g} cut"
+    if w > 1.001:
+        return frac, C_GOOD, f"×{w:g} up"
+    return frac, C_BOT, "neutral"
+
+
 def _learning_html(state: dict) -> str:
-    lr = state.get("learning", {})
-    sleeves = lr.get("sleeve", {})
-    lessons = lr.get("lessons", [])
+    lr = state.get("learning", {}) or {}
+    sleeves = lr.get("sleeve", {}) or {}
+    lessons = lr.get("lessons", []) or []
     n = lr.get("n_trades", 0)
     if not n:
         return ('<div class="empty">The learner is still gathering data — it forms '
-                'conclusions once trades settle. Weights start neutral; winning sleeves '
-                'get sized up, losing sleeves get paused, and losing setups get gated.</div>')
-    # weight bars
+                'conclusions once trades settle. Weights start neutral; sleeves and '
+                'setups with evidence against them are sized down, never switched '
+                'off, so they keep producing the evidence that could clear them.</div>')
+
+    n_eff = lr.get("n_eff")
+    n_days = lr.get("n_days")
+    act = lr.get("diagnostics", {}).get("activation_n_eff", 30)
+    if isinstance(n_eff, (int, float)):
+        if n_eff < act:
+            hdr = (f"{n} settled trades over {n_days} session(s) — effective sample "
+                   f"{n_eff:.1f} after same-day clustering. Sizing stays neutral "
+                   f"until {act}.")
+            hdr_col = MUTED
+        else:
+            hdr = (f"{n} settled trades over {n_days} session(s) — effective sample "
+                   f"{n_eff:.1f}. Sizing is active.")
+            hdr_col = INK2
+    else:
+        hdr, hdr_col = f"{n} settled trades.", MUTED
+
     bars = ""
     for s in SLEEVES:
-        st = sleeves.get(s, {})
-        w = st.get("weight", 1.0)
+        st = sleeves.get(s, {}) or {}
         nn = st.get("n", 0)
-        frac = max(0.02, min(1.0, w / 1.8))
-        col = C_BAD if w == 0.0 else (C_GOOD if w >= 1.2 else C_BOT)
-        status = "paused" if w == 0.0 else (f"×{w}" if nn else "exploring")
+        frac, col, status = _weight_style(st.get("weight", 1.0), nn)
+        if s in RETIRED_SLEEVES:
+            # Weight is still learned from the sleeve's history but no longer
+            # sizes anything — entry skips retired sleeves entirely.
+            col, status = MUTED, "retired"
+        ne = st.get("n_eff")
+        eff_txt = f" · n<sub>eff</sub> {ne:.1f}" if isinstance(ne, (int, float)) and nn else ""
         bars += f'''<div class="wbar">
-          <div class="wbar-lbl">{SLEEVE_LABEL[s]} <span style="color:{MUTED}">({nn})</span></div>
-          <div class="wbar-track"><div class="wbar-fill" style="width:{frac*100:.0f}%;background:{col}"></div></div>
+          <div class="wbar-lbl">{SLEEVE_LABEL[s]} <span style="color:{MUTED}">({nn}{eff_txt})</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:{frac*100:.0f}%;background:{col}"></div><div class="wbar-tick"></div></div>
           <div class="wbar-val" style="color:{col}">{status}</div>
         </div>'''
+
+    n_gates = len(lr.get("gates", []) or [])
+    gate_txt = (f"{n_gates} setup(s) sized down" if n_gates else "no setup sized down")
+    scale = (f'Scale: {W_FLOOR:g}× floor → {W_CEIL:g}× ceiling, tick at neutral. '
+             f'The floor is not zero: nothing is ever blocked, because a blocked '
+             f'setup can never generate the evidence that would clear it. '
+             f'Currently {gate_txt}.')
+
     lessons_html = "".join(f"<li>{html.escape(l)}</li>" for l in lessons) or "<li>No conclusions yet.</li>"
-    return f'''<div class="wbars">{bars}</div>
-      <div style="color:{MUTED};font-size:11px;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
+    return f'''<div style="color:{hdr_col};font-size:12px;margin-bottom:10px">{html.escape(hdr)}</div>
+      <div class="wbars">{bars}</div>
+      <div style="color:{MUTED};font-size:11px;margin-top:8px">{scale}</div>
+      <div style="color:{MUTED};font-size:11px;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
       <ul class="notes">{lessons_html}</ul>'''
 
 
@@ -174,8 +249,11 @@ def build_dashboard(state: dict) -> str:
     srows = ""
     for r in sleeve_rows(state):
         wr = "—" if r["win_rate"] is None else f"{r['win_rate']*100:.0f}%"
+        badge = (f' <span style="color:{MUTED};font-size:11px" title='
+                 f'"{html.escape(RETIRED_NOTE.get(r["sleeve"], "retired"))}">'
+                 f'· retired</span>') if r.get("retired") else ""
         srows += f'''<tr>
-          <td class="lbl">{html.escape(r['label'])}</td>
+          <td class="lbl">{html.escape(r['label'])}{badge}</td>
           <td class="num">{r['open']}</td>
           <td class="num" style="color:{_color_for(r['pnl'])}">{_money(r['pnl'])}</td>
           <td class="num" style="color:{_color_for(r['ret'])}">{_pct(r['ret'])}</td>
@@ -265,8 +343,9 @@ def build_dashboard(state: dict) -> str:
   .wbars {{ display:flex; flex-direction:column; gap:8px; }}
   .wbar {{ display:grid; grid-template-columns: 190px 1fr 64px; align-items:center; gap:10px; }}
   .wbar-lbl {{ font-size:12px; color:{INK2}; }}
-  .wbar-track {{ height:8px; background:{GRID}; border-radius:5px; overflow:hidden; }}
+  .wbar-track {{ position:relative; height:8px; background:{GRID}; border-radius:5px; overflow:hidden; }}
   .wbar-fill {{ height:100%; border-radius:5px; }}
+  .wbar-tick {{ position:absolute; left:80%; top:0; width:1px; height:100%; background:{INK2}; opacity:.55; }}
   .wbar-val {{ font-size:12px; text-align:right; font-variant-numeric:tabular-nums; }}
   .disc {{ color:{MUTED}; font-size:11px; margin-top:22px; line-height:1.5; }}
 </style></head>

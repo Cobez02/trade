@@ -1,12 +1,18 @@
 """
-Four independent signal sleeves. Each returns a list of Signal dicts:
+Signal sleeves. Each returns a list of Signal dicts:
     {underlying, direction ('bull'|'bear'), thesis, score}
 
 Sources are deliberately distinct so the horse-race is meaningful:
-  wsb  -> retail crowd chatter (r/wallstreetbets sentiment feed)
+  wsb  -> RETIRED as an entry source; survives as `crowd_veto` (see below)
   news -> headline catalysts (Alpaca market news + keyword sentiment)
   tech -> price-based indicators (RSI / MACD / trend)
-  flow -> options-market positioning (call vs put open-interest skew)
+  flow -> RETIRED (open-interest skew is unsigned — see engine.RETIRED_SLEEVES)
+
+The retirement mechanics live in engine.RETIRED_SLEEVES / ACTIVE_SLEEVES:
+retired sleeves keep their name, their open positions, their journal history
+and their dashboard row; they just stop producing entry signals. The functions
+below are kept intact so the record of what was tried stays runnable and a
+future signed-volume feed could revive `flow` without archaeology.
 """
 from __future__ import annotations
 import datetime as dt
@@ -15,7 +21,7 @@ import requests
 from engine import (
     Broker, rsi, macd_signal, trend_up,
     ContractType, GetOptionContractsRequest, AssetStatus,
-    MIN_OPEN_INTEREST,
+    MIN_OPEN_INTEREST, SLEEVES, RETIRED_SLEEVES,
 )
 
 # Liquid, optionable universe for tech/flow scans
@@ -205,17 +211,74 @@ def sleeve_flow(broker: Broker, max_signals: int = 3):
     return scored[:max_signals]
 
 
-def all_signals(broker: Broker, api_key: str, secret_key: str) -> dict:
-    """Return {sleeve: [signals]} — each wrapped so one failure can't kill the run."""
-    out = {}
-    for name, fn in [
-        ("wsb",  lambda: sleeve_wsb(broker)),
-        ("news", lambda: sleeve_news(broker, api_key, secret_key)),
-        ("tech", lambda: sleeve_tech(broker)),
-        ("flow", lambda: sleeve_flow(broker)),
-    ]:
+# ---------------------------------------------------------------------------
+# Crowd veto — the one thing the WSB feed is still trusted to know
+# ---------------------------------------------------------------------------
+# The retail-options literature's most consistent finding is that
+# attention-driven lottery demand overprices options on exactly the names the
+# crowd is loudest about (Han & Kumar's retail-concentration result; Boyer &
+# Vorkink's ex-ante skewness premium; Byun & Kim's lottery-option pricing).
+# Buying options — either direction — on a name at peak crowd attention means
+# paying that inflated premium, so heavy attention becomes a VETO on new buys.
+#
+# Two hard properties, both load-bearing:
+#   * DEFENSIVE ONLY. The veto can only remove a candidate buy. It never
+#     creates a position and is never inverted into a short — fading the crowd
+#     by writing the overpriced option is a different, margin-intensive
+#     strategy this account is not equipped to run.
+#   * FAIL-OPEN. If the feed is down, the veto is empty and trading proceeds:
+#     a third-party API's uptime must not gate the bot, and every entry still
+#     passes the Tier-1 screens, which catch the same lottery profile from the
+#     option's own measurable shape (ex-ante skew, moneyness, DTE).
+CROWD_VETO_MIN_COMMENTS = 50     # ~an order of magnitude above ordinary chatter
+CROWD_VETO_MAX_NAMES = 15        # a broken feed must not veto the whole book
+
+
+def crowd_veto() -> dict:
+    """{ticker: reason} for names at peak retail attention right now."""
+    try:
+        r = requests.get("https://tradestie.com/api/v1/apps/reddit", timeout=15)
+        data = r.json()
+    except Exception:
+        return {}
+    if not isinstance(data, list):
+        return {}
+    crowded = []
+    for d in data:
+        if not isinstance(d, dict):
+            continue
+        tkr = str(d.get("ticker", "")).upper()
         try:
-            out[name] = fn()
+            n = int(d.get("no_of_comments") or 0)
+        except Exception:
+            continue
+        if tkr.isalpha() and len(tkr) <= 5 and n >= CROWD_VETO_MIN_COMMENTS:
+            crowded.append((n, tkr, str(d.get("sentiment") or "?")))
+    crowded.sort(reverse=True)
+    return {tkr: f"{n} WSB comments ({senti}) — attention-inflated premium"
+            for n, tkr, senti in crowded[:CROWD_VETO_MAX_NAMES]}
+
+
+def all_signals(broker: Broker, api_key: str, secret_key: str) -> dict:
+    """Return {sleeve: [signals]} — each wrapped so one failure can't kill the run.
+
+    Retired sleeves are present with an empty list, never absent: downstream
+    code (dashboard state, the entry loop, the learner) iterates the full
+    sleeve set and an absent key would read as a feed failure rather than a
+    decision."""
+    entry_fns = {
+        "wsb":  lambda: sleeve_wsb(broker),
+        "news": lambda: sleeve_news(broker, api_key, secret_key),
+        "tech": lambda: sleeve_tech(broker),
+        "flow": lambda: sleeve_flow(broker),
+    }
+    out = {}
+    for name in SLEEVES:
+        if name in RETIRED_SLEEVES:
+            out[name] = []
+            continue
+        try:
+            out[name] = entry_fns[name]()
         except Exception:
             out[name] = []
     return out

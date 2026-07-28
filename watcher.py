@@ -31,12 +31,12 @@ Design, in order of how much each part matters when things go wrong:
 Run:  python3 watcher.py            (runs until the closing bell, then exits)
 """
 from __future__ import annotations
-import os, sys, time, json, threading, datetime as dt
+import os, sys, time, json, math, threading, datetime as dt
 from collections import defaultdict
 
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import (MarketOrderRequest, StopOrderRequest,
-                                     GetOrdersRequest)
+                                     StopLimitOrderRequest, GetOrdersRequest)
 from alpaca.trading.enums import OrderSide, TimeInForce, QueryOrderStatus
 from alpaca.data.historical.option import OptionHistoricalDataClient
 from alpaca.data.requests import OptionLatestQuoteRequest
@@ -48,6 +48,7 @@ except Exception:                                   # older alpaca-py
     OptionDataStream = None
 
 import exitrules as R
+import execution as X
 
 EVAL_SECONDS      = 0.25    # how often the decision loop looks at `latest`
 POLL_SECONDS      = 2.0     # REST refill cadence when the stream is quiet
@@ -214,6 +215,72 @@ class Watcher:
         return sorted(live)
 
     # -- resting broker-side stop --------------------------------------------
+    #
+    # TWO CHANGES, both from the same finding about how Alpaca elects sell-stops.
+    #
+    # Alpaca's documented condition is: "Your sell stop order will only elect if
+    # there is a trade on the consolidated tape at or lower than your stop
+    # price" — and on election it becomes a MARKET order. Note the asymmetry:
+    # the "not outside of the NBBO" qualifier appears only in the BUY-stop
+    # condition. A sell stop has no such protection.
+    #
+    #   (a) THE TRIGGER WAS INSIDE THE NOISE BAND. Prints alternate between bid
+    #       and ask continuously, so the lowest entirely-non-adverse print given
+    #       any quote is the BID. A stop at or above the bid is elected by the
+    #       next seller-initiated print with the mid unmoved — the spread alone
+    #       fires it. `execution.safe_stop_price` pushes the trigger a full
+    #       quoted spread below the bid, which is the minimum that survives a
+    #       complex-order leg printing through. It is guaranteed never to move a
+    #       stop UP toward the band and is monotone in the desired stop, so the
+    #       ratchet below is unaffected.
+    #
+    #   (b) A STOP-MARKET HANDS THE BOOK A BLANK CHEQUE. An option's inside
+    #       quote can be a 1-lot; a market order in that book has no price
+    #       protection whatsoever, and an elected stop becomes exactly that.
+    #       These are now STOP-LIMIT orders with the limit one full spread below
+    #       the trigger. In the normal case the fill is identical. In the
+    #       pathological case — the one this whole file exists for — the limit
+    #       refuses instead of printing into an empty book, and the watcher's own
+    #       tick-by-tick exit (which sees the bid) is still there to work the
+    #       position.
+    #
+    # The trade-off is real and is stated rather than hidden: a stop-limit can go
+    # unfilled in a genuine gap. That is why this is the FLOOR and not the
+    # primary exit. If the quote is unusable we cannot measure the noise band at
+    # all, and there `safe_stop_price` leaves the trigger alone and we fall back
+    # to a stop-market — with no quote, an unprotected fill beats no stop.
+    def _stop_prices(self, sym: str, desired: float):
+        """(trigger, limit_or_None, note) for the resting stop on `sym`.
+
+        The limit is one full quoted spread below the TRIGGER (note 07 §E.5:
+        "at least one full quoted spread beyond the trigger"), not below the
+        bid. The first version of this method priced it off the bid via
+        marketable_limit, which inverted the protection: a stop deep below the
+        market — the normal state of a fresh hard-stop — got a limit ABOVE its
+        trigger, failed the sanity check, and silently fell back to the
+        stop-market this rework exists to eliminate. Only a stop that had
+        already ratcheted up near the market kept its limit. By election time
+        the market has, by definition, traded down to the trigger, so the
+        placement-time bid is stale anyway; the spread is the only part of the
+        quote worth carrying forward as a noise-band estimate."""
+        with self.qlock:
+            q = dict(self.latest.get(sym) or {})
+        bid, ask = q.get("bid"), q.get("ask")
+        trigger = X.safe_stop_price(bid, ask, desired)
+        risk = X.stop_election_risk(bid, ask, trigger)
+        limit = None
+        quote = X._quote(bid, ask)          # execution's own usability test
+        if quote is not None:
+            b, a, _mid = quote
+            raw = trigger - (a - b)
+            # Round DOWN to a tick: §E.5 says "at least" one spread, and a
+            # lower sell limit is strictly more fillable.
+            t = X.tick_size(raw)
+            limit = max(round(math.floor(raw / t + 1e-9) * t, 4), 0.01)
+            if limit > trigger:             # both floors are $0.01, so this
+                limit = None                # is unreachable — belt+braces
+        return trigger, limit, risk.get("note", "")
+
     def ensure_broker_stop(self, sym: str):
         """Keep a resting STOP under the position, ratcheting it up with the peak.
 
@@ -223,14 +290,18 @@ class Watcher:
         entry = self.entries.get(sym)
         if entry is None or sym in self.inflight:
             return
-        want = R.broker_stop_price(entry, self.peaks.get(sym))
+        desired = R.broker_stop_price(entry, self.peaks.get(sym))
+        want, limit, note = self._stop_prices(sym, desired)
         have = self.stop_px.get(sym)
         if have is not None and want <= have + 0.004:
             return                                  # only ever ratchet upward
         old = self.stops.get(sym)
+        kind = "stop-limit" if limit is not None else "stop-market"
         if DRY_RUN:
             self.stops[sym] = f"dry-{sym}"; self.stop_px[sym] = want
-            log(f"  [dry] would rest stop {sym} @ ${want:.2f}")
+            lim = f" limit ${limit:.2f}" if limit is not None else ""
+            log(f"  [dry] would rest {kind} {sym} @ ${want:.2f}{lim} "
+                f"(wanted ${desired:.2f}) — {note}")
             return
         try:
             if old:
@@ -239,13 +310,36 @@ class Watcher:
                 except Exception:
                     pass
                 time.sleep(0.3)
-            o = self.trading.submit_order(StopOrderRequest(
-                symbol=sym, qty=self.qtys.get(sym, 1), side=OrderSide.SELL,
-                time_in_force=TimeInForce.DAY, stop_price=want))
+            qty = self.qtys.get(sym, 1)
+            if limit is not None:
+                req = StopLimitOrderRequest(
+                    symbol=sym, qty=qty, side=OrderSide.SELL,
+                    time_in_force=TimeInForce.DAY,
+                    stop_price=want, limit_price=limit)
+            else:
+                req = StopOrderRequest(
+                    symbol=sym, qty=qty, side=OrderSide.SELL,
+                    time_in_force=TimeInForce.DAY, stop_price=want)
+            o = self.trading.submit_order(req)
             self.stops[sym] = str(o.id); self.stop_px[sym] = want
-            log(f"  broker stop {sym} @ ${want:.2f}"
-                f"{' (raised)' if have else ''}")
+            lim = f" limit ${limit:.2f}" if limit is not None else ""
+            log(f"  broker {kind} {sym} @ ${want:.2f}{lim}"
+                f"{' (raised)' if have else ''}"
+                f"{'' if want >= desired - 0.004 else f' [pushed down from ${desired:.2f}: {note[:70]}]'}")
         except Exception as e:
+            # A rejected stop-limit must not leave the position naked. Retry once
+            # as a plain stop: an unprotected fill still beats no floor at all.
+            if limit is not None:
+                try:
+                    o = self.trading.submit_order(StopOrderRequest(
+                        symbol=sym, qty=self.qtys.get(sym, 1), side=OrderSide.SELL,
+                        time_in_force=TimeInForce.DAY, stop_price=want))
+                    self.stops[sym] = str(o.id); self.stop_px[sym] = want
+                    log(f"  broker stop-limit rejected ({str(e)[:60]}) — "
+                        f"fell back to stop-market {sym} @ ${want:.2f}")
+                    return
+                except Exception as e2:
+                    e = e2
             log(f"  broker stop FAILED {sym}: {str(e)[:90]}")
 
     def cancel_broker_stop(self, sym: str):

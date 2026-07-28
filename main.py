@@ -16,13 +16,16 @@ import os, re, sys, json, math, datetime as dt
 import engine
 from engine import (
     Broker, load_state, save_state,
-    SLEEVES, SLEEVE_ALLOCATION, MAX_PREMIUM_PER_TRADE, MAX_OPEN_PER_SLEEVE,
-    TAKE_PROFIT_PCT, STOP_LOSS_PCT, TIME_STOP_DTE, BENCHMARK_SYMBOL, START_EQUITY,
-    MAX_SPREAD_PCT,
+    SLEEVES, ACTIVE_SLEEVES, SLEEVE_ALLOCATION, MAX_PREMIUM_PER_TRADE,
+    MAX_OPEN_PER_SLEEVE, TAKE_PROFIT_PCT, STOP_LOSS_PCT, TIME_STOP_DTE,
+    BENCHMARK_SYMBOL, START_EQUITY, MAX_SPREAD_PCT,
 )
-from strategies import all_signals
+from strategies import all_signals, crowd_veto
 import learn
 import exitrules
+import screens
+import execution
+import vol as volmod
 
 OCC_RE = re.compile(r'^([A-Z]+)(\d{6})([CP])(\d{8})$')
 
@@ -371,17 +374,31 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                      f"{EOD_FLATTEN_MIN} min.")
         return
 
-    # apply learning: process sleeves best-weight first; skip paused sleeves
-    ordered = sorted(SLEEVES, key=lambda s: learn.sleeve_weight(state, s), reverse=True)
+    # Names at peak retail attention are a veto on NEW buys in either
+    # direction: crowd lottery demand inflates exactly those premia, and this
+    # bot's only order type is buying premium. Defensive only — it removes
+    # candidates, never creates or inverts one — and fail-open: a dead feed
+    # returns {} and the Tier-1 screens still stand. Fetched once per run.
+    crowd = crowd_veto()
+    if crowd:
+        state.setdefault("last_signals", {})["_crowd_veto"] = crowd
+
+    # apply learning: process sleeves best-weight first.
+    # There is no `weight <= 0` skip any more. A paused sleeve stops producing
+    # the evidence that would unpause it, so `sleeve_weight` is now bounded in
+    # [0.25, 1.25] and never reaches zero. See learn.py's module docstring.
+    # Entry iterates ACTIVE_SLEEVES only; retired sleeves (engine.RETIRED_SLEEVES)
+    # keep their open positions, exits, journal rows and dashboard panel.
+    ordered = sorted(ACTIVE_SLEEVES, key=lambda s: learn.sleeve_weight(state, s), reverse=True)
     for sleeve in ordered:
         weight = learn.sleeve_weight(state, sleeve)
-        if weight <= 0.0:
-            notes.append(f"SKIP sleeve '{sleeve}' — paused by learner (weight 0).")
-            continue
         for sig in signals.get(sleeve, []):
             if sleeve_open_count(state, sleeve) >= MAX_OPEN_PER_SLEEVE:
                 break
             und, direction = sig["underlying"], sig["direction"]
+            if und in crowd:
+                notes.append(f"CROWD VETO {und} {direction} [{sleeve}] — {crowd[und]}")
+                continue
             if already_positioned(state, sleeve, und, direction):
                 continue
             if (sleeve, und) in pending:      # a working order already exists for this name
@@ -398,55 +415,145 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 notes.append(f"no liquid contract for {und} [{sleeve}]")
                 continue
             q = broker.option_quote(contract.symbol)
-            ask = (q["ask"] if q else broker.option_ask(contract.symbol))  # price at the ask so it fills
+            if q:
+                ask, bid = q["ask"], q["bid"]
+            else:
+                # `option_mid` returns the MIDPOINT, not the ask — it was named
+                # `option_ask` and bound to a variable called `ask` here, so the
+                # fallback path priced every marketable order half a spread too
+                # tight and quietly failed to fill. Reconstruct a synthetic ask
+                # from the mid using the spread ceiling we are willing to pay,
+                # so a missing two-sided quote is expensive-but-fillable rather
+                # than free-but-imaginary.
+                mid = broker.option_mid(contract.symbol)
+                if not mid or mid <= 0:
+                    continue
+                half = engine.MAX_SPREAD_PCT / 2.0
+                ask = round(mid * (1 + half), 2)
+                bid = round(mid * (1 - half), 2)
+                notes.append(f"{contract.symbol}: no two-sided quote, "
+                             f"synthesised ask {ask:.2f} from mid {mid:.2f}")
             if not ask or ask <= 0:
-                continue
-            # liquidity gate: skip contracts whose bid/ask spread would sink the trade on entry
-            if q and q.get("spread_pct") is not None and q["spread_pct"] > MAX_SPREAD_PCT:
-                notes.append(f"SKIP {und} {direction} [{sleeve}] — bid/ask spread "
-                             f"{q['spread_pct']*100:.0f}% > {MAX_SPREAD_PCT*100:.0f}% (illiquid)")
                 continue
             info = parse_occ(contract.symbol) or {}
             # snapshot the FEATURES present at entry (this is what the learner reads)
             ind = broker.indicators(und)
             strike = info.get("strike") or float(contract.strike_price)
+            dte = ((dt.date.fromisoformat(info["expiration"]) - dt.date.today()).days
+                   if info.get("expiration") else None)
+            is_call = (direction == "bull")
             feat = {
                 "sleeve": sleeve, "direction": direction, "signal_score": round(sig.get("score", 0), 3),
                 "rsi": ind.get("rsi"), "macd_hist": ind.get("macd_hist"),
                 "macd_rising": ind.get("macd_rising"), "trend_up": ind.get("trend_up"),
-                "dte": (dt.date.fromisoformat(info["expiration"]) - dt.date.today()).days
-                        if info.get("expiration") else None,
+                "dte": dte,
                 "moneyness_pct": round(strike / spot - 1, 4),
                 "spread_pct": (q or {}).get("spread_pct"), "type": info.get("type"),
             }
-            # apply learned GATES: block feature buckets that reliably lose
-            gate = learn.is_gated(state, feat)
-            if gate:
-                notes.append(f"GATED {und} {direction} [{sleeve}] — matches losing bucket {gate}")
+
+            # ---- volatility anchor -----------------------------------------
+            # One realized-vol estimate feeds three separate decisions below, so
+            # it is computed once. Yang-Zhang is the gap-aware estimator: the
+            # gap-blind alternatives (Parkinson, Garman-Klass, Rogers-Satchell)
+            # measured 2.2-2.5 vol points LOW on this watchlist because they
+            # cannot see overnight moves, and a downward-biased vol forecast
+            # makes every option look expensive.
+            ref_vol = None
+            closes = None
+            try:
+                bars = broker.daily_bars(und, days=120)
+                if bars is not None and len(bars) >= 30:
+                    closes = [float(c) for c in bars["close"].tolist()]
+                    rv = volmod.realized_vol(bars, window=21, method="yang_zhang")
+                    if rv is not None and rv == rv and rv > 0:
+                        ref_vol = float(rv)
+            except Exception:
+                ref_vol = None
+            feat["ref_vol"] = round(ref_vol, 4) if ref_vol else None
+
+            # ---- TIER-1 NEGATIVE SCREENS -----------------------------------
+            # The trades nine independent research streams each condemned. This
+            # runs BEFORE the learner, because the learner reasons from this
+            # bot's own 7 trades while these thresholds come from samples of
+            # 889,967 retail round-trips and up. Note the spread gate inside is
+            # 4%, not the 15% this bot shipped with: at 15% the modelled round
+            # trip is 10.93% of premium against a best-documented option anomaly
+            # of 0.5%/month, i.e. ~22 months of the best known edge per trade.
+            verdict = screens.screen_entry(
+                spot=spot, strike=strike, is_call=is_call, dte=dte,
+                bid=bid, ask=ask, vol=ref_vol, closes=closes, day=dt.date.today())
+            if not verdict["ok"]:
+                notes.append(f"SCREENED OUT {und} {direction} [{sleeve}] — "
+                             + "; ".join(verdict["failed"]))
                 continue
-            # weight-based sizing: proven sleeves may take a second contract
-            qty = int(per_trade // (ask * 100))
-            if weight >= 1.4 and (qty + 1) * ask * 100 <= min(budget_left, cash):
-                qty += 1
+
+            # ---- EXECUTION TIMING (Muravyev & Pearson) ---------------------
+            # Only cross the spread when the contract is cheap against our own
+            # volatility forecast. This is the ex-ante edge identity
+            # E[edge] ~ vega * (sigma_forecast - sigma_implied); paying the ask
+            # for a contract whose implied vol is already above our forecast is
+            # paying the spread to buy something we think is overpriced.
+            t_years = max(dte or 0, 0) / 365.0
+            iv = None
+            if ref_vol and t_years > 0 and bid:
+                mid = (float(bid) + float(ask)) / 2.0
+                iv = execution.implied_vol(mid, spot, strike, t_years, is_call=is_call)
+                te = execution.timing_edge(spot, strike, t_years, ref_vol,
+                                           bid, ask, is_call=is_call, side="buy")
+                if not te["favorable"]:
+                    notes.append(
+                        f"NO EDGE {und} {direction} [{sleeve}] — implied "
+                        f"{(iv*100 if iv else float('nan')):.1f}% vs forecast "
+                        f"{ref_vol*100:.1f}%; {te['reason']}")
+                    continue
+                feat["iv_at_entry"] = round(iv, 4) if iv else None
+                feat["vol_edge_pts"] = round((ref_vol - iv) * 100, 2) if iv else None
+
+            # ---- LEARNED SIZING (never a block) ----------------------------
+            mult, why = learn.size_multiplier(state, feat)
+            size_budget = per_trade * weight * mult
+
+            # ---- price the order -------------------------------------------
+            # A marketable limit, not `ask * 1.03`. The old multiplier was a
+            # blind 3% of premium given away on every entry; at the 4% spread
+            # gate the entire quoted spread is 4%, so 1.03 was paying up to
+            # 75% of a spread that did not need to be crossed at all.
+            limit_px = execution.marketable_limit(bid, ask, side="buy",
+                                                  slippage_frac=0.0)
+            if limit_px is None:
+                limit_px = round(float(ask), 2)
+
+            qty = int(size_budget // (limit_px * 100))
             if qty < 1:
+                # Never round a discouraged trade back up to 1 contract: that
+                # would silently discard the learner's only lever.
+                if mult < 1.0 or weight < 1.0:
+                    notes.append(f"SIZED OUT {und} {direction} [{sleeve}] — "
+                                 f"×{mult} learned, ×{weight} sleeve"
+                                 + (f" ({'; '.join(why)})" if why else ""))
                 continue
-            cost = qty * ask * 100
-            if cost > cash:
+            cost = qty * limit_px * 100
+            if cost > cash or cost > budget_left:
                 continue
             try:
                 tag = build_tag(sleeve, feat)   # fingerprint -> recoverable from Alpaca
-                broker.buy_to_open(contract.symbol, qty, tag, limit_price=ask * 1.03)
+                broker.buy_to_open(contract.symbol, qty, tag, limit_price=limit_px)
                 state["positions"][contract.symbol] = {
                     "sleeve": sleeve, "underlying": und, "direction": direction,
                     "type": info.get("type"), "strike": strike,
                     "expiration": info.get("expiration"), "qty": qty,
-                    "entry_price": round(ask, 2), "entry_cost": round(cost, 2),
+                    "entry_price": round(limit_px, 2), "entry_cost": round(cost, 2),
                     "entry_date": today(), "thesis": sig["thesis"], "spot_at_entry": spot,
                     "features": feat,
                 }
                 cash -= cost
-                notes.append(f"OPENED {qty}x {contract.symbol} [{sleeve}] @ ${ask:.2f} "
-                             f"(${cost:.0f}, w{weight}) — {sig['thesis']}")
+                rt = (verdict["checks"].get("spread", {}) or {}).get("rt_cost")
+                notes.append(
+                    f"OPENED {qty}x {contract.symbol} [{sleeve}] @ ${limit_px:.2f} "
+                    f"(${cost:.0f}, sleeve ×{weight}, learned ×{mult}"
+                    + (f", vol edge {feat.get('vol_edge_pts'):+.1f}pts" if feat.get("vol_edge_pts") else "")
+                    + (f", round trip {rt*100:.1f}%" if rt else "")
+                    + f") — {sig['thesis']}")
             except Exception as e:
                 notes.append(f"order-failed {und} [{sleeve}]: {e}")
 

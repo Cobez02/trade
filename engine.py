@@ -54,6 +54,39 @@ START_EQUITY = 10_000.0
 SLEEVES = ["wsb", "news", "tech", "flow"]
 SLEEVE_ALLOCATION = START_EQUITY / len(SLEEVES)   # ~$2,500 logical bankroll each
 
+# Sleeves that no longer OPEN positions. They stay in SLEEVES because exit
+# management, journal attribution, learning and the dashboard all key on the
+# sleeve name, and a position opened under a sleeve must remain manageable and
+# attributable for as long as it (or its history) exists.
+#
+# Why these two, specifically — the research phase's two clearest verdicts:
+#
+#   flow  RETIRED. The sleeve reads call/put OPEN INTEREST skew as "smart money
+#         positioning," but open interest has no trade direction in it: every
+#         contract has a buyer and a seller, and the literature that does find
+#         signal in options activity (Pan & Poteshman 2006) needs signed,
+#         volume-based put-call ratios from proprietary open/close data — an
+#         input this bot cannot get from its feed. What it is actually reading
+#         is mostly hedging structure. No study supports the deployed signal.
+#
+#   wsb   RETIRED as an ENTRY source, retained as a defensive VETO
+#         (strategies.crowd_veto). On the entry side the sleeve buys what the
+#         crowd is loudest about, which the retail-options literature
+#         identifies as the single most reliably overpriced corner of the
+#         market: attention-driven lottery demand inflates exactly those
+#         premia (Han & Kumar; Boyer & Vorkink ex-ante skewness). The veto
+#         keeps the feed's one usable property — it knows where the crowd is —
+#         and only ever BLOCKS a buy on a crowded name, never places or
+#         inverts one.
+#
+# Retiring a sleeve retires its capital. SLEEVE_ALLOCATION deliberately still
+# divides by len(SLEEVES): the verdict on these sleeves is "this class of trade
+# is negative-EV," which is not an argument that the survivors deserve double
+# stakes — at any Kelly fraction, a doubtful edge argues for LESS deployment,
+# not redistribution. Flagged in the strategy spec as an owner decision.
+RETIRED_SLEEVES = {"wsb", "flow"}
+ACTIVE_SLEEVES = [s for s in SLEEVES if s not in RETIRED_SLEEVES]
+
 # Risk controls. Conservative in DOLLARS (small size), but short-dated + tighter
 # exits so trades cycle fast and feed the learner quickly. Several knobs are
 # env-overridable so the recursive-learning step can retune them run-to-run.
@@ -69,8 +102,33 @@ def _envf(name, default):
 #   old  $150 x 3 x 4 sleeves = $1,800 of $10k (18%)
 MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 350.0)  # max $ risked per position
 MAX_OPEN_PER_SLEEVE   = int(_envf("SPXBOT_MAX_OPEN", 2)) # cap concurrent positions per sleeve
-MIN_OPEN_INTEREST     = 100        # liquidity filter
-MAX_SPREAD_PCT        = _envf("SPXBOT_MAX_SPREAD", 0.15)  # skip if bid/ask spread wider than this
+# Liquidity. Raised from 100: open interest is the cheapest available proxy for
+# the spread we will actually pay, and the thin-OI tail is where Bryzgalova et
+# al. measure a 28.4% effective spread on deep-OTM retail flow.
+MIN_OPEN_INTEREST     = int(_envf("SPXBOT_MIN_OI", 250))
+
+# THE SINGLE MOST EXPENSIVE NUMBER IN THIS FILE. It shipped at 0.15.
+#
+# The round-trip identity (research note 07 §H) is
+#     RT = S(2 - c_e - c_x) / (2 + S(1 - c_e)) + fees/premium
+# At S = 15% with a realistic capture profile that is 10.93% of premium, per
+# round trip. The best bias-corrected option anomaly in the published
+# literature is about 0.5% per month at Sharpe ~0.5 (Duarte, Jones, Khorram &
+# Mo). A 15% gate therefore admitted trades that had to be held ~22 months at
+# the best documented edge simply to break even on execution.
+#
+# At 4% the same identity gives 3.05%, and the hurdle drops to ~6.1 months.
+# That is still a hard game. It is no longer an arithmetically impossible one.
+#
+# Caveat that must not be lost: Alpaca's free options feed is INDICATIVE, not
+# OPRA. This gate is applied to an indicative quote, so it is a proxy for the
+# NBBO spread and not a measurement of it.
+MAX_SPREAD_PCT        = _envf("SPXBOT_MAX_SPREAD", 0.04)
+
+# Floor of 2 enforced downstream by screens.MIN_DTE: below ~2 DTE vega is so
+# small that a correct volatility view cannot pay for the spread, which turns
+# the trade into a pure direction bet with a fee attached. 0DTE retail fills run
+# ~4.7pp worse than the already-negative retail average.
 TARGET_DTE_MIN = int(_envf("SPXBOT_DTE_MIN", 3))
 TARGET_DTE_MAX = int(_envf("SPXBOT_DTE_MAX", 12))        # short-dated: high gamma, fast feedback
 TARGET_OTM_PCT = _envf("SPXBOT_OTM", 0.015)              # ~1.5% OTM (near the money -> moves)
@@ -174,16 +232,31 @@ class Broker:
             dist = abs(strike - target_strike)
             if dist < best_dist:
                 best, best_dist = c, dist
-        # fallback: ignore OI filter if nothing liquid enough
-        if best is None and contracts:
-            for c in contracts:
-                strike = float(c.strike_price)
-                dist = abs(strike - target_strike)
-                if dist < best_dist:
-                    best, best_dist = c, dist
+        # NO FALLBACK. This function used to re-scan ignoring MIN_OPEN_INTEREST
+        # whenever the liquidity filter emptied the list, which inverted its own
+        # purpose: the filter fired precisely when the chain was illiquid, and
+        # the fallback then guaranteed a trade in the least liquid contract
+        # available. That is adverse selection by construction, and it is the
+        # single most expensive habit in the retail options literature — the
+        # measured round-trip cost is 10.93% of premium at a 15% spread against
+        # a best-case forecasting edge worth well under 1% per trade.
+        #
+        # "No liquid contract exists right now" is a correct and useful answer.
+        # Returning None here costs one skipped signal; the fallback cost real
+        # money on every signal it rescued.
         return best
 
-    def option_ask(self, occ_symbol: str) -> Optional[float]:
+    def option_mid(self, occ_symbol: str) -> Optional[float]:
+        """Quote MIDPOINT, or the single live side if only one is quoted.
+
+        Named for what it returns. It was previously called `option_ask` while
+        returning the mid, and main.py bound the result to a variable named
+        `ask` and priced marketable orders off it — so every fallback fill was
+        priced half a spread too tight and silently missed. At the old 15%
+        spread ceiling that is a 7.5%-of-premium mispricing on the fallback
+        path. Use `option_quote()` when you need the two sides separately;
+        this is only a last-resort scalar.
+        """
         try:
             q = self.opt_data.get_option_latest_quote(
                 OptionLatestQuoteRequest(symbol_or_symbols=occ_symbol,
@@ -198,6 +271,10 @@ class Broker:
             return ask or bid or None
         except Exception:
             return None
+
+    # Back-compat alias. Deliberately points at the same (mid-returning) code so
+    # no caller silently changes behaviour; the name is the thing that was wrong.
+    option_ask = option_mid
 
     def option_quote(self, occ_symbol: str):
         """Return {bid, ask, mid, spread_pct} or None."""

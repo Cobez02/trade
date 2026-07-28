@@ -48,7 +48,7 @@ class FakeTrading:
     """Records every call so the tests can assert on ordering, not just counts."""
 
     def __init__(self, positions=None, open_sells=False, clock_open=True,
-                 minutes_left=120.0):
+                 minutes_left=120.0, reject_stoplimit=False):
         self.positions = positions or {}
         self.calls = []                 # ordered log of ("verb", symbol)
         self.orders = []
@@ -56,6 +56,7 @@ class FakeTrading:
         self.open_sells = open_sells
         self.clock_open, self.minutes_left = clock_open, minutes_left
         self.position_gone = set()
+        self.reject_stoplimit = reject_stoplimit
 
     def get_clock(self):
         now = dt.datetime.now(dt.timezone.utc)
@@ -81,11 +82,19 @@ class FakeTrading:
         self.cancelled.append(oid)
 
     def submit_order(self, req):
-        kind = "stop" if hasattr(req, "stop_price") else "market"
+        has_stop = getattr(req, "stop_price", None) is not None
+        has_lim = getattr(req, "limit_price", None) is not None
+        kind = ("stoplimit" if has_stop and has_lim
+                else "stop" if has_stop else "market")
+        if kind == "stoplimit" and self.reject_stoplimit:
+            self.calls.append(("reject-stoplimit", req.symbol))
+            raise Exception("simulated broker rejection of stop-limit")
         self.calls.append((f"submit-{kind}", req.symbol))
         o = FakeOrder(req.symbol, req.side, req.qty)
-        if kind == "stop":
+        if has_stop:
             o.stop_price = req.stop_price
+        if has_lim:
+            o.limit_price = req.limit_price
         self.orders.append(o)
         return o
 
@@ -307,6 +316,166 @@ w.evaluate(s2)
 time.sleep(0.4)
 check("1-DTE contract is time-stopped even while winning", len(sells(w)) == 1,
       w.exits_done[0]["reason"] if w.exits_done else "no exit")
+
+print()
+print("=" * 74)
+print("11. _stop_prices — trigger below the noise band, limit below the trigger")
+print("=" * 74)
+# The regression this section exists to prevent: the first stop-limit version
+# priced the limit off the BID, so a stop deep below the market — the normal
+# state of a fresh hard-stop — got limit=None and silently fell back to the
+# stop-market the rework was supposed to eliminate.
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
+w.entries[sym], w.qtys[sym] = 1.00, 5
+
+w.put_quote(sym, 2.00, 2.10, None, "ws")
+trig, lim, note = w._stop_prices(sym, 0.75)          # deep stop, quote far above
+check("deep stop: trigger untouched", trig == 0.75, f"trig={trig}")
+check("deep stop: limit is NOT None (the regression)", lim is not None,
+      f"lim={lim}")
+check("deep stop: limit one spread below trigger", lim == 0.65,
+      f"lim={lim} (trigger 0.75 - spread 0.10)")
+
+trig, lim, note = w._stop_prices(sym, 2.05)          # desired inside the band
+check("in-band stop pushed below bid-spread", trig == 1.90, f"trig={trig}")
+check("in-band: limit one spread below the pushed trigger", lim == 1.80,
+      f"lim={lim}")
+check("in-band: election-risk note explains the push", "bid" in note, note[:60])
+
+trig, lim, note = w._stop_prices(sym, 1.90)          # desired exactly at ceiling
+check("stop at the ceiling passes through", trig == 1.90, f"trig={trig}")
+
+w2 = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
+w2.entries[sym] = 1.00
+trig, lim, note = w2._stop_prices(sym, 0.75)         # no quote ever arrived
+check("no quote: trigger = desired (never move a risk limit on no data)",
+      trig == 0.75, f"trig={trig}")
+check("no quote: no limit -> stop-market fallback", lim is None)
+
+w2.latest[sym] = {"bid": 2.10, "ask": 2.00, "seq": 1}    # crossed quote injected
+trig, lim, note = w2._stop_prices(sym, 0.75)
+check("crossed quote treated as unusable", trig == 0.75 and lim is None,
+      f"trig={trig} lim={lim}")
+
+w2.put_quote(sym, 0.0, 0.0, None, "rest")                # zeroed quote
+trig, lim, note = w2._stop_prices(sym, 0.75)
+check("zero quote treated as unusable", trig == 0.75 and lim is None)
+
+# Penny option: both floors collide at $0.01 and must not invert.
+w3 = mkwatcher(positions={sym: FakePosition(sym, 5, 0.10)})
+w3.entries[sym] = 0.10
+w3.put_quote(sym, 0.05, 0.15, None, "ws")
+trig, lim, note = w3._stop_prices(sym, 0.03)
+check("penny option: trigger floored at $0.01", trig == 0.01, f"trig={trig}")
+check("penny option: limit <= trigger even at the floor", lim is None or lim <= trig,
+      f"trig={trig} lim={lim}")
+
+# Property sweep: over a grid of quotes and desired stops, the invariants that
+# make the ratchet and the order legal must hold without exception.
+bad = []
+quotes = [(2.00, 2.10), (0.98, 1.02), (0.05, 0.15), (4.90, 5.40), (1.00, 1.00),
+          (0.50, 0.52), (3.00, 3.20)]
+desireds = [0.01, 0.03, 0.10, 0.50, 0.75, 0.94, 1.00, 1.50, 1.90, 2.00,
+            2.05, 3.10, 5.00]
+for (b, a) in quotes:
+    wq = mkwatcher(positions={sym: FakePosition(sym, 1, 1.00)})
+    wq.entries[sym] = 1.00
+    wq.put_quote(sym, b, a, None, "ws")
+    prev_trig = None
+    for d in sorted(desireds):
+        tg, lm, _ = wq._stop_prices(sym, d)
+        if tg > d + 1e-9 and d >= 0.01:
+            bad.append(f"trigger {tg} ABOVE desired {d} at quote {b}/{a}")
+        if lm is not None and lm > tg + 1e-9:
+            bad.append(f"limit {lm} above trigger {tg} at quote {b}/{a} d={d}")
+        if lm is not None and lm < 0.01 - 1e-9:
+            bad.append(f"limit {lm} below $0.01 at quote {b}/{a} d={d}")
+        if prev_trig is not None and tg < prev_trig - 1e-9:
+            bad.append(f"trigger fell {prev_trig}->{tg} as desired rose to {d} "
+                       f"at quote {b}/{a}")
+        prev_trig = tg
+    usable = b > 0 and a > 0 and a >= b
+    tg, lm, _ = wq._stop_prices(sym, 0.75)
+    if usable and a > b and lm is None and tg > 0.011:
+        bad.append(f"usable quote {b}/{a} produced no limit (stop-market leak)")
+for m in bad[:8]:
+    print("        " + m)
+check(f"91-point sweep: trigger<=desired, limit<=trigger, limit>=$0.01, "
+      f"monotone, no stop-market leak", not bad, f"{len(bad)} violations")
+
+print()
+print("=" * 74)
+print("12. ensure_broker_stop — stop-limit resting orders, end to end")
+print("=" * 74)
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.put_quote(sym, 0.98, 1.02, None, "ws")
+w.ensure_broker_stop(sym)
+kinds = [c[0] for c in w.trading.calls]
+check("usable quote -> a STOP-LIMIT rests, not a stop-market",
+      "submit-stoplimit" in kinds, str(kinds))
+o = w.trading.orders[-1]
+desired0 = R.broker_stop_price(1.00, None)
+check("resting trigger == broker_stop_price (deep stop untouched)",
+      abs(o.stop_price - desired0) < 1e-9,
+      f"stop={o.stop_price} desired={desired0}")
+check("resting limit == trigger - spread",
+      abs(o.limit_price - round(o.stop_price - 0.04, 2)) < 1e-9,
+      f"limit={o.limit_price}")
+check("stop_px bookkeeping records the trigger",
+      abs(w.stop_px[sym] - o.stop_price) < 1e-9)
+
+first_px = w.stop_px[sym]
+w.peaks[sym] = 0.60                                    # ran to +60% -> trail arms
+w.ensure_broker_stop(sym)
+check("ratchet raises the resting stop-limit", w.stop_px[sym] > first_px,
+      f"${first_px:.2f} -> ${w.stop_px[sym]:.2f}")
+check("old order cancelled before the new one rests",
+      len(w.trading.cancelled) == 1)
+o2 = w.trading.orders[-1]
+check("raised order still carries a limit", getattr(o2, "limit_price", None)
+      is not None, f"limit={getattr(o2, 'limit_price', None)}")
+check("raised limit still one spread below raised trigger",
+      abs(o2.limit_price - round(o2.stop_price - 0.04, 2)) < 1e-9)
+
+raised_px = w.stop_px[sym]
+w.peaks[sym] = 0.20                                    # give-back
+w.ensure_broker_stop(sym)
+check("falling peak does not lower the stop-limit", w.stop_px[sym] == raised_px)
+
+# Spread widens after placement: the safety ceiling drops, want < have, and the
+# upward-only ratchet must hold the existing (higher) stop rather than replace.
+n_orders = len(w.trading.orders)
+w.put_quote(sym, 0.80, 1.30, None, "ws")               # ugly wide quote
+w.ensure_broker_stop(sym)
+check("widening spread cannot pull the resting stop back down",
+      len(w.trading.orders) == n_orders and w.stop_px[sym] == raised_px,
+      f"px=${w.stop_px[sym]:.2f}")
+
+# Broker rejects the stop-limit: the position must not be left naked.
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)},
+              reject_stoplimit=True)
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.put_quote(sym, 0.98, 1.02, None, "ws")
+w.ensure_broker_stop(sym)
+kinds = [c[0] for c in w.trading.calls]
+check("rejected stop-limit retries as a plain stop",
+      "reject-stoplimit" in kinds and "submit-stop" in kinds, str(kinds))
+check("fallback stop is tracked so cancel-before-sell still works",
+      w.stops.get(sym) is not None and w.stop_px.get(sym) is not None,
+      f"id={w.stops.get(sym)}")
+check("fallback rests at the same safe trigger",
+      abs(w.stop_px[sym] - w.trading.orders[-1].stop_price) < 1e-9)
+check("fallback order has no limit (it IS the stop-market)",
+      getattr(w.trading.orders[-1], "limit_price", None) is None)
+
+# No quote at all -> plain stop-market (documented fallback), not a crash.
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.ensure_broker_stop(sym)
+kinds = [c[0] for c in w.trading.calls]
+check("no quote -> plain stop-market rests", "submit-stop" in kinds and
+      "submit-stoplimit" not in kinds, str(kinds))
 
 print()
 print("=" * 74)
