@@ -547,6 +547,29 @@ check("flatten after adoption: the sell actually goes out",
 
 print()
 print("=" * 74)
+print("13b. Clock reads: a failed API call is UNKNOWN, never 'closed'")
+print("=" * 74)
+# Live incident: a transient clock failure at 14:58 UTC read as None, the run
+# loop said "market closed — watcher exiting" and shut down mid-session with
+# the workflow still green. The contract is now three-way and the two negative
+# states are impossible to confuse.
+w = mkwatcher(minutes_left=120.0)
+st, mins = w.minutes_to_close()
+check("open market -> ('open', minutes)", st == "open" and 119 < mins <= 120,
+      f"({st}, {mins})")
+w = mkwatcher(clock_open=False)
+st, mins = w.minutes_to_close()
+check("closed market -> ('closed', None)", st == "closed" and mins is None)
+w = mkwatcher()
+def _boom():
+    raise Exception("simulated clock API failure")
+w.trading.get_clock = _boom
+st, mins = w.minutes_to_close()
+check("clock API failure -> ('unknown', None), NOT 'closed'",
+      st == "unknown" and mins is None, f"({st}, {mins})")
+
+print()
+print("=" * 74)
 print("14. SKIP paths release the in-flight claim — no frozen symbols")
 print("=" * 74)
 # evaluate() refuses any symbol in `inflight`, so a SKIP that kept the claim

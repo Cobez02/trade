@@ -112,13 +112,24 @@ class Watcher:
 
     # -- market clock --------------------------------------------------------
     def minutes_to_close(self):
+        """('open', minutes) | ('closed', None) | ('unknown', None).
+
+        The three-way split exists because of a real incident: a transient
+        clock-API failure at 14:58 UTC returned the same None as a genuine
+        close, and the run loop said "market closed — watcher exiting" and
+        SHUT DOWN mid-session with the workflow still showing green. "The API
+        did not answer" and "the bell rang" must be impossible to confuse:
+        a failed read means we know NOTHING — and a watcher that knows nothing
+        must keep standing there asking, not walk off the floor.
+        """
         try:
             c = self.trading.get_clock()
             if not c.is_open:
-                return None
-            return (c.next_close - c.timestamp).total_seconds() / 60.0
-        except Exception:
-            return None
+                return ("closed", None)
+            return ("open", (c.next_close - c.timestamp).total_seconds() / 60.0)
+        except Exception as e:
+            log(f"  clock read failed ({str(e)[:60]}) — treating as UNKNOWN, not closed")
+            return ("unknown", None)
 
     # -- quote intake ---------------------------------------------------------
     def put_quote(self, sym, bid, ask, ts, src):
@@ -309,7 +320,13 @@ class Watcher:
                     self.trading.cancel_order_by_id(old)
                 except Exception:
                     pass
-                time.sleep(0.3)
+                # Live incident 14:05:12 UTC: 0.3s was not enough for the
+                # cancel to release the reserved contracts, and the replacement
+                # was rejected 40310000 "not eligible to trade uncovered
+                # option contracts" — both the stop-limit AND its stop-market
+                # fallback, inside the same reserved window. Self-healed on
+                # the next pass, but that is a 30s window with no floor.
+                time.sleep(0.8)
             qty = self.qtys.get(sym, 1)
             if limit is not None:
                 req = StopLimitOrderRequest(
@@ -558,9 +575,19 @@ class Watcher:
         # Check the clock BEFORE touching orders. Everything below places or
         # cancels resting stops, and doing that outside regular hours means
         # queueing DAY orders into a session nobody has looked at yet.
-        mins = self.minutes_to_close()
-        if mins is None:
+        status, mins = self.minutes_to_close()
+        for _ in range(4):                       # a blip at boot is not a verdict
+            if status != "unknown":
+                break
+            time.sleep(5)
+            status, mins = self.minutes_to_close()
+        if status == "closed":
             log("market is closed — nothing to watch, exiting")
+            return
+        if status == "unknown":
+            log("clock unreadable after 5 attempts — cannot confirm a live "
+                "session, exiting WITHOUT touching orders (resting stops, if "
+                "any, remain on the broker)")
             return
         log(f"market open, {mins:.0f} min to the bell")
         symbols = self.refresh_positions()
@@ -579,11 +606,24 @@ class Watcher:
         last_refresh = time.time()
         last_rest = 0.0
         last_beat = 0.0
+        # Dead reckoning for clock outages: (minutes at last good read, when).
+        # If the clock API goes dark we advance the last known reading by
+        # wall-clock time instead of exiting — so the 19:45 flatten fires on
+        # the estimate even through an outage. Connor's no-overnight rule must
+        # not depend on an API call succeeding at exactly the right minute.
+        known = (mins, time.monotonic())
         while True:
-            mins = self.minutes_to_close()
-            if mins is None:
+            status, mins = self.minutes_to_close()
+            if status == "closed":
                 log("market closed — watcher exiting")
                 break
+            if status == "unknown":
+                mins = known[0] - (time.monotonic() - known[1]) / 60.0
+                if mins < -5.0:
+                    log("clock unreadable and dead-reckoned past the bell — exiting")
+                    break
+            else:
+                known = (mins, time.monotonic())
             flatten = mins <= EOD_FLATTEN_MIN
             now = time.time()
 
