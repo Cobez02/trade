@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10045.59,
-      "spy": 741.425
+      "benchmark_equity": 10037.06,
+      "spy": 740.795
     }
   ],
   "run_log": [
@@ -547,6 +547,14 @@
       "notes": [
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "NO NEW ENTRIES \u2014 31 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T20:11:38.835766+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
       ]
     }
   ],
@@ -942,24 +950,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "INCY",
+        "underlying": "MDLZ",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "HOG",
+        "underlying": "NEO",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "HLT",
+        "underlying": "EXLS",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "CNC",
+        "underlying": "ENPH",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [],
