@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 run.log
+watcher.log
+
+# The Alpaca keys live here and must never be committed. They are paper-trading
+# keys, but the habit is the point: this file is sourced at runtime and supplied
+# to GitHub Actions as repository secrets, never as a tracked file.
+config.env
+*.env
