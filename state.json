@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10046.2,
-      "spy": 741.47
+      "benchmark_equity": 10033.47,
+      "spy": 740.53
     }
   ],
   "run_log": [
@@ -528,6 +528,17 @@
         "no liquid contract for STRC [news]",
         "no liquid contract for RELL [news]",
         "no liquid contract for TREX [news]"
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T18:25:30.968529+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for CNC [news]",
+        "no liquid contract for MOH [news]",
+        "SCREENED OUT HUT bull [news] \u2014 spread: spread 25.6% > 4% \u2014 modelled round trip 18.1% of premium vs a best-documented edge of 0.5%/month",
+        "SCREENED OUT CLSK bull [news] \u2014 spread: spread 8.9% > 4% \u2014 modelled round trip 6.7% of premium vs a best-documented edge of 0.5%/month; premium: $0.45 contract < $0.50 \u2014 $0.60/contract PFOF alone is 2.7% round trip"
       ]
     }
   ],
@@ -923,22 +934,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "MSTR",
+        "underlying": "CNC",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "MOH",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "HUT",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "STRC",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "RELL",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "TREX",
+        "underlying": "CLSK",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
