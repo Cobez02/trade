@@ -315,8 +315,8 @@
     {
       "date": "2026-07-28",
       "equity": 10837.98,
-      "benchmark_equity": 10048.64,
-      "spy": 741.65
+      "benchmark_equity": 10046.2,
+      "spy": 741.47
     }
   ],
   "run_log": [
@@ -517,6 +517,17 @@
       "notes": [
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
+    },
+    {
+      "date": "2026-07-28",
+      "time": "2026-07-28T17:29:17.856071+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SCREENED OUT MSTR bull [news] \u2014 spread: spread 9.5% > 4% \u2014 modelled round trip 7.0% of premium vs a best-documented edge of 0.5%/month",
+        "no liquid contract for STRC [news]",
+        "no liquid contract for RELL [news]",
+        "no liquid contract for TREX [news]"
       ]
     }
   ],
@@ -912,22 +923,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "AMKR",
+        "underlying": "MSTR",
         "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "STRC",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "RELL",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
         "underlying": "TREX",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "BRX",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "AMZN",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
