@@ -48,7 +48,7 @@ class FakeTrading:
     """Records every call so the tests can assert on ordering, not just counts."""
 
     def __init__(self, positions=None, open_sells=False, clock_open=True,
-                 minutes_left=120.0, reject_stoplimit=False):
+                 minutes_left=120.0, reject_stoplimit=False, resting=None):
         self.positions = positions or {}
         self.calls = []                 # ordered log of ("verb", symbol)
         self.orders = []
@@ -57,6 +57,10 @@ class FakeTrading:
         self.clock_open, self.minutes_left = clock_open, minutes_left
         self.position_gone = set()
         self.reject_stoplimit = reject_stoplimit
+        # Pre-existing resting orders on the broker (e.g. stops placed by the
+        # PREVIOUS watcher job or by the hourly cron). List of SimpleNamespace
+        # with id / side / symbol and optionally stop_price.
+        self.resting = list(resting or [])
 
     def get_clock(self):
         now = dt.datetime.now(dt.timezone.utc)
@@ -73,9 +77,13 @@ class FakeTrading:
         return self.positions[sym]
 
     def get_orders(self, req):
-        if not self.open_sells:
-            return []
-        return [types.SimpleNamespace(id="foreign-1", side="OrderSide.SELL")]
+        out = [o for o in self.resting if o.id not in self.cancelled]
+        syms = getattr(req, "symbols", None)
+        if syms:
+            out = [o for o in out if getattr(o, "symbol", None) in syms]
+        if self.open_sells:
+            out.append(types.SimpleNamespace(id="foreign-1", side="OrderSide.SELL"))
+        return out
 
     def cancel_order_by_id(self, oid):
         self.calls.append(("cancel", oid))
@@ -476,6 +484,89 @@ w.ensure_broker_stop(sym)
 kinds = [c[0] for c in w.trading.calls]
 check("no quote -> plain stop-market rests", "submit-stop" in kinds and
       "submit-stoplimit" not in kinds, str(kinds))
+
+print()
+print("=" * 74)
+print("13. Stop adoption — a new watcher job inherits existing resting stops")
+print("=" * 74)
+# The production shape: watch.yml runs as two consecutive jobs (6h cap vs a
+# 6.5h session), and the hourly cron arms floors of its own. Job 2 boots with
+# empty in-memory maps while the broker already holds job 1's stops. Without
+# adoption: has_open_sell reads the unknown stop as a working sell and refuses
+# every exit INCLUDING the 19:45 flatten, and ensure_broker_stop double-places.
+prev = types.SimpleNamespace(id="prev-stop-1", side="OrderSide.SELL",
+                             symbol=sym, stop_price=0.40)
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)}, resting=[prev])
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.adopt_broker_stops([sym])
+check("previous job's stop adopted into the tracking maps",
+      w.stops.get(sym) == "prev-stop-1" and w.stop_px.get(sym) == 0.40,
+      f"id={w.stops.get(sym)} px={w.stop_px.get(sym)}")
+w.ensure_broker_stop(sym)
+check("unchanged floor -> NO second stop placed over the adopted one",
+      len(w.trading.orders) == 0, f"{len(w.trading.orders)} orders")
+w.peaks[sym] = 0.60                                    # ratchet condition
+w.ensure_broker_stop(sym)
+check("ratchet replaces the ADOPTED order (cancel then re-place)",
+      "prev-stop-1" in w.trading.cancelled and len(w.trading.orders) == 1,
+      f"cancelled={w.trading.cancelled}")
+check("replacement rests above the adopted level",
+      w.stop_px[sym] > 0.40, f"${w.stop_px[sym]:.2f}")
+
+dup1 = types.SimpleNamespace(id="dup-a", side="OrderSide.SELL", symbol=sym,
+                             stop_price=0.35)
+dup2 = types.SimpleNamespace(id="dup-b", side="OrderSide.SELL", symbol=sym,
+                             stop_price=0.40)
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)}, resting=[dup1, dup2])
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.adopt_broker_stops([sym])
+check("duplicate stops: highest trigger kept",
+      w.stops.get(sym) == "dup-b" and w.stop_px.get(sym) == 0.40)
+check("duplicate stops: the extra is cancelled",
+      "dup-a" in w.trading.cancelled)
+
+mkt = types.SimpleNamespace(id="mkt-sell-1", side="OrderSide.SELL", symbol=sym)
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)}, resting=[mkt])
+w.entries[sym] = 1.00
+w.adopt_broker_stops([sym])
+check("a working market/limit sell (no stop_price) is NOT adopted",
+      sym not in w.stops)
+
+prev2 = types.SimpleNamespace(id="prev-stop-2", side="OrderSide.SELL",
+                              symbol=sym, stop_price=0.40)
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)}, resting=[prev2])
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.adopt_broker_stops([sym])
+w.exit_position(sym, "eod-flatten", 0.10)
+kinds = [c[0] for c in w.trading.calls]
+check("flatten after adoption: adopted stop cancelled BEFORE the sell",
+      w.trading.calls.index(("cancel", "prev-stop-2"))
+      < kinds.index("submit-market"), str(w.trading.calls))
+check("flatten after adoption: the sell actually goes out",
+      ("submit-market", sym) in w.trading.calls)
+
+print()
+print("=" * 74)
+print("14. SKIP paths release the in-flight claim — no frozen symbols")
+print("=" * 74)
+# evaluate() refuses any symbol in `inflight`, so a SKIP that kept the claim
+# would permanently end management of a still-open position.
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)}, open_sells=True)
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.exit_position(sym, "stop-loss -31%", -0.31)
+check("SKIP (sell already working): no market order", not sells(w))
+check("SKIP (sell already working): inflight released", sym not in w.inflight)
+w.trading.open_sells = False                     # the foreign sell went away
+w.exit_position(sym, "stop-loss -31%", -0.31)
+check("released claim allows the retry to complete the exit",
+      len(sells(w)) == 1)
+
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.trading.position_gone.add(sym)
+w.exit_position(sym, "stop-loss -31%", -0.31)
+check("SKIP (position gone/transient error): inflight released",
+      sym not in w.inflight)
 
 print()
 print("=" * 74)

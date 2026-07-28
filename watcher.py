@@ -342,6 +342,58 @@ class Watcher:
                     e = e2
             log(f"  broker stop FAILED {sym}: {str(e)[:90]}")
 
+    def adopt_broker_stops(self, symbols):
+        """Adopt resting SELL stops that this process did not place.
+
+        The watcher runs as two consecutive GitHub Actions jobs (a job caps at
+        6h and the session is 6.5), and the hourly cron arms disaster floors of
+        its own. So at startup the book usually already HAS resting stops —
+        placed by the previous job or by main.py — and this process's in-memory
+        maps know nothing about them. Without adoption that ignorance is fatal,
+        not cosmetic: has_open_sell() reads the unknown stop as "a sell is
+        already working" and exit_position() refuses to sell — INCLUDING THE
+        19:45 FLATTEN, which is exactly how positions get carried overnight —
+        while ensure_broker_stop() tries to rest a second stop on contracts the
+        first already reserves, which the broker rejects.
+
+        Adopting means tracking the existing order as ours, so the upward
+        ratchet and cancel-before-sell operate on it. If a symbol somehow has
+        several resting stops, keep the HIGHEST trigger (the most ratcheted
+        state) and cancel the rest — duplicates double-reserve the contracts."""
+        for sym in symbols:
+            if sym in self.stops:
+                continue
+            try:
+                orders = self.trading.get_orders(GetOrdersRequest(
+                    status=QueryOrderStatus.OPEN, symbols=[sym], limit=20))
+            except Exception as e:
+                log(f"  stop adoption failed {sym}: {str(e)[:70]}")
+                continue
+            found = []
+            for o in orders:
+                if "SELL" not in str(getattr(o, "side", "")).upper():
+                    continue
+                sp = getattr(o, "stop_price", None)
+                if sp is None:
+                    continue
+                try:
+                    found.append((float(sp), str(o.id)))
+                except (TypeError, ValueError):
+                    continue
+            if not found:
+                continue
+            found.sort(reverse=True)
+            px, oid = found[0]
+            self.stops[sym] = oid
+            self.stop_px[sym] = px
+            log(f"  adopted resting stop {sym} @ ${px:.2f} (order {oid[:8]})")
+            for extra_px, extra_id in found[1:]:
+                try:
+                    self.trading.cancel_order_by_id(extra_id)
+                    log(f"  cancelled duplicate stop {sym} @ ${extra_px:.2f}")
+                except Exception:
+                    pass
+
     def cancel_broker_stop(self, sym: str):
         """Must happen BEFORE any watcher sell, or the resting stop and the
         market order both execute and we end up short the contract."""
@@ -379,15 +431,25 @@ class Watcher:
         try:
             self.cancel_broker_stop(sym)
             time.sleep(0.35)
+            # Every SKIP below must release the in-flight claim. An early
+            # return here is NOT a completed exit, and evaluate() refuses any
+            # symbol in `inflight` — so keeping the claim would convert a
+            # transient condition (a working sell that later cancels, a network
+            # blip that made the position read as gone) into a position this
+            # watcher permanently refuses to manage. The claim is retained only
+            # on a successful submit, where refresh_positions() clears it once
+            # the position is confirmed gone.
             if self.has_open_sell(sym):
-                log(f"  SKIP {sym}: a sell is already working"); return
+                log(f"  SKIP {sym}: a sell is already working")
+                self.inflight.discard(sym); return
             try:
                 live = self.trading.get_open_position(sym)
                 qty = abs(int(float(live.qty)))
             except Exception:
-                log(f"  SKIP {sym}: position already gone"); return
+                log(f"  SKIP {sym}: position already gone")
+                self.inflight.discard(sym); return
             if qty <= 0:
-                return
+                self.inflight.discard(sym); return
             o = self.trading.submit_order(MarketOrderRequest(
                 symbol=sym, qty=qty, side=OrderSide.SELL,
                 time_in_force=TimeInForce.DAY))
@@ -506,6 +568,11 @@ class Watcher:
         self.start_stream()
         self.subscribe(symbols)
         self.sweep(symbols)
+        # Adopt BEFORE ensuring: the previous watcher job or the hourly cron
+        # has usually stopped these positions already, and placing over an
+        # unknown resting stop is a rejection at best and a frozen flatten at
+        # worst (see adopt_broker_stops).
+        self.adopt_broker_stops(symbols)
         for s in symbols:
             self.ensure_broker_stop(s)
 
@@ -528,6 +595,9 @@ class Watcher:
                     if s not in prev:
                         log(f"  now watching new position {s} @ {self.entries[s]}")
                 self.subscribe(symbols)
+                # Adoption runs during flatten too — cancel-before-sell needs
+                # the resting stop's id even (especially) at the bell.
+                self.adopt_broker_stops(symbols)
                 if not flatten:
                     for s in symbols:
                         self.ensure_broker_stop(s)

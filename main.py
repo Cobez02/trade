@@ -415,24 +415,19 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 notes.append(f"no liquid contract for {und} [{sleeve}]")
                 continue
             q = broker.option_quote(contract.symbol)
-            if q:
-                ask, bid = q["ask"], q["bid"]
-            else:
-                # `option_mid` returns the MIDPOINT, not the ask — it was named
-                # `option_ask` and bound to a variable called `ask` here, so the
-                # fallback path priced every marketable order half a spread too
-                # tight and quietly failed to fill. Reconstruct a synthetic ask
-                # from the mid using the spread ceiling we are willing to pay,
-                # so a missing two-sided quote is expensive-but-fillable rather
-                # than free-but-imaginary.
-                mid = broker.option_mid(contract.symbol)
-                if not mid or mid <= 0:
-                    continue
-                half = engine.MAX_SPREAD_PCT / 2.0
-                ask = round(mid * (1 + half), 2)
-                bid = round(mid * (1 - half), 2)
-                notes.append(f"{contract.symbol}: no two-sided quote, "
-                             f"synthesised ask {ask:.2f} from mid {mid:.2f}")
+            if not q:
+                # No two-sided quote during market hours, on a contract that
+                # passed the open-interest floor, means the market is not
+                # showing us a price right now. An earlier version synthesised
+                # a bid/ask around option_mid at the spread ceiling — but every
+                # downstream decision (the spread gate, the timing edge, the
+                # marketable limit) then computed on an INVENTED spread, and
+                # cent-rounding made the gate verdict flip with the mid's
+                # digits. Same principle as find_contract's missing fallback:
+                # "no usable quote" is a correct and useful answer. Skip.
+                notes.append(f"{contract.symbol}: no two-sided quote — skipped")
+                continue
+            ask, bid = q["ask"], q["bid"]
             if not ask or ask <= 0:
                 continue
             info = parse_occ(contract.symbol) or {}
