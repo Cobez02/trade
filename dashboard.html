@@ -39,45 +39,46 @@
   .wbars { display:flex; flex-direction:column; gap:8px; }
   .wbar { display:grid; grid-template-columns: 190px 1fr 64px; align-items:center; gap:10px; }
   .wbar-lbl { font-size:12px; color:#c3c2b7; }
-  .wbar-track { height:8px; background:#2c2c2a; border-radius:5px; overflow:hidden; }
+  .wbar-track { position:relative; height:8px; background:#2c2c2a; border-radius:5px; overflow:hidden; }
   .wbar-fill { height:100%; border-radius:5px; }
+  .wbar-tick { position:absolute; left:80%; top:0; width:1px; height:100%; background:#c3c2b7; opacity:.55; }
   .wbar-val { font-size:12px; text-align:right; font-variant-numeric:tabular-nums; }
   .disc { color:#898781; font-size:11px; margin-top:22px; line-height:1.5; }
 </style></head>
 <body><div class="wrap">
   <h1>SPX-Beater · autonomous options paper trading</h1>
-  <div class="sub">As of 2026-07-27 · Alpaca paper account · $10k conservative · benchmark = S&amp;P 500 (SPY)</div>
+  <div class="sub">As of 2026-07-28 · Alpaca paper account · $10k conservative · benchmark = S&amp;P 500 (SPY)</div>
 
   <div class="banner">
-    <div class="dot" style="width:14px;height:14px;background:#d03b3b"></div>
-    <div><span class="big" style="color:#d03b3b">TRAILING the S&amp;P 500</span>
-    &nbsp;by -0.12%</div>
+    <div class="dot" style="width:14px;height:14px;background:#0ca30c"></div>
+    <div><span class="big" style="color:#0ca30c">BEATING the S&amp;P 500</span>
+    &nbsp;by +0.12%</div>
   </div>
 
   <div class="grid"><div class="tile">
       <div class="tile-label">Portfolio value</div>
-      <div class="tile-value" style="color:#ffffff">$9,997</div>
+      <div class="tile-value" style="color:#ffffff">$10,023</div>
       <div class="tile-sub">from $10,000 start</div>
     </div><div class="tile">
       <div class="tile-label">Bot return</div>
-      <div class="tile-value" style="color:#d03b3b">-0.03%</div>
+      <div class="tile-value" style="color:#0ca30c">+0.23%</div>
       <div class="tile-sub">options, 4 sleeves</div>
     </div><div class="tile">
       <div class="tile-label">S&amp;P 500 (SPY)</div>
-      <div class="tile-value" style="color:#0ca30c">+0.09%</div>
+      <div class="tile-value" style="color:#0ca30c">+0.11%</div>
       <div class="tile-sub">buy &amp; hold benchmark</div>
     </div><div class="tile">
       <div class="tile-label">Alpha vs S&amp;P</div>
-      <div class="tile-value" style="color:#d03b3b">-0.12%</div>
-      <div class="tile-sub">TRAILING</div>
+      <div class="tile-value" style="color:#0ca30c">+0.12%</div>
+      <div class="tile-sub">BEATING</div>
     </div><div class="tile">
       <div class="tile-label">Open positions</div>
-      <div class="tile-value" style="color:#ffffff">5</div>
-      <div class="tile-sub">7 closed</div>
+      <div class="tile-value" style="color:#ffffff">0</div>
+      <div class="tile-sub">12 closed</div>
     </div><div class="tile">
       <div class="tile-label">Win rate</div>
-      <div class="tile-value" style="color:#ffffff">43%</div>
-      <div class="tile-sub">7 settled trades</div>
+      <div class="tile-value" style="color:#ffffff">50%</div>
+      <div class="tile-sub">12 settled trades</div>
     </div></div>
 
   <div class="card">
@@ -87,12 +88,12 @@
       <span><span class="dot" style="background:#d95926"></span>S&amp;P 500 buy &amp; hold</span>
     </div>
     <svg viewBox="0 0 920 280" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Equity vs S&P 500">
-      <line x1="44" y1="44.0" x2="876" y2="44.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="48.0" text-anchor="end" fill="#898781" font-size="11">$10,021</text><line x1="44" y1="92.0" x2="876" y2="92.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="96.0" text-anchor="end" fill="#898781" font-size="11">$9,990</text><line x1="44" y1="140.0" x2="876" y2="140.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="144.0" text-anchor="end" fill="#898781" font-size="11">$9,959</text><line x1="44" y1="188.0" x2="876" y2="188.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="192.0" text-anchor="end" fill="#898781" font-size="11">$9,928</text><line x1="44" y1="236.0" x2="876" y2="236.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="240.0" text-anchor="end" fill="#898781" font-size="11">$9,897</text>
+      <line x1="44" y1="44.0" x2="876" y2="44.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="48.0" text-anchor="end" fill="#898781" font-size="11">$10,032</text><line x1="44" y1="92.0" x2="876" y2="92.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="96.0" text-anchor="end" fill="#898781" font-size="11">$9,998</text><line x1="44" y1="140.0" x2="876" y2="140.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="144.0" text-anchor="end" fill="#898781" font-size="11">$9,964</text><line x1="44" y1="188.0" x2="876" y2="188.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="192.0" text-anchor="end" fill="#898781" font-size="11">$9,930</text><line x1="44" y1="236.0" x2="876" y2="236.0" stroke="#2c2c2a" stroke-width="1"/><text x="36" y="240.0" text-anchor="end" fill="#898781" font-size="11">$9,896</text>
       <line x1="44" y1="236" x2="876" y2="236" stroke="#383835" stroke-width="1"/>
-      <path d="M44.0,57.2 L460.0,59.1 L876.0,63.1" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round"/>
-      <path d="M44.0,222.8 L460.0,202.6 L876.0,81.5" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
-      <circle cx="876.0" cy="81.5" r="4" fill="#3987e5"/><circle cx="876.0" cy="63.1" r="4" fill="#d95926"/>
-      <text x="44.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-24</text><text x="460.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-25</text><text x="876.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-27</text>
+      <path d="M44.0,71.9 L321.3,73.6 L598.7,77.2 L876.0,74.6" fill="none" stroke="#d95926" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M44.0,222.8 L321.3,204.4 L598.7,94.0 L876.0,57.2" fill="none" stroke="#3987e5" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="876.0" cy="57.2" r="4" fill="#3987e5"/><circle cx="876.0" cy="74.6" r="4" fill="#d95926"/>
+      <text x="44.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-24</text><text x="598.7" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-27</text><text x="876.0" y="254.0" text-anchor="middle" fill="#898781" font-size="11">07-28</text>
     </svg>
   </div>
 
@@ -102,28 +103,28 @@
       <tr><th>Sleeve</th><th style="text-align:right">Open</th><th style="text-align:right">Realized P&amp;L</th>
       <th style="text-align:right">Return</th><th style="text-align:right">Trades</th><th style="text-align:right">Win %</th></tr>
       <tr>
-          <td class="lbl">Reddit / WSB sentiment</td>
-          <td class="num">2</td>
-          <td class="num" style="color:#0ca30c">$324</td>
-          <td class="num" style="color:#0ca30c">+12.96%</td>
+          <td class="lbl">Reddit / WSB sentiment <span style="color:#898781;font-size:11px" title="retired — entry signal replaced by the crowd veto">· retired</span></td>
+          <td class="num">0</td>
+          <td class="num" style="color:#0ca30c">$157</td>
+          <td class="num" style="color:#0ca30c">+6.28%</td>
+          <td class="num">5</td>
+          <td class="num">60%</td>
+        </tr><tr>
+          <td class="lbl">News catalysts</td>
+          <td class="num">0</td>
+          <td class="num" style="color:#0ca30c">$592</td>
+          <td class="num" style="color:#0ca30c">+23.68%</td>
+          <td class="num">3</td>
+          <td class="num">33%</td>
+        </tr><tr>
+          <td class="lbl">Technical indicators</td>
+          <td class="num">0</td>
+          <td class="num" style="color:#0ca30c">$138</td>
+          <td class="num" style="color:#0ca30c">+5.52%</td>
           <td class="num">3</td>
           <td class="num">67%</td>
         </tr><tr>
-          <td class="lbl">News catalysts</td>
-          <td class="num">1</td>
-          <td class="num" style="color:#d03b3b">$-284</td>
-          <td class="num" style="color:#d03b3b">-11.36%</td>
-          <td class="num">2</td>
-          <td class="num">0%</td>
-        </tr><tr>
-          <td class="lbl">Technical indicators</td>
-          <td class="num">2</td>
-          <td class="num" style="color:#0ca30c">$70.00</td>
-          <td class="num" style="color:#0ca30c">+2.80%</td>
-          <td class="num">1</td>
-          <td class="num">100%</td>
-        </tr><tr>
-          <td class="lbl">Options-flow copy</td>
+          <td class="lbl">Options-flow copy <span style="color:#898781;font-size:11px" title="retired — OI skew is unsigned; no signal without open/close data">· retired</span></td>
           <td class="num">0</td>
           <td class="num" style="color:#d03b3b">$-47.00</td>
           <td class="num" style="color:#d03b3b">-1.88%</td>
@@ -135,25 +136,27 @@
 
   <div class="card">
     <h2>Recursive learning — what's working, what's gated</h2>
-    <div class="wbars"><div class="wbar">
-          <div class="wbar-lbl">Reddit / WSB sentiment <span style="color:#898781">(3)</span></div>
-          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
-          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+    <div style="color:#898781;font-size:12px;margin-bottom:10px">12 settled trades over 2 session(s) — effective sample 9.9 after same-day clustering. Sizing stays neutral until 30.</div>
+      <div class="wbars"><div class="wbar">
+          <div class="wbar-lbl">Reddit / WSB sentiment <span style="color:#898781">(5 · n<sub>eff</sub> 4.7)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:80%;background:#898781"></div><div class="wbar-tick"></div></div>
+          <div class="wbar-val" style="color:#898781">retired</div>
         </div><div class="wbar">
-          <div class="wbar-lbl">News catalysts <span style="color:#898781">(2)</span></div>
-          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
-          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+          <div class="wbar-lbl">News catalysts <span style="color:#898781">(3 · n<sub>eff</sub> 2.0)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:80%;background:#3987e5"></div><div class="wbar-tick"></div></div>
+          <div class="wbar-val" style="color:#3987e5">neutral</div>
         </div><div class="wbar">
-          <div class="wbar-lbl">Technical indicators <span style="color:#898781">(1)</span></div>
-          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
-          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+          <div class="wbar-lbl">Technical indicators <span style="color:#898781">(3 · n<sub>eff</sub> 3.0)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:80%;background:#3987e5"></div><div class="wbar-tick"></div></div>
+          <div class="wbar-val" style="color:#3987e5">neutral</div>
         </div><div class="wbar">
-          <div class="wbar-lbl">Options-flow copy <span style="color:#898781">(1)</span></div>
-          <div class="wbar-track"><div class="wbar-fill" style="width:56%;background:#3987e5"></div></div>
-          <div class="wbar-val" style="color:#3987e5">×1.0</div>
+          <div class="wbar-lbl">Options-flow copy <span style="color:#898781">(1 · n<sub>eff</sub> 1.0)</span></div>
+          <div class="wbar-track"><div class="wbar-fill" style="width:80%;background:#898781"></div><div class="wbar-tick"></div></div>
+          <div class="wbar-val" style="color:#898781">retired</div>
         </div></div>
-      <div style="color:#898781;font-size:11px;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
-      <ul class="notes"><li>Best signal so far — spread_tight: 50% win, avg +17% (4).</li><li>Best signal so far — dte&lt;=4: 40% win, avg +3% (5).</li><li>Weak signal — call: 20% win, avg -27% (5).</li><li>Weak signal — counter_trend: 20% win, avg -27% (5).</li><li>GATED call (direction): 20% win over 5 — blocking new entries that match.</li><li>GATED counter_trend (trend_align): 20% win over 5 — blocking new entries that match.</li></ul>
+      <div style="color:#898781;font-size:11px;margin-top:8px">Scale: 0.25× floor → 1.25× ceiling, tick at neutral. The floor is not zero: nothing is ever blocked, because a blocked setup can never generate the evidence that would clear it. Currently no setup sized down.</div>
+      <div style="color:#898781;font-size:11px;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
+      <ul class="notes"><li>NOT ENOUGH EVIDENCE TO ACT: 12 settled trades across 2 session(s) is n_eff = 9.9 after correcting for same-day clustering (deff 1.206). Sizing stays neutral until n_eff ≥ 30. Trades on the same day share the market&#x27;s move, so they are not independent observations.</li><li>DEDUPLICATED &#x27;trend_align&#x27; — Cramér&#x27;s V 1.0 against &#x27;direction&#x27;. These are the same hypothesis; acting on both would count one piece of evidence twice.</li><li>&#x27;tech&#x27;: 67% win, avg +68% over 3 trades (n_eff 3.0) — size unchanged, evidence too thin to move it. Honest confidence needs ~9 trades; there are 3.</li><li>&#x27;news&#x27;: 33% win, avg +65% over 3 trades (n_eff 2.0) — size unchanged, evidence too thin to move it. Honest confidence needs ~25 trades; there are 3.</li><li>&#x27;wsb&#x27;: 60% win, avg +8% over 5 trades (n_eff 4.7) — size unchanged, evidence too thin to move it. Honest confidence needs ~196 trades; there are 5.</li><li>&#x27;flow&#x27;: 0% win, avg -54% over 1 trades (n_eff 1.0) — size unchanged, evidence too thin to move it.</li><li>Testing 14 buckets at once: an uncorrected rule of this size fires on noise with probability 0.9968. One honest decision needs n ≈ 61 (126 corrected). No bucket has been blocked.</li></ul>
   </div>
 
   <div class="card">
@@ -161,42 +164,7 @@
     <table>
       <tr><th>Contract</th><th>Sleeve</th><th style="text-align:right">Qty</th>
       <th style="text-align:right">Entry</th><th style="text-align:right">Expiry</th><th>Thesis</th></tr>
-      <tr>
-          <td class="mono">DRAM CALL $52.0</td>
-          <td class="lbl">Reddit / WSB sentiment</td>
-          <td class="num">1</td>
-          <td class="num">$2.62</td>
-          <td class="num">2026-07-31 (4d)</td>
-          <td class="thesis"></td>
-        </tr><tr>
-          <td class="mono">GOOGL CALL $332.5</td>
-          <td class="lbl">Technical indicators</td>
-          <td class="num">1</td>
-          <td class="num">$3.45</td>
-          <td class="num">2026-07-31 (4d)</td>
-          <td class="thesis"></td>
-        </tr><tr>
-          <td class="mono">NFLX CALL $71.0</td>
-          <td class="lbl">Technical indicators</td>
-          <td class="num">1</td>
-          <td class="num">$1.03</td>
-          <td class="num">2026-07-31 (4d)</td>
-          <td class="thesis"></td>
-        </tr><tr>
-          <td class="mono">SPY PUT $729.0</td>
-          <td class="lbl">Reddit / WSB sentiment</td>
-          <td class="num">1</td>
-          <td class="num">$2.05</td>
-          <td class="num">2026-07-30 (3d)</td>
-          <td class="thesis"></td>
-        </tr><tr>
-          <td class="mono">VZ CALL $48.0</td>
-          <td class="lbl">News catalysts</td>
-          <td class="num">12</td>
-          <td class="num">$0.26</td>
-          <td class="num">2026-07-31 (4d)</td>
-          <td class="thesis"></td>
-        </tr>
+      <tr><td colspan="6" class="empty">No open positions.</td></tr>
     </table>
   </div>
 
@@ -223,6 +191,12 @@
           <td class="lbl">closed</td>
           <td class="num">2026-07-27</td>
         </tr><tr>
+          <td class="mono">NFLX CALL $71.0</td>
+          <td class="lbl">Technical indicators</td>
+          <td class="num" style="color:#0ca30c">$189</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-28</td>
+        </tr><tr>
           <td class="mono">SPY PUT $733.0</td>
           <td class="lbl">Reddit / WSB sentiment</td>
           <td class="num" style="color:#0ca30c">$109</td>
@@ -235,11 +209,35 @@
           <td class="lbl">closed</td>
           <td class="num">2026-07-27</td>
         </tr><tr>
+          <td class="mono">GOOGL CALL $332.5</td>
+          <td class="lbl">Technical indicators</td>
+          <td class="num" style="color:#d03b3b">$-121</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-28</td>
+        </tr><tr>
           <td class="mono">NVDA PUT $200.0</td>
           <td class="lbl">Reddit / WSB sentiment</td>
           <td class="num" style="color:#0ca30c">$290</td>
           <td class="lbl">closed</td>
           <td class="num">2026-07-27</td>
+        </tr><tr>
+          <td class="mono">SPY PUT $729.0</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num" style="color:#0ca30c">$13.00</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-28</td>
+        </tr><tr>
+          <td class="mono">VZ CALL $48.0</td>
+          <td class="lbl">News catalysts</td>
+          <td class="num" style="color:#0ca30c">$876</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-28</td>
+        </tr><tr>
+          <td class="mono">DRAM CALL $52.0</td>
+          <td class="lbl">Reddit / WSB sentiment</td>
+          <td class="num" style="color:#d03b3b">$-180</td>
+          <td class="lbl">closed</td>
+          <td class="num">2026-07-28</td>
         </tr><tr>
           <td class="mono">SLB CALL $53.0</td>
           <td class="lbl">News catalysts</td>
@@ -252,7 +250,7 @@
 
   <div class="card">
     <h2>Last run activity</h2>
-    <ul class="notes"><li>CLOSED SLB260731C00053000 [news] LOSS stop-loss -51%, P&amp;L $-165 — entry was: RSI 77.0, counter_trend, DTE 4, score 3.0</li><li>Learner: 6 settled trades | wsb=w1.0 · news=w1.0 · tech=w1.0 · flow=w1.0</li><li>SKIP PSX bull [news] — bid/ask spread 38% &gt; 15% (illiquid)</li><li>no liquid contract for SXT [news]</li><li>no liquid contract for MRSH [news]</li><li>no liquid contract for GSHD [news]</li></ul>
+    <ul class="notes"><li>Learner: 7 settled trades | wsb=w1.0 · news=w1.0 · tech=w1.0 · flow=w1.0</li><li>Market closed — signals recorded, no orders placed this run.</li></ul>
   </div>
 
   <div class="disc">Experimental / educational paper-trading system. Trades are simulated on an Alpaca

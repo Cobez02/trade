@@ -67,3 +67,6 @@ jobs:
             tail -c 8000 watcher.log 2>/dev/null || echo "(no log)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+# schedule-poke 2026-07-28: neither cron fired on first registration
+# (13:31 and 14:00 both missed); editing this file re-registers the schedule.

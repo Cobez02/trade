@@ -69,3 +69,6 @@ jobs:
           git add -A state.json dashboard.html
           git commit -m "run $(date -u +%Y-%m-%dT%H:%MZ)" || echo "nothing to commit"
           git push || echo "push skipped"
+
+# schedule-poke 2026-07-28: neither cron fired on first registration
+# (13:31 and 14:00 both missed); editing this file re-registers the schedule.
