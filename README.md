@@ -1,17 +1,22 @@
 # SPX-Beater — autonomous options paper-trading bot
 
 Runs **options-only** paper trades on an Alpaca paper account every hour during US
-market hours and tries to beat a buy-and-hold S&P 500 (SPY) benchmark. Four
-independent strategy "sleeves" compete, and a recursive-learning loop sizes up
-what works and pauses/gates what doesn't. Runs free, 24/7, on **GitHub Actions** —
-no server, no keeping your computer on.
+market hours and tries to beat a buy-and-hold S&P 500 (SPY) benchmark. Strategy
+"sleeves" compete under a learning loop that **sizes** what works up or down
+(0.25×–1.25×) — it never pauses or gates anything, because a blocked setup can
+never earn the evidence that would clear it. Runs free, 24/7, on **GitHub
+Actions** — no server, no keeping your computer on.
 
-| Sleeve | Signal source |
-|--------|----------------|
-| `wsb`  | Reddit / r/wallstreetbets sentiment |
-| `news` | Alpaca market-news headline sentiment |
-| `tech` | RSI / MACD / trend indicators |
-| `flow` | Options call/put open-interest skew |
+| Sleeve | Signal source | Status |
+|--------|----------------|--------|
+| `news` | Alpaca market-news headline sentiment | active |
+| `tech` | RSI / MACD / trend indicators | active |
+| `wsb`  | Reddit / r/wallstreetbets sentiment | retired as entry; survives as a crowd **veto** on hyped names |
+| `flow` | Options call/put open-interest skew | retired — OI is unsigned; no signal without open/close data |
+
+**Read `STRATEGY.md`** for what the program trades and the evidence behind every
+rule, and **`ASSESSMENT.md`** for the honest math on the 10x goal before any
+real-money decision. Both are part of the deliverable, not decoration.
 
 It is **stateless**: every run reconstructs open positions and the full learning
 journal from Alpaca's own order history (each trade's signal features are encoded
@@ -76,9 +81,18 @@ gh workflow run "SPX-Beater options bot"
 
 ## Tuning (optional)
 Behaviour is env-overridable in `trade.yml` (add under the `env:` block):
-`SPXBOT_MAX_PREM` (max $/trade, default 150), `SPXBOT_MAX_OPEN` (per sleeve, 3),
-`SPXBOT_MAX_SPREAD` (max bid/ask spread, 0.15), `SPXBOT_TP` (take-profit, 0.45),
-`SPXBOT_SL` (stop, -0.30), `SPXBOT_DTE_MIN`/`SPXBOT_DTE_MAX` (3/12).
+`SPXBOT_MAX_PREM` (max $/trade, default 350), `SPXBOT_MAX_OPEN` (per sleeve, 2),
+`SPXBOT_MAX_SPREAD` (max bid/ask spread, **0.04** — see STRATEGY.md §2 before
+raising it; at 0.15 the round trip costs 10.9% of premium), `SPXBOT_TP`
+(trail arms at +0.25), `SPXBOT_SL` (working stop, -0.30),
+`SPXBOT_DTE_MIN`/`SPXBOT_DTE_MAX` (3/12).
+
+## Tests
+Eight suites, no network, no orders: `for t in test_*.py; do python3 $t; done`
+(1,279 named checks). They pin the statistics (`test_stats.py` reproduces
+published Deflated-Sharpe worked examples to the digit), the screens, the
+execution math, the exit rules, the learning loop's "size, never block"
+property, the watcher's stop machinery, and the sleeve retirement.
 
 ## Notes & caveats
 - Scheduled GitHub runs can be delayed a few minutes under load — fine hourly.
