@@ -22,6 +22,7 @@ from engine import (
 )
 from strategies import all_signals
 import learn
+import exitrules
 
 OCC_RE = re.compile(r'^([A-Z]+)(\d{6})([CP])(\d{8})$')
 
@@ -225,6 +226,15 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
         if reason:
             try:
                 qty = abs(int(float(pos.qty)))
+                # Clear any resting protective stop FIRST. It reserves the
+                # contracts, so a close placed alongside it is rejected for
+                # insufficient quantity — and if both did fill we would not be
+                # flat, we would be short the contract.
+                for o in broker.open_sell_orders(sym):
+                    try:
+                        broker.cancel(o.id)
+                    except Exception:
+                        pass
                 broker.sell_to_close(sym, qty)
                 realized = float(pos.unrealized_pl)
                 feat = meta.get("features") or pos_feat.get(sym, {})
@@ -262,6 +272,48 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
                 "closed_on": today(), "thesis": meta.get("thesis", ""),
             })
             notes.append(f"RECONCILED {sym} [{meta.get('sleeve')}] — no longer held")
+
+
+def ensure_broker_stops(broker: Broker, state: dict, notes: list):
+    """Make sure every open position has a resting stop underneath it.
+
+    The watcher places these too, but the watcher is a process that can die and
+    a container that can be reclaimed. Doing it here as well means the floor is
+    established by whatever runs — and if only the hourly cron ever runs, every
+    position still has a stop Alpaca evaluates continuously rather than one this
+    code re-checks sixty minutes from now.
+
+    Deliberately does NOT ratchet with a peak: this path sees the book once an
+    hour and has no idea what happened in between. Trailing is the watcher's
+    job; this is the disaster floor.
+    """
+    try:
+        if not broker.clock().is_open:
+            return
+    except Exception:
+        return
+    mins = minutes_to_close(broker)
+    if mins is not None and mins <= EOD_FLATTEN_MIN:
+        return                      # the book is being flattened; don't re-arm
+    try:
+        covered = {o.symbol for o in broker.open_sell_orders()}
+    except Exception:
+        return
+    for p in broker.positions():
+        if p.symbol in covered:
+            continue
+        try:
+            entry = float(p.avg_entry_price or 0)
+            qty = abs(int(float(p.qty)))
+            if entry <= 0 or qty <= 0:
+                continue
+            px = exitrules.broker_stop_price(entry, None)
+            broker.rest_stop(p.symbol, qty, px)
+            notes.append(f"STOP ARMED {p.symbol} x{qty} @ ${px:.2f} "
+                         f"({exitrules.HARD_STOP_PCT:+.0%} from ${entry:.2f}) — "
+                         f"holds whether or not anything of ours is running")
+        except Exception as e:
+            notes.append(f"stop-arm failed {p.symbol}: {str(e)[:70]}")
 
 
 def sleeve_open_count(state: dict, sleeve: str) -> int:
@@ -480,6 +532,7 @@ def run():
         }
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
     manage_exits(broker, state, notes, sleeve_map, pos_feat)
+    ensure_broker_stops(broker, state, notes)
     if journal:                                    # Alpaca is authoritative for settled trades
         state["journal"] = journal
         state["closed"] = [{
@@ -498,6 +551,11 @@ def run():
     # now reject, so pull anything whose spread has widened past the gate.
     for o in broker.open_orders():
         try:
+            # BUYs only. The resting protective stops are working SELL orders,
+            # and cancelling those because the spread widened would remove the
+            # floor at exactly the moment it is most needed.
+            if "BUY" not in str(getattr(o, "side", "")).upper():
+                continue
             q = broker.option_quote(o.symbol) or {}
             sp = q.get("spread_pct")
             if sp is not None and sp > MAX_SPREAD_PCT:
@@ -516,6 +574,9 @@ def run():
             pending.add((coid.split("-")[1], info["underlying"]))
     signals = all_signals(broker, api_key, secret)
     open_new_trades(broker, state, signals, api_key, secret, notes, pending)
+    # Again, because anything that just filled has no floor under it yet. The
+    # call skips symbols already covered, so a second pass costs one API read.
+    ensure_broker_stops(broker, state, notes)
     update_benchmark(broker, state)
 
     state["run_log"].append({"date": today(),

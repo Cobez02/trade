@@ -27,7 +27,8 @@ from typing import Optional
 # ---- Alpaca SDK -------------------------------------------------------------
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import (
-    MarketOrderRequest, LimitOrderRequest, GetOptionContractsRequest, GetOrdersRequest,
+    MarketOrderRequest, LimitOrderRequest, StopOrderRequest,
+    GetOptionContractsRequest, GetOrdersRequest,
 )
 from alpaca.trading.enums import (
     OrderSide, TimeInForce, ContractType, AssetStatus, QueryOrderStatus, OrderStatus,
@@ -253,6 +254,42 @@ class Broker:
     def cancel(self, order_id):
         """Pull a working order (e.g. a limit that has gone stale as the spread widened)."""
         return self.trading.cancel_order_by_id(order_id)
+
+    # -- protective stops ----------------------------------------------------
+    # The prefix is deliberately NOT "SPXB-": sleeve_map_from_orders() reads any
+    # SPXB-tagged closed order and would file a filled stop under a sleeve named
+    # "stop", quietly corrupting the attribution the learner runs on.
+    STOP_TAG = "PSTOP"
+
+    def rest_stop(self, occ_symbol: str, qty: int, stop_price: float):
+        """Place a resting protective stop.
+
+        This is the only piece of risk control that keeps working when nothing
+        of ours is running — no cron, no watcher, no container. Alpaca evaluates
+        it continuously on its own side. Options accept `stop` but reject
+        `trailing_stop` and OCO, so a trail has to be emulated by replacing it.
+        """
+        return self.trading.submit_order(StopOrderRequest(
+            symbol=occ_symbol, qty=qty, side=OrderSide.SELL,
+            time_in_force=TimeInForce.DAY,
+            stop_price=round(max(float(stop_price), 0.01), 2),
+            client_order_id=f"{self.STOP_TAG}-{int(time.time()*1000)}"))
+
+    def open_sell_orders(self, occ_symbol: str = None):
+        """Working SELL orders — protective stops, plus anything else resting.
+
+        A resting sell reserves the contracts, so a close order placed while one
+        is live is rejected for insufficient quantity. Anything that intends to
+        sell must clear these first.
+        """
+        out = []
+        for o in self.open_orders():
+            if "SELL" not in str(getattr(o, "side", "")).upper():
+                continue
+            if occ_symbol and o.symbol != occ_symbol:
+                continue
+            out.append(o)
+        return out
 
     def closed_orders(self, limit: int = 500):
         """All filled/closed orders (both sides), newest first."""
