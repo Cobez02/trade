@@ -321,8 +321,8 @@
     {
       "date": "2026-07-29",
       "equity": 10837.68,
-      "benchmark_equity": 9995.6,
-      "spy": 737.735
+      "benchmark_equity": 9955.97,
+      "spy": 734.81
     }
   ],
   "run_log": [
@@ -634,6 +634,14 @@
         "no liquid contract for DMC [news]",
         "SCREENED OUT SPY bull [news] \u2014 skew: ex-ante skew 4.4 > 4.0 \u2014 Boyer-Vorkink top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)",
         "no liquid contract for TEVA [news]"
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T19:27:59.503480+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "NO NEW ENTRIES \u2014 32 min to close (cutoff 90); positions will be flattened at 15 min."
       ]
     }
   ],
@@ -1029,24 +1037,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "IQV",
+        "underlying": "SPY",
+        "direction": "bull",
+        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "F",
         "direction": "bull",
         "thesis": "News flow +4 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "DMC",
+        "underlying": "CTO",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "SPY",
+        "underlying": "NVDA",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "TEVA",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
