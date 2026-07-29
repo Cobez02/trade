@@ -321,8 +321,8 @@
     {
       "date": "2026-07-29",
       "equity": 10837.68,
-      "benchmark_equity": 9966.67,
-      "spy": 735.6
+      "benchmark_equity": 9976.02,
+      "spy": 736.29
     }
   ],
   "run_log": [
@@ -612,6 +612,17 @@
       "notes": [
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T17:25:36.630347+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for STX [news]",
+        "SCREENED OUT V bull [news] \u2014 spread: spread 21.3% > 4% \u2014 modelled round trip 15.2% of premium vs a best-documented edge of 0.5%/month",
+        "no liquid contract for DRAM [news]",
+        "no liquid contract for FPX [news]"
       ]
     }
   ],
