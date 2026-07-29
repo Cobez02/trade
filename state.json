@@ -321,8 +321,8 @@
     {
       "date": "2026-07-29",
       "equity": 10837.68,
-      "benchmark_equity": 9955.56,
-      "spy": 734.78
+      "benchmark_equity": 9940.52,
+      "spy": 733.67
     }
   ],
   "run_log": [
@@ -592,6 +592,18 @@
         "SCREENED OUT VRT bull [news] \u2014 spread: spread 11.2% > 4% \u2014 modelled round trip 8.2% of premium vs a best-documented edge of 0.5%/month",
         "SCREENED OUT V bull [news] \u2014 spread: spread 15.9% > 4% \u2014 modelled round trip 11.5% of premium vs a best-documented edge of 0.5%/month",
         "SCREENED OUT AAPL bear [tech] \u2014 spread: spread 6.1% > 4% \u2014 modelled round trip 4.5% of premium vs a best-documented edge of 0.5%/month"
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T16:27:58.025187+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for ADP [news]",
+        "no liquid contract for GEHC [news]",
+        "no liquid contract for STX [news]",
+        "no liquid contract for JHX [news]",
+        "SCREENED OUT TSLA bull [tech] \u2014 spread: spread 4.7% > 4% \u2014 modelled round trip 3.5% of premium vs a best-documented edge of 0.5%/month"
       ]
     }
   ],
@@ -987,24 +999,24 @@
     "wsb": [],
     "news": [
       {
+        "underlying": "ADP",
+        "direction": "bull",
+        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
+      },
+      {
         "underlying": "GEHC",
         "direction": "bull",
         "thesis": "News flow +5 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ASH",
+        "underlying": "STX",
         "direction": "bull",
-        "thesis": "News flow +5 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 3 articles (keyword sentiment)"
       },
       {
-        "underlying": "VRT",
+        "underlying": "JHX",
         "direction": "bull",
-        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "V",
-        "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
@@ -1012,17 +1024,13 @@
         "underlying": "TSLA",
         "direction": "bull",
         "thesis": "Technical: RSI 9 oversold + MACD turning up"
-      },
-      {
-        "underlying": "AAPL",
-        "direction": "bear",
-        "thesis": "Technical: RSI 71 overbought + MACD turning down"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "67 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "51 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "114 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "65 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "SK": "55 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
