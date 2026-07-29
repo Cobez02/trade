@@ -317,6 +317,12 @@
       "equity": 10837.98,
       "benchmark_equity": 10037.06,
       "spy": 740.795
+    },
+    {
+      "date": "2026-07-29",
+      "equity": 10837.68,
+      "benchmark_equity": 9948.92,
+      "spy": 734.29
     }
   ],
   "run_log": [
@@ -564,11 +570,22 @@
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T14:44:06.387331+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for GD [news]",
+        "SCREENED OUT PYPL bull [news] \u2014 spread: spread 10.2% > 4% \u2014 modelled round trip 7.6% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 17.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for UMC [news]",
+        "SCREENED OUT SMCI bear [news] \u2014 lottery: MAX 19.9% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-07-28",
+    "updated": "2026-07-29",
     "n_trades": 12,
     "n_eff": 9.95,
     "n_days": 2,
@@ -958,31 +975,37 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "HIW",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "AKR",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "CHE",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "CTO",
+        "underlying": "GD",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "PYPL",
+        "direction": "bull",
+        "thesis": "News flow +3 across 3 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "UMC",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SMCI",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       }
     ],
-    "tech": [],
+    "tech": [
+      {
+        "underlying": "TSLA",
+        "direction": "bull",
+        "thesis": "Technical: RSI 9 oversold + MACD turning up"
+      }
+    ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "121 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "52 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "67 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "51 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
