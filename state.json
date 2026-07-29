@@ -321,8 +321,8 @@
     {
       "date": "2026-07-29",
       "equity": 10837.68,
-      "benchmark_equity": 9955.97,
-      "spy": 734.81
+      "benchmark_equity": 9884.97,
+      "spy": 729.57
     }
   ],
   "run_log": [
@@ -642,6 +642,14 @@
       "notes": [
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "NO NEW ENTRIES \u2014 32 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T20:10:34.702898+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
       ]
     }
   ],
@@ -1037,33 +1045,27 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "SPY",
+        "underlying": "LHX",
         "direction": "bull",
-        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "F",
+        "underlying": "PCOR",
         "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "CTO",
+        "underlying": "CNXN",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "NVDA",
+        "underlying": "PBI",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
-    "tech": [
-      {
-        "underlying": "TSLA",
-        "direction": "bull",
-        "thesis": "Technical: RSI 9 oversold + MACD turning up"
-      }
-    ],
+    "tech": [],
     "flow": [],
     "_crowd_veto": {
       "AI": "114 WSB comments (Bullish) \u2014 attention-inflated premium",
