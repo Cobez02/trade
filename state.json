@@ -321,8 +321,8 @@
     {
       "date": "2026-07-29",
       "equity": 10837.68,
-      "benchmark_equity": 9940.52,
-      "spy": 733.67
+      "benchmark_equity": 9966.67,
+      "spy": 735.6
     }
   ],
   "run_log": [
@@ -604,6 +604,14 @@
         "no liquid contract for STX [news]",
         "no liquid contract for JHX [news]",
         "SCREENED OUT TSLA bull [tech] \u2014 spread: spread 4.7% > 4% \u2014 modelled round trip 3.5% of premium vs a best-documented edge of 0.5%/month"
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "time": "2026-07-29T17:09:22.340983+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
     }
   ],
@@ -999,24 +1007,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "ADP",
-        "direction": "bull",
-        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "GEHC",
-        "direction": "bull",
-        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
-      },
-      {
         "underlying": "STX",
         "direction": "bull",
-        "thesis": "News flow +3 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +8 across 3 articles (keyword sentiment)"
       },
       {
-        "underlying": "JHX",
+        "underlying": "V",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "DRAM",
+        "direction": "bull",
+        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "FPX",
+        "direction": "bull",
+        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
