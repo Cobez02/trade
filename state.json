@@ -809,6 +809,14 @@
         "Learner: 14 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T20:23:57.541269+00:00",
+      "notes": [
+        "Learner: 14 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1203,24 +1211,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "FND",
+        "underlying": "BFAM",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "SPSC",
+        "underlying": "CUZ",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "SPXC",
+        "underlying": "ERIE",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "AMH",
+        "underlying": "FHI",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
