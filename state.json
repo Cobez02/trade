@@ -351,8 +351,8 @@
     {
       "date": "2026-07-30",
       "equity": 10757.64,
-      "benchmark_equity": 9969.92,
-      "spy": 735.84
+      "benchmark_equity": 10009.96,
+      "spy": 738.795
     }
   ],
   "run_log": [
@@ -719,6 +719,20 @@
         "NO EDGE QQQ bull [tech] \u2014 implied 25.0% vs forecast 24.2%; buy: bsm 3.5407 vs mid 3.7550 -> -5.71% (quote is against you, wait)",
         "SPY: strike scan: 3 quoted, spreads [9.0%, 2.2%, 1.3%], tightest 1.3%",
         "SCREENED OUT SPY bull [tech] \u2014 skew: ex-ante skew 4.3 > 4.0 \u2014 Boyer-Vorkink top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)"
+      ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T16:29:04.352979+00:00",
+      "notes": [
+        "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for ALNY [news]",
+        "BMY: strike scan: 2 quoted, spreads [11.3%, 20.8%], tightest 11.3%",
+        "SCREENED OUT BMY bull [news] \u2014 spread: spread 11.3% > 4% \u2014 modelled round trip 8.3% of premium vs a best-documented edge of 0.5%/month",
+        "no liquid contract for CCB [news]",
+        "no liquid contract for CMCO [news]",
+        "TSLA: strike scan: 3 quoted, spreads [5.6%, 2.0%, 3.0%], tightest 2.0%",
+        "QQQ: strike scan: 3 quoted, spreads [2.2%, 2.1%, 1.1%], tightest 1.1%"
       ]
     }
   ],
@@ -1114,48 +1128,43 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "MSFT",
+        "underlying": "ALNY",
         "direction": "bull",
-        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "BAX",
+        "underlying": "BMY",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "META",
+        "underlying": "CCB",
         "direction": "bull",
-        "thesis": "News flow +3 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "STX",
+        "underlying": "CMCO",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 13 oversold + MACD turning up"
+        "thesis": "Technical: RSI 14 oversold + MACD turning up"
       },
       {
         "underlying": "QQQ",
         "direction": "bull",
-        "thesis": "Technical: RSI 31 oversold + MACD turning up"
-      },
-      {
-        "underlying": "SPY",
-        "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "81 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "63 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MSFT": "53 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "131 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "95 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MSFT": "95 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
