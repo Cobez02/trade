@@ -374,9 +374,9 @@
     },
     {
       "date": "2026-07-30",
-      "equity": 10756.62,
-      "benchmark_equity": 10029.54,
-      "spy": 740.24
+      "equity": 10832.62,
+      "benchmark_equity": 10054.26,
+      "spy": 742.065
     }
   ],
   "run_log": [
@@ -793,6 +793,14 @@
         "no liquid contract for ARM [news]",
         "TSLA: strike scan: 3 quoted, spreads [2.7%, 4.0%, 1.4%], tightest 1.4%"
       ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T19:28:58.048769+00:00",
+      "notes": [
+        "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "NO NEW ENTRIES \u2014 31 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1187,36 +1195,36 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "LRCX",
+        "underlying": "ARM",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "GD",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "CI",
+        "underlying": "SHOO",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "BMY",
+        "underlying": "IEX",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ARM",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 14 oversold + MACD turning up"
+        "thesis": "Technical: RSI 16 oversold + MACD turning up"
       },
       {
         "underlying": "QQQ",
         "direction": "bull",
-        "thesis": "Technical: RSI 33 oversold + MACD turning up"
+        "thesis": "Technical: RSI 34 oversold + MACD turning up"
       }
     ],
     "flow": [],
