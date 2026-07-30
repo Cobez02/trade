@@ -653,6 +653,22 @@ check("NaN/negative spread quotes excluded", c == "B")
 c, q, _ = BQ(["A"], lambda c: mkq(0.05), max_spread=0.04, resample=2, sleep_fn=None)
 check("un-tightened near miss returned wide (gate will reject)", q["spread_pct"] == 0.05)
 
+# 12) max_cost: affordability joins selection — tighter-but-unaffordable loses
+def mkq2(sp, mid):
+    return {"bid": round(mid*(1-sp/2), 4), "ask": round(mid*(1+sp/2), 4),
+            "mid": mid, "spread_pct": sp}
+quotes = {"A": mkq2(0.015, 9.00), "B": mkq2(0.028, 4.20), "C": mkq2(0.039, 2.10)}
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04, max_cost=600.0)
+check("tightest AFFORDABLE candidate wins (A tighter but $908 > $600)",
+      c == "B", f"chose {c}")
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04, max_cost=250.0)
+check("only C fits $250 -> C chosen despite widest spread", c == "C")
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04, max_cost=50.0)
+check("nothing fits -> falls back to tightest overall (TOO RICH path intact)",
+      c == "A")
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04, max_cost=None)
+check("max_cost None -> behaviour unchanged (tightest overall)", c == "A")
+
 
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")

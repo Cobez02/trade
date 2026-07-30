@@ -335,3 +335,19 @@ produced the single worst fill on the books); and no minimum-trades-per-day
 rule was added (a forced trade is a guaranteed toll with no compensating
 edge; the literature's most robust finding is that turnover for its own sake
 is how retail loses). Days with no passing trades remain a correct output.
+
+## Addendum 2026-07-30 (evening): per-trade cap 350 -> 600, affordability in selection
+
+Owner decision (Connor), after the TOO-RICH postmortem showed TSLA passing
+every quality gate for three days while no contract fit the $350 cap. Removing
+the cap entirely was considered and rejected together: without it the sleeve
+allocation alone would permit ~25% of the bankroll on one contract, and a
+three-stop cluster — which happened this very week — would cost 15–25% of the
+account. $600 is 6% of the bankroll per trade; a stopped trade at the new cap
+loses roughly $180–360, which a bad week survives.
+
+Mechanically, affordability now joins strike SELECTION (`best_quoted`'s
+`max_cost`): the bot prefers the tightest-spread strike a contract of which
+fits the per-trade budget, rather than choosing an unaffordable strike and
+rejecting it downstream. If nothing fits, the TOO RICH note still reports the
+truth. All quality gates are unchanged and still deliver the only verdict.

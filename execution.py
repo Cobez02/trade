@@ -616,7 +616,7 @@ def marketable_limit(bid: Any, ask: Any, side: Any = "buy",
 # ---------------------------------------------------------------------------
 def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
                 resample: int = 2, resample_band: float = 1.75,
-                sleep_fn=None):
+                sleep_fn=None, max_cost: float = None):
     """Pick the tightest-quoted candidate contract; re-sample near misses.
 
     Born from the day-2 zero-trade post-mortem: every signal was judged on
@@ -667,8 +667,22 @@ def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
     if not best:
         return None, None, notes
 
+    def fits(i):
+        """Affordability as part of SELECTION (2026-07-30, Connor's call).
+
+        A tighter strike that one contract of cannot fit in the per-trade
+        budget is not the best candidate — it is a guaranteed TOO-RICH
+        rejection. Prefer the tightest AFFORDABLE candidate; if nothing
+        fits, fall back to tightest overall so the rejection downstream
+        still reports the truth."""
+        if max_cost is None:
+            return True
+        ask = best[i][1].get("ask")
+        return isinstance(ask, (int, float)) and 0 < ask * 100 <= max_cost
+
     def tightest():
-        i = min(best, key=lambda k: best[k][0])
+        pool = [k for k in best if fits(k)] or list(best)
+        i = min(pool, key=lambda k: best[k][0])
         return i, best[i][0], best[i][1]
 
     i0, sp0, q0 = tightest()

@@ -100,7 +100,12 @@ def _envf(name, default):
 # while cutting slots per sleeve keeps total deployment conservative:
 #   new  $350 x 2 x 4 sleeves = $2,800 of $10k (28%)
 #   old  $150 x 3 x 4 sleeves = $1,800 of $10k (18%)
-MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 350.0)  # max $ risked per position
+MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 600.0)  # max $ risked per position
+# 350 -> 600 on 2026-07-30, Connor's call after the TOO-RICH postmortem: 6% of
+# the $10k bankroll per trade. Removing the cap entirely was considered and
+# rejected — the sleeve allocation alone would permit 25% of the bankroll on
+# one contract, and a 3-stop cluster (which happened THIS week) would cost
+# 15-25%% of the account. The cap is the survivability governor.
 MAX_OPEN_PER_SLEEVE   = int(_envf("SPXBOT_MAX_OPEN", 2)) # cap concurrent positions per sleeve
 # Liquidity. Raised from 100: open interest is the cheapest available proxy for
 # the spread we will actually pay, and the thin-OI tail is where Bryzgalova et

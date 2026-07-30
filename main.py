@@ -429,7 +429,11 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
             contract, q, sel_notes = execution.best_quoted(
                 cands, lambda c: broker.option_quote(c.symbol),
                 max_spread=engine.MAX_SPREAD_PCT, resample=2,
-                sleep_fn=lambda: _dt_sleep(18))
+                sleep_fn=lambda: _dt_sleep(18),
+                # Affordability guides selection: prefer the tightest strike a
+                # contract of which FITS the per-trade budget (learned sizing
+                # still applies after the screens and can only shrink it).
+                max_cost=per_trade)
             for sn in sel_notes:
                 notes.append(f"{und}: {sn}")
             if contract is None or not q:

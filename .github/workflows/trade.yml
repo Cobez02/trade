@@ -45,7 +45,7 @@ jobs:
           SPXBOT_STARTED: "2026-07-24"
           SPXBOT_BENCH_START: "738.06"
           SPXBOT_BASELINE: "100000"
-          SPXBOT_MAX_PREM: "350"
+          SPXBOT_MAX_PREM: "600"
           SPXBOT_MAX_OPEN: "2"
           SPXBOT_EOD_FLATTEN_MIN: "15"
           SPXBOT_NO_NEW_ENTRY_MIN: "90"
