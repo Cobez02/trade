@@ -538,9 +538,22 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                     notes.append(f"SIZED OUT {und} {direction} [{sleeve}] — "
                                  f"×{mult} learned, ×{weight} sleeve"
                                  + (f" ({'; '.join(why)})" if why else ""))
+                else:
+                    # Every rejection must say so. This branch was silent for
+                    # three days and TSLA — which passed every quality gate
+                    # with 1.4-2.2% scanned spreads — kept vanishing from the
+                    # notes without a verdict: its contracts simply cost more
+                    # than the per-trade cap. An unexplained absence reads as
+                    # a bug; a stated reason is a design fact Connor can see.
+                    notes.append(f"TOO RICH {und} {direction} [{sleeve}] — one "
+                                 f"contract ${limit_px * 100:,.0f} vs per-trade "
+                                 f"budget ${size_budget:,.0f} (cap ${per_trade:,.0f})")
                 continue
             cost = qty * limit_px * 100
             if cost > cash or cost > budget_left:
+                notes.append(f"BUDGET STOP {und} {direction} [{sleeve}] — "
+                             f"${cost:,.0f} vs cash ${cash:,.0f} / "
+                             f"day budget left ${budget_left:,.0f}")
                 continue
             try:
                 tag = build_tag(sleeve, feat)   # fingerprint -> recoverable from Alpaca
