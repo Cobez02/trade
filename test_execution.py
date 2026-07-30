@@ -574,6 +574,86 @@ check("should_cross returns a real bool, never a truthy sentinel",
       isinstance(E.should_cross(None, None, None, None, None, None), bool))
 
 print()
+# ---------------------------------------------------------------------------
+print("=" * 74)
+print("9. best_quoted — tightest strike wins, near misses resample, gates untouched")
+print("=" * 74)
+BQ = E.best_quoted
+
+def mkq(sp):
+    mid = 2.00
+    return {"bid": round(mid*(1-sp/2), 4), "ask": round(mid*(1+sp/2), 4),
+            "mid": mid, "spread_pct": sp}
+
+# 1) picks the tightest of three
+cands = ["A", "B", "C"]
+quotes = {"A": mkq(0.061), "B": mkq(0.029), "C": mkq(0.048)}
+c, q, notes = BQ(cands, lambda c: quotes[c], max_spread=0.04)
+check("tightest strike selected", c == "B" and abs(q["spread_pct"] - 0.029) < 1e-12)
+check("strike-scan note emitted", any("strike scan" in n for n in notes), str(notes))
+
+# 2) unquoted candidates skipped; single survivor used
+quotes = {"A": None, "B": mkq(0.031), "C": None}
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04)
+check("None quotes skipped, survivor selected", c == "B")
+
+# 3) all None -> (None, None)
+c, q, _ = BQ(cands, lambda c: None, max_spread=0.04)
+check("all-None quotes -> None result", c is None and q is None)
+
+# 4) empty candidates -> (None, None)
+c, q, _ = BQ([], lambda c: mkq(0.01), max_spread=0.04)
+check("empty candidate list -> None result", c is None and q is None)
+
+# 5) quote_fn raising treated as unusable, not fatal
+def boom(c):
+    raise RuntimeError("feed hiccup")
+c, q, _ = BQ(cands, boom, max_spread=0.04)
+check("raising quote_fn -> None result, no raise", c is None and q is None)
+
+# 6) near miss resamples and improves; sleeps counted
+calls = {"n": 0}
+seq = {"A": [mkq(0.047), mkq(0.047), mkq(0.036)]}   # improves on round 2
+def qf(c): return seq[c].pop(0) if seq[c] else mkq(0.036)
+c, q, notes = BQ(["A"], qf, max_spread=0.04, resample=2,
+                 sleep_fn=lambda: calls.__setitem__("n", calls["n"] + 1))
+check("near miss improved by resample", abs(q["spread_pct"] - 0.036) < 1e-12, str(q["spread_pct"]))
+check("resample note emitted", any("resample" in n for n in notes), str(notes))
+check("slept once per resample round used", calls["n"] == 2, f"slept {calls['n']}")
+
+# 7) hopeless miss (outside band) does NOT resample
+calls = {"n": 0}
+c, q, _ = BQ(["A"], lambda c: mkq(0.12), max_spread=0.04, resample=2,
+             sleep_fn=lambda: calls.__setitem__("n", calls["n"] + 1))
+check("wide miss (12% vs 4% cap, band 1.75x) skips resampling", calls["n"] == 0)
+check("wide miss still returned for the gate to reject", q is not None and q["spread_pct"] == 0.12)
+
+# 8) per-candidate minimum is monotone — a later WIDER read never replaces a tighter one
+seq2 = {"A": [mkq(0.05), mkq(0.09), mkq(0.09)]}
+def qf2(c): return seq2[c].pop(0) if seq2[c] else mkq(0.09)
+c, q, _ = BQ(["A"], qf2, max_spread=0.04, resample=2, sleep_fn=None)
+check("later wider read never degrades the kept quote", abs(q["spread_pct"] - 0.05) < 1e-12, str(q["spread_pct"]))
+
+# 9) stops early once a resample passes the cap
+calls = {"n": 0}
+seq3 = {"A": [mkq(0.047), mkq(0.038)]}
+def qf3(c): return seq3[c].pop(0) if seq3[c] else mkq(0.038)
+c, q, _ = BQ(["A"], qf3, max_spread=0.04, resample=5,
+             sleep_fn=lambda: calls.__setitem__("n", calls["n"] + 1))
+check("stops resampling once inside the cap", calls["n"] == 1 and q["spread_pct"] <= 0.04,
+      f"slept {calls['n']}, spread {q['spread_pct']}")
+
+# 10) garbage spread values in quotes are unusable, never selected
+quotes = {"A": {"bid": 1, "ask": 1.1, "mid": 1.05, "spread_pct": float("nan")},
+          "B": mkq(0.033), "C": {"bid": 1, "ask": 1.1, "mid": 1.05, "spread_pct": -0.2}}
+c, q, _ = BQ(cands, lambda c: quotes[c], max_spread=0.04)
+check("NaN/negative spread quotes excluded", c == "B")
+
+# 11) the helper never invents a passing quote: if nothing tightens, verdict stays wide
+c, q, _ = BQ(["A"], lambda c: mkq(0.05), max_spread=0.04, resample=2, sleep_fn=None)
+check("un-tightened near miss returned wide (gate will reject)", q["spread_pct"] == 0.05)
+
+
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")
 if FAIL:

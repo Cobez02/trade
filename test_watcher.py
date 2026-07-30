@@ -133,8 +133,14 @@ def sells(w):
 print("=" * 74)
 print("1. Confirmation window — a single bad print must not sell")
 print("=" * 74)
-w = mkwatcher(positions={"AAA260731C00100000": FakePosition("AAA260731C00100000", 5, 1.00)})
-sym = "AAA260731C00100000"
+# The test contract's expiry is computed, not hardcoded: a fixed date once
+# rolled inside TIME_STOP_DTE when the calendar caught up with it (02:37 UTC
+# on 2026-07-30, a 260731 expiry became 1 DTE), and the time-stop then fired
+# on every quote — masking the recovery-reset behaviour under test.
+import datetime as _dt
+_exp = (_dt.date.today() + _dt.timedelta(days=30)).strftime("%y%m%d")
+sym = f"AAA{_exp}C00100000"
+w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
 w.entries[sym], w.qtys[sym] = 1.00, 5
 w.put_quote(sym, 0.60, 0.64, None, "ws")      # -40%, well past the -30% stop
 w.evaluate(sym)

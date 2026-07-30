@@ -306,3 +306,32 @@ loop's shrinkage does the regularizing.
    trades — the honest number for "statistically demonstrated").
 3. **The 10x goal itself** — see ASSESSMENT.md before committing real money.
    That document is the required reading; this one is only the machinery.
+
+## Addendum 2026-07-29: the drought fix — measure better, never pay more
+
+Two consecutive zero-trade days produced a post-mortem with a surprise in it:
+the candidate universe was already liquid (the tech sleeve scans SPY, QQQ and
+the megacaps) and strikes already target near-the-money. What was actually
+failing was the *measurement*. Each signal was judged on exactly one strike's
+quote at one instant, on the free indicative feed — which is not the NBBO and
+whose quoted spreads flutter (one contract read 11% → 33% → 10% → 21% across
+consecutive hourly runs on day 1). A single wide read is often staleness, not
+the market's true price.
+
+The change, live from 2026-07-30: each signal is judged on the 2–3 nearest
+liquid strikes (`find_contracts`), each strike keeps the tightest of its
+sampled quotes, and a near miss (within 1.75x the spread cap) is re-sampled
+twice ~18s apart before rejection (`execution.best_quoted`). Every candidate
+still clears the identical OI floor, spread cap, premium band, skew and
+lottery screens — the gates did not move. TSLA missed day 2 by 0.7 points on
+one strike's one reading; under this rule it would have been examined on
+three strikes and up to nine readings.
+
+What was deliberately NOT done, in order of how tempting it was: the 4%
+spread cap was not raised (the modelled round trip at the observed 10–20%
+spreads is 7–15% of premium per trade — no documented signal earns that
+back); the OI floor was not lowered (the deleted fallback that ignored it
+produced the single worst fill on the books); and no minimum-trades-per-day
+rule was added (a forced trade is a guaranteed toll with no compensating
+edge; the literature's most robust finding is that turnover for its own sake
+is how retail loses). Days with no passing trades remain a correct output.

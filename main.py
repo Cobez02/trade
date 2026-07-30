@@ -29,6 +29,11 @@ import vol as volmod
 
 OCC_RE = re.compile(r'^([A-Z]+)(\d{6})([CP])(\d{8})$')
 
+def _dt_sleep(seconds: float):
+    """Indirection for best_quoted's resample pause (patchable in tests)."""
+    import time as _t
+    _t.sleep(seconds)
+
 # --- end-of-day flat rule ----------------------------------------------------
 # Connor's requirement: carry NOTHING overnight. Two cooperating limits:
 #   NO_NEW_ENTRY_MIN — stop opening once the remaining session is too short for a
@@ -410,22 +415,29 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
             spot = broker.stock_price(und)
             if not spot:
                 continue
-            contract = broker.find_contract(und, direction, spot)
-            if not contract:
+            cands = broker.find_contracts(und, direction, spot, n=3)
+            if not cands:
                 notes.append(f"no liquid contract for {und} [{sleeve}]")
                 continue
-            q = broker.option_quote(contract.symbol)
-            if not q:
-                # No two-sided quote during market hours, on a contract that
-                # passed the open-interest floor, means the market is not
-                # showing us a price right now. An earlier version synthesised
-                # a bid/ask around option_mid at the spread ceiling — but every
-                # downstream decision (the spread gate, the timing edge, the
-                # marketable limit) then computed on an INVENTED spread, and
-                # cent-rounding made the gate verdict flip with the mid's
-                # digits. Same principle as find_contract's missing fallback:
-                # "no usable quote" is a correct and useful answer. Skip.
-                notes.append(f"{contract.symbol}: no two-sided quote — skipped")
+            # Judge each signal on the 2-3 nearest liquid strikes and each
+            # strike's tightest reading, not one strike at one instant — the
+            # indicative feed's spreads flutter (day-1: 11%->33%->10% on one
+            # contract across consecutive hours), so a single wide read is
+            # often staleness, not truth. Near misses get re-sampled twice,
+            # ~18s apart. The gates below still deliver the actual verdict;
+            # nothing here can loosen them. (Day-2 post-mortem change.)
+            contract, q, sel_notes = execution.best_quoted(
+                cands, lambda c: broker.option_quote(c.symbol),
+                max_spread=engine.MAX_SPREAD_PCT, resample=2,
+                sleep_fn=lambda: _dt_sleep(18))
+            for sn in sel_notes:
+                notes.append(f"{und}: {sn}")
+            if contract is None or not q:
+                # No two-sided quote on ANY candidate during market hours.
+                # An earlier version synthesised a bid/ask here; every
+                # downstream decision then computed on an invented spread.
+                # "No usable quote" is a correct and useful answer. Skip.
+                notes.append(f"{und}: no two-sided quote on any candidate — skipped")
                 continue
             ask, bid = q["ask"], q["bid"]
             if not ask or ask <= 0:

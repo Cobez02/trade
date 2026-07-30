@@ -609,3 +609,88 @@ def marketable_limit(bid: Any, ask: Any, side: Any = "buy",
     elif sd == "sell" and px > b + 1e-9:
         px = round(math.floor(b / t + 1e-9) * t, 4)
     return max(px, 0.01)
+
+
+# ---------------------------------------------------------------------------
+# Candidate selection on a fluttering feed
+# ---------------------------------------------------------------------------
+def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
+                resample: int = 2, resample_band: float = 1.75,
+                sleep_fn=None):
+    """Pick the tightest-quoted candidate contract; re-sample near misses.
+
+    Born from the day-2 zero-trade post-mortem: every signal was judged on
+    ONE strike's quote at ONE instant, on Alpaca's indicative (non-NBBO)
+    feed, whose quoted spreads flutter — the same contract read 11%, 33%,
+    10%, 21% across consecutive hours on day 1. Two consequences: adjacent
+    strikes of the same liquid underlying quote very differently at any
+    moment, and a single wide read may be staleness rather than truth.
+
+    This helper fixes the MEASUREMENT, never the STANDARD:
+      * quote every candidate once, keep each candidate's tightest reading;
+      * if the best is a near miss (within `resample_band` x max_spread),
+        re-read up to `resample` more rounds, keeping per-candidate minima;
+      * return the tightest (candidate, quote, notes) seen overall.
+
+    The caller's spread gate still delivers the verdict on what we return —
+    a candidate that never tightens inside the cap is still rejected there.
+    Total function: a raising/None-returning quote_fn marks that candidate
+    unusable in that round rather than raising out.
+
+    quote_fn(candidate) -> {"bid","ask","mid","spread_pct"} | None.
+    sleep_fn() is called between resample rounds (None -> no sleep; tests
+    inject a counter).
+    Returns (candidate|None, quote|None, notes: list[str]).
+    """
+    notes = []
+    if not candidates:
+        return None, None, notes
+
+    def read(c):
+        try:
+            q = quote_fn(c)
+        except Exception:
+            return None
+        if not q:
+            return None
+        sp = q.get("spread_pct")
+        if not isinstance(sp, (int, float)) or not math.isfinite(sp) or sp < 0:
+            return None
+        return q
+
+    best = {}                                   # idx -> (spread, quote)
+    for i, c in enumerate(candidates):
+        q = read(c)
+        if q is not None:
+            best[i] = (q["spread_pct"], q)
+
+    if not best:
+        return None, None, notes
+
+    def tightest():
+        i = min(best, key=lambda k: best[k][0])
+        return i, best[i][0], best[i][1]
+
+    i0, sp0, q0 = tightest()
+    if len(best) > 1:
+        spreads = ", ".join(f"{best[k][0]*100:.1f}%" for k in sorted(best))
+        notes.append(f"strike scan: {len(best)} quoted, spreads [{spreads}], "
+                     f"tightest {sp0*100:.1f}%")
+
+    rounds = 0
+    while sp0 > max_spread and sp0 <= max_spread * resample_band and rounds < resample:
+        rounds += 1
+        if sleep_fn is not None:
+            sleep_fn()
+        for i in list(best):
+            q = read(candidates[i])
+            if q is not None and q["spread_pct"] < best[i][0]:
+                best[i] = (q["spread_pct"], q)
+        i1, sp1, q1 = tightest()
+        if sp1 < sp0:
+            notes.append(f"resample {rounds}: spread {sp0*100:.1f}% -> {sp1*100:.1f}%")
+        i0, sp0, q0 = i1, sp1, q1
+        if sp0 <= max_spread:
+            break
+
+    return candidates[i0], q0, notes

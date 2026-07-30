@@ -192,8 +192,19 @@ class Broker:
             return None
 
     # ---- option chain ------------------------------------------------------
-    def find_contract(self, underlying: str, direction: str, spot: float):
-        """Pick a liquid, conservative contract in the target DTE/moneyness window."""
+    def find_contracts(self, underlying: str, direction: str, spot: float,
+                       n: int = 3):
+        """Up to `n` liquid contracts in the target DTE/moneyness window,
+        ranked by strike distance to target (ties toward the lower strike).
+
+        Returning several candidates instead of one exists because of the
+        day-2 drought post-mortem: each signal was judged on exactly ONE
+        strike's quote at ONE moment, on an indicative (non-NBBO) feed whose
+        spreads flutter. Adjacent strikes on the same liquid name routinely
+        quote very differently at any instant; letting the entry path compare
+        2-3 and take the tightest is a measurement fix, not a discipline
+        change — every candidate still clears the same OI floor and the same
+        spread/premium/skew/lottery gates."""
         ctype = ContractType.CALL if direction == "bull" else ContractType.PUT
         today = dt.date.today()
         exp_lo = (today + dt.timedelta(days=TARGET_DTE_MIN)).isoformat()
@@ -219,8 +230,8 @@ class Broker:
             contracts = getattr(resp, "option_contracts", None) or []
         except Exception:
             return None
-        # liquidity filter + nearest to target strike
-        best, best_dist = None, 1e18
+        # liquidity filter + rank by distance to target strike
+        passing = []
         for c in contracts:
             try:
                 oi = int(c.open_interest) if c.open_interest is not None else 0
@@ -229,9 +240,7 @@ class Broker:
             if oi < MIN_OPEN_INTEREST:
                 continue
             strike = float(c.strike_price)
-            dist = abs(strike - target_strike)
-            if dist < best_dist:
-                best, best_dist = c, dist
+            passing.append((abs(strike - target_strike), strike, c))
         # NO FALLBACK. This function used to re-scan ignoring MIN_OPEN_INTEREST
         # whenever the liquidity filter emptied the list, which inverted its own
         # purpose: the filter fired precisely when the chain was illiquid, and
@@ -244,7 +253,13 @@ class Broker:
         # "No liquid contract exists right now" is a correct and useful answer.
         # Returning None here costs one skipped signal; the fallback cost real
         # money on every signal it rescued.
-        return best
+        passing.sort(key=lambda t: (t[0], t[1]))
+        return [c for _, _, c in passing[:n]]
+
+    def find_contract(self, underlying: str, direction: str, spot: float):
+        """Single nearest liquid contract (back-compat wrapper)."""
+        cands = self.find_contracts(underlying, direction, spot, n=1)
+        return cands[0] if cands else None
 
     def option_mid(self, occ_symbol: str) -> Optional[float]:
         """Quote MIDPOINT, or the single live side if only one is quoted.
