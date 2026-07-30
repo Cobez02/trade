@@ -2,7 +2,38 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "QQQ260804C00692000": {
+      "sleeve": "tech",
+      "underlying": "QQQ",
+      "direction": "bull",
+      "type": "call",
+      "strike": 692.0,
+      "expiration": "2026-08-04",
+      "qty": 1,
+      "entry_price": 3.35,
+      "entry_cost": 335.0,
+      "entry_date": "2026-07-30",
+      "thesis": "Technical: RSI 33 oversold + MACD turning up",
+      "spot_at_entry": 682.34,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "signal_score": 6.977,
+        "rsi": 33.0,
+        "macd_hist": -3.882,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 5,
+        "moneyness_pct": 0.0142,
+        "spread_pct": 0.009,
+        "type": "call",
+        "ref_vol": 0.2416,
+        "iv_at_entry": 0.2218,
+        "vol_edge_pts": 1.98
+      }
+    }
+  },
   "closed": [
     {
       "symbol": "QQQ260803C00693000",
@@ -351,8 +382,8 @@
     {
       "date": "2026-07-30",
       "equity": 10757.64,
-      "benchmark_equity": 10023.85,
-      "spy": 739.82
+      "benchmark_equity": 10025.07,
+      "spy": 739.91
     }
   ],
   "run_log": [
@@ -741,6 +772,20 @@
       "notes": [
         "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T17:28:56.067720+00:00",
+      "notes": [
+        "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for AVTR [news]",
+        "SCREENED OUT ADP bull [news] \u2014 spread: spread 43.1% > 4% \u2014 modelled round trip 29.2% of premium vs a best-documented edge of 0.5%/month",
+        "no liquid contract for ZWS [news]",
+        "no liquid contract for WM [news]",
+        "TSLA: strike scan: 3 quoted, spreads [2.3%, 2.9%, 1.5%], tightest 1.5%",
+        "QQQ: strike scan: 3 quoted, spreads [1.0%, 2.2%, 0.9%], tightest 0.9%",
+        "OPENED 1x QQQ260804C00692000 [tech] @ $3.35 ($335, sleeve \u00d71.0, learned \u00d71.0, vol edge +2.0pts, round trip 0.7%) \u2014 Technical: RSI 33 oversold + MACD turning up"
       ]
     }
   ],
@@ -1136,22 +1181,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "APD",
+        "underlying": "AVTR",
         "direction": "bull",
-        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 3 articles (keyword sentiment)"
       },
       {
-        "underlying": "RACE",
+        "underlying": "ADP",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "APAM",
+        "underlying": "ZWS",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "IEX",
+        "underlying": "WM",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1160,7 +1205,7 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 13 oversold + MACD turning up"
+        "thesis": "Technical: RSI 14 oversold + MACD turning up"
       },
       {
         "underlying": "QQQ",
