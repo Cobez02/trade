@@ -351,8 +351,8 @@
     {
       "date": "2026-07-30",
       "equity": 10757.64,
-      "benchmark_equity": 10009.96,
-      "spy": 738.795
+      "benchmark_equity": 10023.85,
+      "spy": 739.82
     }
   ],
   "run_log": [
@@ -733,6 +733,14 @@
         "no liquid contract for CMCO [news]",
         "TSLA: strike scan: 3 quoted, spreads [5.6%, 2.0%, 3.0%], tightest 2.0%",
         "QQQ: strike scan: 3 quoted, spreads [2.2%, 2.1%, 1.1%], tightest 1.1%"
+      ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T17:11:15.626956+00:00",
+      "notes": [
+        "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
     }
   ],
@@ -1128,31 +1136,31 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "ALNY",
+        "underlying": "APD",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +5 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "BMY",
+        "underlying": "RACE",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "CCB",
+        "underlying": "APAM",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "CMCO",
+        "underlying": "IEX",
         "direction": "bull",
-        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 14 oversold + MACD turning up"
+        "thesis": "Technical: RSI 13 oversold + MACD turning up"
       },
       {
         "underlying": "QQQ",
