@@ -2,7 +2,38 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "QQQ260803C00693000": {
+      "sleeve": "tech",
+      "underlying": "QQQ",
+      "direction": "bull",
+      "type": "call",
+      "strike": 693.0,
+      "expiration": "2026-08-03",
+      "qty": 1,
+      "entry_price": 2.37,
+      "entry_cost": 237.0,
+      "entry_date": "2026-07-30",
+      "thesis": "Technical: RSI 33 oversold + MACD turning up",
+      "spot_at_entry": 682.29,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "signal_score": 7.003,
+        "rsi": 33.0,
+        "macd_hist": -3.885,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 4,
+        "moneyness_pct": 0.0157,
+        "spread_pct": 0.013,
+        "type": "call",
+        "ref_vol": 0.2416,
+        "iv_at_entry": 0.22,
+        "vol_edge_pts": 2.16
+      }
+    }
+  },
   "closed": [
     {
       "symbol": "SLB260731C00053000",
@@ -323,6 +354,12 @@
       "equity": 10837.68,
       "benchmark_equity": 9884.97,
       "spy": 729.57
+    },
+    {
+      "date": "2026-07-30",
+      "equity": 10833.66,
+      "benchmark_equity": 10000.0,
+      "spy": 738.06
     }
   ],
   "run_log": [
@@ -659,11 +696,26 @@
         "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-07-30",
+      "time": "2026-07-30T14:44:07.027783+00:00",
+      "notes": [
+        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "SCREENED OUT CMG bull [news] \u2014 spread: spread 20.0% > 4% \u2014 modelled round trip 14.6% of premium vs a best-documented edge of 0.5%/month; premium: $0.30 contract < $0.50 \u2014 $0.60/contract PFOF alone is 4.0% round trip",
+        "no liquid contract for SHOO [news]",
+        "CROWD VETO MU bull [news] \u2014 63 WSB comments (Bullish) \u2014 attention-inflated premium",
+        "SKHY: strike scan: 3 quoted, spreads [12.0%, 17.9%, 11.7%], tightest 11.7%",
+        "SCREENED OUT SKHY bull [news] \u2014 spread: spread 11.7% > 4% \u2014 modelled round trip 8.6% of premium vs a best-documented edge of 0.5%/month",
+        "TSLA: strike scan: 3 quoted, spreads [4.2%, 3.0%, 1.5%], tightest 1.5%",
+        "QQQ: strike scan: 3 quoted, spreads [1.3%, 1.5%, 1.6%], tightest 1.3%",
+        "OPENED 1x QQQ260803C00693000 [tech] @ $2.37 ($237, sleeve \u00d71.0, learned \u00d71.0, vol edge +2.2pts, round trip 1.0%) \u2014 Technical: RSI 33 oversold + MACD turning up"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-07-29",
+    "updated": "2026-07-30",
     "n_trades": 12,
     "n_eff": 9.95,
     "n_days": 2,
@@ -1053,32 +1105,43 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "FPI",
+        "underlying": "CMG",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SHOO",
+        "direction": "bull",
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "MU",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "HLI",
-        "direction": "bear",
-        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "SCI",
+        "underlying": "SKHY",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "MGM",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       }
     ],
-    "tech": [],
+    "tech": [
+      {
+        "underlying": "TSLA",
+        "direction": "bull",
+        "thesis": "Technical: RSI 14 oversold + MACD turning up"
+      },
+      {
+        "underlying": "QQQ",
+        "direction": "bull",
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
+      }
+    ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "114 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "65 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "SK": "55 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "81 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "63 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MSFT": "53 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
