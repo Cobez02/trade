@@ -90,6 +90,13 @@ class FakeTrading:
         self.cancelled.append(oid)
 
     def submit_order(self, req):
+        if getattr(req, "legs", None):
+            self.calls.append(("submit-mleg", getattr(req, "limit_price", None)))
+            o = FakeOrder("mleg", "close", getattr(req, "qty", 1))
+            o.limit_price = getattr(req, "limit_price", None)
+            o.legs = req.legs
+            self.orders.append(o)
+            return o
         has_stop = getattr(req, "stop_price", None) is not None
         has_lim = getattr(req, "limit_price", None) is not None
         kind = ("stoplimit" if has_stop and has_lim
@@ -122,6 +129,8 @@ def mkwatcher(**kw):
     w.lock, w.qlock = threading.Lock(), threading.Lock()
     w.exits_done, w.stream, w.stream_alive = [], None, False
     w.subscribed, w.tick_count = set(), 0
+    w.spread_pkgs, w.spread_members = {}, set()
+    w.spread_credit, w.spread_inflight, w._spread_sig = {}, set(), {}
     return w
 
 
@@ -598,6 +607,82 @@ check("SKIP (position gone/transient error): inflight released",
       sym not in w.inflight)
 
 print()
+
+
+print()
+print("=" * 74)
+print("15. Spread packages — exemptions hold, exits are package-level")
+print("=" * 74)
+import datetime as _dt2
+_sexp = (_dt2.date.today() + _dt2.timedelta(days=8)).strftime("%y%m%d")
+SS, LL = f"SPY{_sexp}P00690000", f"SPY{_sexp}P00687000"
+w = mkwatcher(positions={
+    SS: FakePosition(SS, -1, 0.90), LL: FakePosition(LL, 1, 0.30),
+    sym: FakePosition(sym, 5, 1.00)})
+syms = w.refresh_positions()
+check("refresh splits the book: spread members are NOT singles",
+      SS not in syms and LL not in syms and sym in syms, str(syms))
+check("package tracked with both strikes",
+      len(w.spread_pkgs) == 1 and list(w.spread_pkgs.values())[0]["width"] == 3.0)
+
+w.ensure_broker_stop(LL)
+w.ensure_broker_stop(SS)
+check("ensure_broker_stop refuses BOTH spread legs (no stop orders placed)",
+      not any(c[0].startswith("submit-stop") for c in w.trading.calls),
+      str(w.trading.calls))
+
+# flatten path: evaluate() runs only over singles (refresh already excluded
+# members) — prove a flatten pass leaves the legs untouched while the single
+# still exits.
+w.entries[sym], w.qtys[sym] = 1.00, 5
+w.put_quote(sym, 0.90, 0.94, None, "ws")
+w.evaluate(sym, flatten=True)
+time.sleep(0.4)
+mkt = [c for c in w.trading.calls if c[0] == "submit-market"]
+check("flatten exits the SINGLE at market", len(mkt) == 1)
+check("flatten never touches spread legs",
+      all("mleg" not in c[0] for c in w.trading.calls))
+
+# package exit: stop rule with persistence
+w2 = mkwatcher(positions={SS: FakePosition(SS, -1, 0.90), LL: FakePosition(LL, 1, 0.30)})
+w2.refresh_positions()
+k = f"{SS}|{LL}"
+w2.spread_credit[k] = 0.60
+w2.put_quote(SS, 1.50, 1.60, None, "ws")   # short leg blew out
+w2.put_quote(LL, 0.20, 0.26, None, "ws")   # net mid = 1.55 - 0.23 = 1.32 >= 2x0.60
+w2.evaluate_spreads()
+check("first breach evaluation does NOT close (needs 3s persistence)",
+      not any(c[0] == "submit-mleg" for c in w2.trading.calls))
+time.sleep(3.1)
+w2.evaluate_spreads()
+mlegs = [c for c in w2.trading.calls if c[0] == "submit-mleg"]
+check("persistent breach closes the PACKAGE via one mleg order", len(mlegs) == 1)
+check("close is a POSITIVE-limit (debit) buyback",
+      mlegs and mlegs[0][1] is not None and mlegs[0][1] > 0, str(mlegs))
+w2.evaluate_spreads()
+check("inflight guard: no second close order",
+      len([c for c in w2.trading.calls if c[0] == "submit-mleg"]) == 1)
+
+# take-profit path with persistence; and time-exit immediacy
+w3 = mkwatcher(positions={SS: FakePosition(SS, -1, 0.90), LL: FakePosition(LL, 1, 0.30)})
+w3.refresh_positions(); w3.spread_credit[k] = 0.60
+w3.put_quote(SS, 0.30, 0.34, None, "ws")   # net mid = 0.32-0.235 = 0.085 <= 50% of credit
+w3.put_quote(LL, 0.22, 0.25, None, "ws")
+w3.evaluate_spreads()
+check("take-profit also waits out the persistence window",
+      not any(c[0] == "submit-mleg" for c in w3.trading.calls))
+time.sleep(3.1)
+w3.evaluate_spreads()
+check("persistent take-profit closes the package",
+      any(c[0] == "submit-mleg" for c in w3.trading.calls))
+
+# orphan short leg: excluded from singles, never market-sold by flatten
+w4 = mkwatcher(positions={SS: FakePosition(SS, -1, 0.90)})
+syms4 = w4.refresh_positions()
+check("orphan short leg is not a single and not a package",
+      syms4 == [] and len(w4.spread_pkgs) == 0)
+
+
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")
 if FAIL:

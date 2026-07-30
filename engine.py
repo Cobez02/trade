@@ -28,10 +28,11 @@ from typing import Optional
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import (
     MarketOrderRequest, LimitOrderRequest, StopOrderRequest,
-    GetOptionContractsRequest, GetOrdersRequest,
+    GetOptionContractsRequest, GetOrdersRequest, OptionLegRequest,
 )
 from alpaca.trading.enums import (
     OrderSide, TimeInForce, ContractType, AssetStatus, QueryOrderStatus, OrderStatus,
+    OrderClass, PositionIntent,
 )
 import time, re as _re
 from alpaca.data.historical.stock import StockHistoricalDataClient
@@ -388,6 +389,118 @@ class Broker:
             out.append(o)
         return out
 
+    # -- defined-risk spreads (sleeve "spreads") ------------------------------
+    def spread_quote(self, short_sym: str, long_sym: str):
+        """Net quote for a put credit spread (short leg sold, long leg bought).
+
+        Convention: values are the package's NET CREDIT, positive numbers.
+          bid = credit received CROSSING both legs (short.bid - long.ask)
+          ask = cost to buy the package back crossing (short.ask - long.bid)
+          mid = short.mid - long.mid
+        The package "cost gate" compares (ask - bid) to the credit: that
+        difference is the round trip the market charges for the pair.
+        Returns {"bid","ask","mid","spread_pct"} or None if either leg lacks
+        a two-sided quote (same principle as singles: no invented numbers).
+        """
+        try:
+            q = self.opt_data.get_option_latest_quote(OptionLatestQuoteRequest(
+                symbol_or_symbols=[short_sym, long_sym],
+                feed=OptionsFeed.INDICATIVE))
+            s, l = q.get(short_sym), q.get(long_sym)
+            if s is None or l is None:
+                return None
+            sb, sa = float(s.bid_price or 0), float(s.ask_price or 0)
+            lb, la = float(l.bid_price or 0), float(l.ask_price or 0)
+            if min(sb, sa, lb, la) <= 0 or sa < sb or la < lb:
+                return None
+            bid = sb - la
+            ask = sa - lb
+            mid = (sb + sa) / 2.0 - (lb + la) / 2.0
+            if mid <= 0 or ask <= 0:
+                return None            # a "credit" spread quoting at a debit is unusable
+            return {"bid": round(bid, 4), "ask": round(ask, 4),
+                    "mid": round(mid, 4),
+                    "spread_pct": round((ask - bid) / mid, 4) if mid else None}
+        except Exception:
+            return None
+
+    def find_put_spread(self, underlying: str, spot: float, sigma_ann: float):
+        """Select a put credit spread: short strike ~one expected move down,
+        long strike one preferred width below it, both legs OI-passing.
+
+        Returns {"short": contract, "long": contract, "width", "dte",
+                 "expiry_ymd"} or None. No fallback past the OI floor — the
+        same no-adverse-selection rule as singles."""
+        try:
+            if not spot or spot <= 0 or not sigma_ann or sigma_ann <= 0:
+                return None
+            today = dt.date.today()
+            exp_lo = (today + dt.timedelta(days=SPREADS_DTE_MIN)).isoformat()
+            exp_hi = (today + dt.timedelta(days=SPREADS_DTE_MAX)).isoformat()
+            t_mid = ((SPREADS_DTE_MIN + SPREADS_DTE_MAX) / 2.0) / 365.0
+            k_target = spot * (1.0 - 1.1 * sigma_ann * math.sqrt(t_mid))
+            req = GetOptionContractsRequest(
+                underlying_symbols=[underlying], status=AssetStatus.ACTIVE,
+                expiration_date_gte=exp_lo, expiration_date_lte=exp_hi,
+                type=ContractType.PUT,
+                strike_price_gte=str(round(spot * 0.80, 2)),
+                strike_price_lte=str(round(spot * 1.00, 2)),
+                limit=300)
+            resp = self.trading.get_option_contracts(req)
+            contracts = getattr(resp, "option_contracts", None) or []
+        except Exception:
+            return None
+        by_exp = {}
+        for c in contracts:
+            try:
+                oi = int(c.open_interest) if c.open_interest is not None else 0
+                if oi < MIN_OPEN_INTEREST:
+                    continue
+                parts = _occ_parts(c.symbol)
+                if parts is None:
+                    continue
+                by_exp.setdefault(parts["ymd"], []).append((parts["strike"], c))
+            except Exception:
+                continue
+        widths = (2.0, 3.0) if underlying == "SPY" else (3.0, 4.0, 5.0)
+        best = None
+        for ymd, lst in by_exp.items():
+            dte = spread_dte(ymd)
+            if dte is None or not (SPREADS_DTE_MIN <= dte <= SPREADS_DTE_MAX):
+                continue
+            lst.sort()
+            strikes = [s for s, _ in lst]
+            # short: OI-passing strike nearest the expected-move target
+            si = min(range(len(lst)), key=lambda i: abs(strikes[i] - k_target))
+            s_strike, s_c = lst[si]
+            for w in widths:
+                lt = s_strike - w
+                li = min(range(len(lst)), key=lambda i: abs(strikes[i] - lt))
+                l_strike, l_c = lst[li]
+                if l_strike >= s_strike:
+                    continue
+                width = round(s_strike - l_strike, 2)
+                if (width - 0.0) * 100 > SPREADS_MAX_LOSS + 50:
+                    continue          # even before credit, hopeless vs the loss cap
+                cand = {"short": s_c, "long": l_c, "width": width,
+                        "dte": dte, "expiry_ymd": ymd}
+                # prefer the nearest-to-target expiry ~7 DTE, then first width
+                score = abs(dte - 7)
+                if best is None or score < best[0]:
+                    best = (score, cand)
+                break
+        return best[1] if best else None
+
+    def submit_spread(self, short_sym, long_sym, qty, net_credit,
+                      client_order_id: str = None):
+        return submit_spread_order(self.trading, short_sym, long_sym, qty,
+                                   net_credit, client_order_id)
+
+    def close_spread(self, short_sym, long_sym, qty, net_debit_limit,
+                     client_order_id: str = None):
+        return close_spread_order(self.trading, short_sym, long_sym, qty,
+                                  net_debit_limit, client_order_id)
+
     def closed_orders(self, limit: int = 500):
         """All filled/closed orders (both sides), newest first."""
         try:
@@ -463,3 +576,138 @@ def trend_up(series: pd.Series) -> bool:
     sma20 = series.rolling(20).mean().iloc[-1]
     sma50 = series.rolling(50).mean().iloc[-1]
     return bool(series.iloc[-1] > sma20 > sma50)
+
+
+# ============================================================================
+# DEFINED-RISK SPREADS (sleeve "spreads" — see SPREADS_DESIGN.md)
+# ============================================================================
+# Put credit spreads on SPY/QQQ only: sell a put ~one expected move down,
+# buy a put 2-5 dollars further down. Max loss is fixed at entry
+# (width - credit): that bound, not any resting order, is the disaster floor.
+# Connor granted these (and only these) the overnight/weekend exemption from
+# the flat-by-close rule on 2026-07-30.
+
+SPREADS_ALLOCATION  = _envf("SPXBOT_SPREADS_ALLOC", 1000.0)  # dedicated, NOT from SLEEVE_ALLOCATION
+SPREADS_MAX_OPEN    = int(_envf("SPXBOT_SPREADS_MAX_OPEN", 2))
+SPREADS_MAX_LOSS    = _envf("SPXBOT_SPREADS_MAX_LOSS", 400.0)   # per spread, width - credit
+SPREADS_MIN_CREDIT_FRAC = _envf("SPXBOT_SPREADS_MIN_CRED", 0.20)  # credit >= 20% of width
+SPREADS_NET_COST_FRAC   = _envf("SPXBOT_SPREADS_NET_COST", 0.08)  # package RT cost <= 8% of credit
+SPREADS_RICH_PTS    = _envf("SPXBOT_SPREADS_RICH", 0.02)     # implied - forecast >= 2 vol pts
+SPREADS_DTE_MIN     = int(_envf("SPXBOT_SPREADS_DTE_MIN", 5))
+SPREADS_DTE_MAX     = int(_envf("SPXBOT_SPREADS_DTE_MAX", 10))
+SPREADS_TAKE_FRAC   = _envf("SPXBOT_SPREADS_TP", 0.50)       # buy back at 50% of credit
+SPREADS_STOP_MULT   = _envf("SPXBOT_SPREADS_STOP", 2.00)     # buy back at 2x credit
+SPREADS_TIME_DTE    = int(_envf("SPXBOT_SPREADS_TIME_DTE", 2))
+SPREADS_UNDERLYINGS = ("SPY", "QQQ")
+
+_OCC_SPREAD_RE = _re.compile(r'^([A-Z]+)(\d{6})([CP])(\d{8})$')
+
+def _occ_parts(sym: str):
+    m = _OCC_SPREAD_RE.match(sym or "")
+    if not m:
+        return None
+    root, ymd, cp, strike = m.groups()
+    return {"underlying": root, "ymd": ymd, "cp": cp, "strike": int(strike) / 1000.0}
+
+def detect_spreads(positions):
+    """Group raw Alpaca option positions into put-credit-spread packages.
+
+    Stateless by design, like everything else: a package is derivable from
+    the book alone — a SHORT put (qty < 0) paired with the nearest LOWER-
+    strike LONG put of the same underlying and expiry, quantity-matched.
+    Anything that does not pair stays a single and is managed (and
+    flattened) by the ordinary rules — an orphan short leg would mean
+    assignment or a broken entry, and treating it as a normal position is
+    the safe default because the ordinary rules will close it.
+
+    Returns (packages, member_syms):
+      packages: [{short, long, qty, underlying, expiry_ymd,
+                  short_strike, long_strike, width}]
+      member_syms: set of every symbol consumed by a package.
+    Total function: unreadable positions are skipped, never raised on.
+    """
+    shorts, longs = [], []
+    for p in positions or []:
+        try:
+            sym = getattr(p, "symbol", None) or ""
+            parts = _occ_parts(sym)
+            if parts is None or parts["cp"] != "P":
+                continue
+            q = int(float(getattr(p, "qty", 0) or 0))
+            if q < 0:
+                shorts.append((sym, parts, -q))
+            elif q > 0:
+                longs.append((sym, parts, q))
+        except Exception:
+            continue
+    packages, used = [], set()
+    for s_sym, s, s_qty in sorted(shorts, key=lambda t: t[0]):
+        best = None
+        for l_sym, l, l_qty in longs:
+            if l_sym in used or l_sym == s_sym:
+                continue
+            if (l["underlying"] != s["underlying"] or l["ymd"] != s["ymd"]
+                    or l["strike"] >= s["strike"] or l_qty < s_qty):
+                continue
+            if best is None or l["strike"] > best[1]["strike"]:
+                best = (l_sym, l, l_qty)
+        if best is None:
+            continue
+        l_sym, l, _ = best
+        used.add(l_sym)
+        packages.append({
+            "short": s_sym, "long": l_sym, "qty": s_qty,
+            "underlying": s["underlying"], "expiry_ymd": s["ymd"],
+            "short_strike": s["strike"], "long_strike": l["strike"],
+            "width": round(s["strike"] - l["strike"], 2),
+        })
+    member_syms = {p["short"] for p in packages} | {p["long"] for p in packages}
+    return packages, member_syms
+
+
+def spread_dte(expiry_ymd: str):
+    """Days to expiry from an OCC yymmdd, or None if unreadable."""
+    try:
+        e = dt.date(2000 + int(expiry_ymd[:2]), int(expiry_ymd[2:4]),
+                    int(expiry_ymd[4:6]))
+        return (e - dt.date.today()).days
+    except Exception:
+        return None
+
+
+def submit_spread_order(trading, short_sym: str, long_sym: str, qty: int,
+                        net_credit: float, client_order_id: str = None):
+    """Open a put credit spread at a NET CREDIT limit (module-level so the
+    watcher can use it with its own TradingClient).
+
+    Alpaca's mleg convention (verified in the SDK reference): limit_price
+    NEGATIVE signifies a credit received. `net_credit` here is the positive
+    credit we require; the sign flip happens exactly once, HERE, so no caller
+    ever reasons about signed prices."""
+    legs = [
+        OptionLegRequest(symbol=short_sym, ratio_qty=1, side=OrderSide.SELL,
+                         position_intent=PositionIntent.SELL_TO_OPEN),
+        OptionLegRequest(symbol=long_sym, ratio_qty=1, side=OrderSide.BUY,
+                         position_intent=PositionIntent.BUY_TO_OPEN),
+    ]
+    req = LimitOrderRequest(
+        qty=qty, order_class=OrderClass.MLEG, time_in_force=TimeInForce.DAY,
+        limit_price=-abs(round(float(net_credit), 2)), legs=legs,
+        client_order_id=client_order_id)
+    return trading.submit_order(req)
+
+
+def close_spread_order(trading, short_sym: str, long_sym: str, qty: int,
+                       net_debit_limit: float, client_order_id: str = None):
+    """Buy a put credit spread back (BTC short / STC long) at a net debit."""
+    legs = [
+        OptionLegRequest(symbol=short_sym, ratio_qty=1, side=OrderSide.BUY,
+                         position_intent=PositionIntent.BUY_TO_CLOSE),
+        OptionLegRequest(symbol=long_sym, ratio_qty=1, side=OrderSide.SELL,
+                         position_intent=PositionIntent.SELL_TO_CLOSE),
+    ]
+    req = LimitOrderRequest(
+        qty=qty, order_class=OrderClass.MLEG, time_in_force=TimeInForce.DAY,
+        limit_price=abs(round(float(net_debit_limit), 2)), legs=legs,
+        client_order_id=client_order_id)
+    return trading.submit_order(req)

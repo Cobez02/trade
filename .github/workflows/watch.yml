@@ -49,6 +49,7 @@ jobs:
         run: |
           python test_exitrules.py
           python test_watcher.py
+          python test_spreads.py
 
       - name: Watch
         env:

@@ -195,3 +195,52 @@ def broker_stop_price(entry: float, peak_pct: float | None) -> float:
         trailed = entry * (1 + peak_pct - TRAIL_GIVEBACK - 0.10)
         floor = max(floor, trailed)
     return max(round(floor, 2), 0.01)
+
+
+# ---------------------------------------------------------------------------
+# Defined-risk credit spreads (sleeve "spreads") — package-level exits
+# ---------------------------------------------------------------------------
+def spread_decide(credit: float, net_now: float, dte_left,
+                  take_frac: float = 0.50, stop_mult: float = 2.00,
+                  time_dte: int = 2):
+    """Exit decision for a put credit spread, on its NET value.
+
+    `credit` is what we were paid to open (positive). `net_now` is what the
+    package costs to buy back right now (its current net value, positive).
+    The three documented rules, in priority order:
+
+      stop        net_now >= stop_mult * credit   (loss of ~1x credit; fires
+                  before max loss ever comes into play)
+      take-profit net_now <= take_frac * credit   (the managed-early rule
+                  with the strongest large-sample support)
+      time        dte_left <= time_dte            (gamma week and assignment
+                  risk are not our trade)
+
+    Total function: unreadable inputs -> hold with a reason, never an
+    exception — this sits in the loop that manages live positions.
+    Returns {"action": "hold"|"exit", "reason": str, "pnl_frac": float|None}
+    where pnl_frac is P&L as a fraction of max profit (the credit).
+    """
+    try:
+        c = float(credit); n = float(net_now)
+        if not (c > 0) or not (n >= 0) or c != c or n != n:
+            return {"action": "hold", "reason": "unreadable credit/value", "pnl_frac": None}
+    except (TypeError, ValueError, OverflowError):
+        return {"action": "hold", "reason": "unreadable credit/value", "pnl_frac": None}
+    pnl_frac = round((c - n) / c, 4)
+    if n >= stop_mult * c:
+        return {"action": "exit",
+                "reason": f"spread stop: value {n:.2f} >= {stop_mult:g}x credit {c:.2f}",
+                "pnl_frac": pnl_frac}
+    if n <= take_frac * c:
+        return {"action": "exit",
+                "reason": f"spread take-profit: value {n:.2f} <= {take_frac:.0%} of credit {c:.2f}",
+                "pnl_frac": pnl_frac}
+    try:
+        if dte_left is not None and int(dte_left) <= int(time_dte):
+            return {"action": "exit",
+                    "reason": f"spread time-exit: {int(dte_left)} DTE <= {int(time_dte)}",
+                    "pnl_frac": pnl_frac}
+    except (TypeError, ValueError):
+        pass
+    return {"action": "hold", "reason": f"holding ({pnl_frac:+.0%} of credit)", "pnl_frac": pnl_frac}

@@ -31,7 +31,7 @@ Design, in order of how much each part matters when things go wrong:
 Run:  python3 watcher.py            (runs until the closing bell, then exits)
 """
 from __future__ import annotations
-import os, sys, time, json, math, threading, datetime as dt
+import os, re, sys, time, json, math, threading, datetime as dt
 from collections import defaultdict
 
 from alpaca.trading.client import TradingClient
@@ -49,6 +49,7 @@ except Exception:                                   # older alpaca-py
 
 import exitrules as R
 import execution as X
+import engine as E
 
 EVAL_SECONDS      = 0.25    # how often the decision loop looks at `latest`
 POLL_SECONDS      = 2.0     # REST refill cadence when the stream is quiet
@@ -109,6 +110,12 @@ class Watcher:
         self.stream_alive = False
         self.subscribed: set[str] = set()
         self.tick_count = 0
+        # credit-spread packages (managed as units; overnight-exempt)
+        self.spread_pkgs: dict[str, dict] = {}       # "short|long" -> package
+        self.spread_members: set[str] = set()
+        self.spread_credit: dict[str, float] = {}    # "short|long" -> open credit
+        self.spread_inflight: set[str] = set()
+        self._spread_sig: dict[str, tuple] = {}   # exit-signal persistence
 
     # -- market clock --------------------------------------------------------
     def minutes_to_close(self):
@@ -209,12 +216,45 @@ class Watcher:
         except Exception as e:
             log(f"position refresh failed: {str(e)[:80]}")
             return sorted(self.entries.keys())
+        # Split the book FIRST: credit-spread packages are managed as units
+        # under their own exit rules (and Connor's overnight exemption), and
+        # their member legs must NEVER enter the singles machinery — a short
+        # leg given a protective SELL stop would double the short, and a
+        # flatten that market-sells one leg turns defined risk into naked.
+        pkgs, members = E.detect_spreads(pos)
+        new_keys = {f"{p['short']}|{p['long']}" for p in pkgs}
+        for k in list(self.spread_pkgs):
+            if k not in new_keys:
+                self.spread_pkgs.pop(k, None)
+                self.spread_credit.pop(k, None)
+                self.spread_inflight.discard(k)
+        for p in pkgs:
+            k = f"{p['short']}|{p['long']}"
+            if k not in self.spread_pkgs:
+                log(f"  spread package detected: {p['underlying']} "
+                    f"{p['short_strike']:g}/{p['long_strike']:g}P "
+                    f"x{p['qty']} exp {p['expiry_ymd']}")
+            self.spread_pkgs[k] = p
+        self.spread_members = members
         live = set()
         for p in pos:
             s = p.symbol
+            if s in members:
+                continue
+            try:
+                q = int(float(p.qty))
+            except Exception:
+                continue
+            if q < 0:
+                # An unpaired short leg = assignment aftermath or a broken
+                # entry. The singles machinery must not touch it (its "sell"
+                # would ADD short); the hourly reconcile owns that repair.
+                log(f"  ORPHAN SHORT LEG {s} x{q} — left for reconcile, "
+                    f"not managed as a single")
+                continue
             live.add(s)
             self.entries[s] = float(p.avg_entry_price)
-            self.qtys[s] = abs(int(float(p.qty)))
+            self.qtys[s] = abs(q)
         # forget positions that are gone, so a re-entry starts with a fresh peak
         for s in list(self.entries):
             if s not in live:
@@ -298,6 +338,11 @@ class Watcher:
         This is the part that still works when this process is dead. It is set
         deliberately BELOW the watcher's own trigger so that under normal
         operation the watcher exits first and this never fires."""
+        if sym in self.spread_members:
+            # A spread leg NEVER gets a singles stop: a SELL stop on the short
+            # leg would double the short; on the long leg it would amputate
+            # the package's loss bound. The spread's floor is its structure.
+            return
         entry = self.entries.get(sym)
         if entry is None or sym in self.inflight:
             return
@@ -378,7 +423,7 @@ class Watcher:
         several resting stops, keep the HIGHEST trigger (the most ratcheted
         state) and cancel the rest — duplicates double-reserve the contracts."""
         for sym in symbols:
-            if sym in self.stops:
+            if sym in self.stops or sym in self.spread_members:
                 continue
             try:
                 orders = self.trading.get_orders(GetOrdersRequest(
@@ -542,6 +587,123 @@ class Watcher:
                          args=(sym, d["reason"], d["pnl_pct"]),
                          daemon=True).start()
 
+    # -- credit-spread package management (overnight-exempt) ------------------
+    def spread_net(self, pkg):
+        """Package NET value from the freshest leg quotes: mid for deciding,
+        ask (buyback crossing) for pricing the close. None without both legs."""
+        with self.qlock:
+            s = dict(self.latest.get(pkg["short"]) or {})
+            l = dict(self.latest.get(pkg["long"]) or {})
+        try:
+            sb, sa = float(s.get("bid") or 0), float(s.get("ask") or 0)
+            lb, la = float(l.get("bid") or 0), float(l.get("ask") or 0)
+        except Exception:
+            return None
+        if min(sb, sa, lb, la) <= 0 or sa < sb or la < lb:
+            return None
+        return {"mid": (sb + sa) / 2.0 - (lb + la) / 2.0, "ask": sa - lb}
+
+    def recover_spread_credit(self, k, pkg):
+        """The credit received at open, recovered statelessly.
+
+        Priority: (1) the mleg parent order whose legs match this package —
+        its |filled_avg_price| is the actual credit; (2) any SPXS- tag whose
+        encoded width matches (the tag carries the LIMIT credit, a floor on
+        what filled); (3) a conservative 25%-of-width assumption, loudly
+        logged, which makes every exit rule fire EARLIER than truth, never
+        later."""
+        credit = None
+        try:
+            orders = self.trading.get_orders(GetOrdersRequest(
+                status=QueryOrderStatus.CLOSED, limit=100))
+        except Exception:
+            orders = []
+        tag_fallback = None
+        for o in orders:
+            coid = str(getattr(o, "client_order_id", "") or "")
+            if not coid.startswith("SPXS-"):
+                continue
+            m = re.match(r"SPXS-(\d+)-(\d+)-", coid)
+            legs = getattr(o, "legs", None) or []
+            syms = {str(getattr(x, "symbol", "") or "") for x in legs}
+            if pkg["short"] in syms and pkg["long"] in syms:
+                try:
+                    fp = abs(float(getattr(o, "filled_avg_price", None) or 0))
+                except (TypeError, ValueError):
+                    fp = 0.0
+                if fp > 0:
+                    credit = fp
+                    break
+                if m:
+                    credit = int(m.group(1)) / 100.0
+                    break
+            elif m and tag_fallback is None:
+                if abs(int(m.group(2)) / 100.0 - pkg["width"]) < 0.011:
+                    tag_fallback = int(m.group(1)) / 100.0
+        if credit is None:
+            credit = tag_fallback
+        if credit is None or credit <= 0:
+            credit = 0.25 * pkg["width"]
+            log(f"  spread credit UNRECOVERABLE for {k} — assuming "
+                f"{credit:.2f} (25% of width; exits fire early, not late)")
+        self.spread_credit[k] = credit
+        return credit
+
+    def evaluate_spreads(self):
+        """Package-level exit management. Runs every loop; spreads are exempt
+        from the EOD flatten by owner decision, so there is no flatten branch —
+        the rules here (stop / take-profit / time) are the only exits."""
+        for k, pkg in list(self.spread_pkgs.items()):
+            if k in self.spread_inflight:
+                continue
+            nq = self.spread_net(pkg)
+            if nq is None:
+                continue
+            credit = self.spread_credit.get(k)
+            if credit is None:
+                credit = self.recover_spread_credit(k, pkg)
+            value = max(nq["mid"], 0.01)
+            d = R.spread_decide(credit, value, E.spread_dte(pkg["expiry_ymd"]),
+                                take_frac=E.SPREADS_TAKE_FRAC,
+                                stop_mult=E.SPREADS_STOP_MULT,
+                                time_dte=E.SPREADS_TIME_DTE)
+            if d["action"] != "exit":
+                self._spread_sig.pop(k, None)
+                continue
+            # One joint bad quote must not close a package: require the exit
+            # signal to persist ~3s across evaluations (time exits are
+            # deterministic and skip the wait).
+            kind = d["reason"].split(":")[0]
+            first = self._spread_sig.get(k)
+            if "time-exit" not in kind:
+                if first is None or first[0] != kind:
+                    self._spread_sig[k] = (kind, time.time())
+                    continue
+                if time.time() - first[1] < 3.0:
+                    continue
+            self.spread_inflight.add(k)
+            if DRY_RUN:
+                log(f"[dry] WOULD CLOSE SPREAD {k} — {d['reason']}")
+                self.spread_inflight.discard(k)
+                self._spread_sig.pop(k, None)
+                continue
+            try:
+                limit = max(round(nq["ask"] + 0.02, 2), 0.01)
+                o = E.close_spread_order(self.trading, pkg["short"],
+                                         pkg["long"], pkg["qty"], limit)
+                log(f"CLOSE SPREAD {pkg['underlying']} "
+                    f"{pkg['short_strike']:g}/{pkg['long_strike']:g}P x{pkg['qty']} — "
+                    f"{d['reason']} [{(d['pnl_frac'] or 0):+.0%} of credit] "
+                    f"limit {limit:.2f} order {str(getattr(o, 'id', '?'))[:8]}")
+                self.exits_done.append({
+                    "symbol": k, "qty": pkg["qty"], "reason": d["reason"],
+                    "pnl_pct": d["pnl_frac"], "spread": True,
+                    "at": dt.datetime.utcnow().isoformat()[:19]})
+            except Exception as e:
+                log(f"  CLOSE SPREAD FAILED {k}: {str(e)[:100]}")
+                self.spread_inflight.discard(k)
+            self._spread_sig.pop(k, None)
+
     # -- REST refill (fallback + belt-and-braces alongside the stream) --------
     def sweep(self, symbols):
         if not symbols:
@@ -591,10 +753,13 @@ class Watcher:
             return
         log(f"market open, {mins:.0f} min to the bell")
         symbols = self.refresh_positions()
-        log(f"watching {len(symbols)} positions: {', '.join(symbols) or '(none)'}")
+        log(f"watching {len(symbols)} singles: {', '.join(symbols) or '(none)'}"
+            + (f" + {len(self.spread_pkgs)} spread package(s)"
+               if self.spread_pkgs else ""))
+        watch = sorted(set(symbols) | self.spread_members)
         self.start_stream()
-        self.subscribe(symbols)
-        self.sweep(symbols)
+        self.subscribe(watch)
+        self.sweep(watch)
         # Adopt BEFORE ensuring: the previous watcher job or the hourly cron
         # has usually stopped these positions already, and placing over an
         # unknown resting stop is a rejection at best and a frozen flatten at
@@ -634,7 +799,7 @@ class Watcher:
                 for s in symbols:
                     if s not in prev:
                         log(f"  now watching new position {s} @ {self.entries[s]}")
-                self.subscribe(symbols)
+                self.subscribe(sorted(set(symbols) | self.spread_members))
                 # Adoption runs during flatten too — cancel-before-sell needs
                 # the resting stop's id even (especially) at the bell.
                 self.adopt_broker_stops(symbols)
@@ -642,27 +807,34 @@ class Watcher:
                     for s in symbols:
                         self.ensure_broker_stop(s)
                 last_refresh = now
-                if flatten and not symbols:
+                if flatten and not symbols and not self.spread_pkgs:
                     log("book is flat — watcher exiting")
                     break
+                if flatten and not symbols and self.spread_pkgs:
+                    # Spreads are overnight-exempt: nothing to flatten, but
+                    # their stop/TP rules deserve eyes until the bell.
+                    pass
 
-            if not symbols:
+            if not symbols and not self.spread_pkgs:
                 time.sleep(POLL_SECONDS); continue
 
             # REST refills whatever the socket has not spoken about lately.
             if now - last_rest > POLL_SECONDS:
-                stale = self.stale_symbols(symbols)
+                stale = self.stale_symbols(sorted(set(symbols) | self.spread_members))
                 if stale:
                     self.sweep(stale)
                 last_rest = now
 
             for s in list(symbols):
                 self.evaluate(s, flatten=flatten)
+            if self.spread_pkgs:
+                self.evaluate_spreads()
 
             if now - last_beat > 300:
                 src = "ws" if self.stream_alive else "rest"
-                log(f"  [{mins:.0f}m to close] {len(symbols)} open, "
-                    f"{self.tick_count} ticks, feed={src}")
+                log(f"  [{mins:.0f}m to close] {len(symbols)} singles"
+                    + (f" + {len(self.spread_pkgs)} spreads" if self.spread_pkgs else "")
+                    + f", {self.tick_count} ticks, feed={src}")
                 last_beat = now
 
             time.sleep(EVAL_SECONDS)

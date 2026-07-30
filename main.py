@@ -12,6 +12,9 @@ Reads credentials from env: ALPACA_API_KEY, ALPACA_SECRET_KEY.
 """
 from __future__ import annotations
 import os, re, sys, json, math, datetime as dt
+import time as time_mod
+from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.enums import OrderSide, TimeInForce
 
 import engine
 from engine import (
@@ -144,6 +147,15 @@ def rebuild_from_alpaca(broker: Broker):
     orders = broker.closed_orders()
     buys, sells = {}, {}
     for o in orders:  # newest-first
+        # Spread legs must NEVER enter the singles journal: an mleg close
+        # would read as a fake single round-trip and poison the learner.
+        try:
+            if str(getattr(o, "order_class", "") or "").lower() == "mleg":
+                continue
+            if str(getattr(o, "client_order_id", "") or "").startswith("SPXS-"):
+                continue
+        except Exception:
+            pass
         try:
             filled = float(o.filled_qty or 0) > 0
         except Exception:
@@ -205,7 +217,25 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
     flatten = mins is not None and mins <= EOD_FLATTEN_MIN
     if flatten:
         notes.append(f"EOD FLATTEN — {mins:.0f} min to close, closing every open position.")
-    live = {p.symbol: p for p in broker.positions()}
+    raw_positions = broker.positions()
+    # Split out credit-spread packages BEFORE any singles rule runs. Their
+    # legs must never be flattened or stop-lossed individually: market-selling
+    # one leg of a spread converts a bounded position into a naked short.
+    # Spreads are overnight-exempt (owner decision 2026-07-30) and managed by
+    # manage_spreads(); orphan shorts (assignment debris) go to reconcile.
+    spread_pkgs, spread_members = engine.detect_spreads(raw_positions)
+    live = {}
+    for p in raw_positions:
+        if p.symbol in spread_members:
+            continue
+        try:
+            if int(float(p.qty)) < 0:
+                notes.append(f"ORPHAN SHORT LEG {p.symbol} — excluded from "
+                             f"singles exits; reconcile owns it")
+                continue
+        except Exception:
+            continue
+        live[p.symbol] = p
     # 1) close positions per rules
     for sym, pos in list(live.items()):
         info = parse_occ(sym) or {}
@@ -282,6 +312,285 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
             notes.append(f"RECONCILED {sym} [{meta.get('sleeve')}] — no longer held")
 
 
+def reconcile_assignments(broker: Broker, notes: list):
+    """An options-only book must never silently hold stock.
+
+    A short put that gets assigned deposits LONG STOCK into the account (a
+    short call would deposit short stock). Either is outside every rule this
+    bot has, so the response is immediate and dumb on purpose: flatten the
+    equity at market, loudly. The orphaned long leg the assignment leaves
+    behind re-enters the ordinary machinery as a single and is closed by it."""
+    try:
+        for p in broker.positions():
+            sym = getattr(p, "symbol", "") or ""
+            if parse_occ(sym):
+                continue                      # an option — not our problem here
+            try:
+                q = int(float(p.qty))
+            except Exception:
+                continue
+            if q == 0:
+                continue
+            side = OrderSide.SELL if q > 0 else OrderSide.BUY
+            try:
+                broker.trading.submit_order(MarketOrderRequest(
+                    symbol=sym, qty=abs(q), side=side,
+                    time_in_force=TimeInForce.DAY))
+                notes.append(f"ASSIGNMENT REPAIR — {'sold' if q > 0 else 'covered'} "
+                             f"{abs(q)} shares of {sym} at market (stock in an "
+                             f"options-only book = a short leg was assigned)")
+            except Exception as e:
+                notes.append(f"ASSIGNMENT REPAIR FAILED {sym}: {str(e)[:80]}")
+    except Exception:
+        pass
+
+
+def manage_spreads(broker: Broker, state: dict, notes: list):
+    """Exit management + bookkeeping for credit-spread packages.
+
+    Spreads are OVERNIGHT-EXEMPT (owner decision 2026-07-30): there is no
+    flatten branch here. The exits are exactly the three documented rules in
+    exitrules.spread_decide, and the disaster floor is the structure itself.
+    Closed spreads are journaled into state['spreads_closed'], which run()
+    merges into the learner's journal after the singles rebuild (the rebuild
+    excludes mleg orders, so spread history lives here)."""
+    try:
+        if not broker.clock().is_open:
+            return
+    except Exception:
+        return
+    raw = broker.positions()
+    pkgs, _members = engine.detect_spreads(raw)
+    book = state.setdefault("spreads_open", {})
+    closed_log = state.setdefault("spreads_closed", [])
+    open_keys = {f"{p['short']}|{p['long']}" for p in pkgs}
+
+    # 1) packages that left the book since last run -> find the close fill, journal it
+    for k in list(book):
+        if k in open_keys:
+            continue
+        rec = book.pop(k)
+        pnl = None
+        try:
+            for o in broker.closed_orders(150):
+                if str(getattr(o, "order_class", "") or "").lower() != "mleg":
+                    continue
+                legs = getattr(o, "legs", None) or []
+                syms = {str(getattr(x, "symbol", "") or "") for x in legs}
+                if rec["short"] in syms and rec["long"] in syms:
+                    fp = getattr(o, "filled_avg_price", None)
+                    if fp is None:
+                        continue
+                    fpv = float(fp)
+                    if fpv >= 0:          # a net DEBIT fill = the buyback
+                        pnl = round((rec["credit"] - fpv) * 100 * rec.get("qty", 1), 2)
+                        break
+        except Exception:
+            pass
+        max_loss = max((rec["width"] - rec["credit"]) * 100 * rec.get("qty", 1), 1.0)
+        row = {
+            "symbol": f"{rec['short']}|{rec['long']}", "sleeve": "spreads",
+            "underlying": rec.get("underlying"), "type": "put_spread",
+            "strike": rec.get("short_strike"), "expiration": rec.get("expiry_iso"),
+            "qty": rec.get("qty", 1), "entry": rec.get("credit"),
+            "exit_reason": rec.get("last_reason", "closed"),
+            "pnl": pnl, "pnl_pct": (round(pnl / max_loss, 4) if pnl is not None else None),
+            "closed_on": today(), "thesis": rec.get("thesis", ""),
+            "features": {"type": "put_spread", "dte": rec.get("dte_entry"),
+                         "direction": "bull", "spread_pct": rec.get("net_cost_frac")},
+        }
+        closed_log.append(row)
+        state["spreads_closed"] = closed_log[-100:]
+        learn.record_lesson(state, row)
+        notes.append(f"SPREAD CLOSED {rec.get('underlying')} "
+                     f"{rec.get('short_strike'):g}/{rec.get('long_strike'):g}P — "
+                     f"P&L {'$%+.0f' % pnl if pnl is not None else 'unknown'} "
+                     f"(credit {rec['credit']:.2f})")
+
+    # 2) packages on the broker that we have no book entry for (state loss,
+    #    watcher-opened, container swap): adopt with recovered credit
+    for p in pkgs:
+        k = f"{p['short']}|{p['long']}"
+        if k in book:
+            continue
+        credit = None
+        try:
+            for o in broker.closed_orders(150):
+                coid = str(getattr(o, "client_order_id", "") or "")
+                if not coid.startswith("SPXS-"):
+                    continue
+                legs = getattr(o, "legs", None) or []
+                syms = {str(getattr(x, "symbol", "") or "") for x in legs}
+                if p["short"] in syms and p["long"] in syms:
+                    fp = getattr(o, "filled_avg_price", None)
+                    credit = abs(float(fp)) if fp is not None else None
+                    if not credit:
+                        m = re.match(r"SPXS-(\d+)-", coid)
+                        credit = int(m.group(1)) / 100.0 if m else None
+                    break
+        except Exception:
+            credit = None
+        if not credit or credit <= 0:
+            credit = 0.25 * p["width"]
+            notes.append(f"SPREAD ADOPTED with assumed credit {credit:.2f} "
+                         f"(25% of width) — exits will fire early, never late")
+        book[k] = {"short": p["short"], "long": p["long"], "qty": p["qty"],
+                   "underlying": p["underlying"], "width": p["width"],
+                   "short_strike": p["short_strike"], "long_strike": p["long_strike"],
+                   "expiry_ymd": p["expiry_ymd"], "credit": round(credit, 2),
+                   "opened": today()}
+
+    # 3) exit management on every open package
+    for p in pkgs:
+        k = f"{p['short']}|{p['long']}"
+        rec = book.get(k)
+        if rec is None:
+            continue
+        q = broker.spread_quote(p["short"], p["long"])
+        if not q:
+            notes.append(f"SPREAD {p['underlying']} {p['short_strike']:g}/"
+                         f"{p['long_strike']:g}P — no usable net quote this run")
+            continue
+        d = exitrules.spread_decide(
+            rec["credit"], max(q["mid"], 0.01), engine.spread_dte(p["expiry_ymd"]),
+            take_frac=engine.SPREADS_TAKE_FRAC, stop_mult=engine.SPREADS_STOP_MULT,
+            time_dte=engine.SPREADS_TIME_DTE)
+        rec["last_reason"] = d["reason"]
+        notes.append(f"SPREAD {p['underlying']} {p['short_strike']:g}/"
+                     f"{p['long_strike']:g}P value {q['mid']:.2f} vs credit "
+                     f"{rec['credit']:.2f} -> {d['reason']}")
+        if d["action"] != "exit":
+            continue
+        # one working close order at a time, across every process
+        dup = False
+        try:
+            for o in broker.open_orders():
+                if str(getattr(o, "order_class", "") or "").lower() != "mleg":
+                    continue
+                legs = getattr(o, "legs", None) or []
+                syms = {str(getattr(x, "symbol", "") or "") for x in legs}
+                if p["short"] in syms and p["long"] in syms:
+                    dup = True
+                    break
+        except Exception:
+            pass
+        if dup:
+            notes.append(f"SPREAD CLOSE already working for {k} — not duplicating")
+            continue
+        try:
+            limit = max(round(q["ask"] + 0.02, 2), 0.01)
+            broker.close_spread(p["short"], p["long"], p["qty"], limit)
+            notes.append(f"SPREAD CLOSING {p['underlying']} {p['short_strike']:g}/"
+                         f"{p['long_strike']:g}P x{p['qty']} — {d['reason']} "
+                         f"(limit {limit:.2f})")
+        except Exception as e:
+            notes.append(f"SPREAD CLOSE FAILED {k}: {str(e)[:90]}")
+
+
+def try_spread_entries(broker: Broker, state: dict, notes: list):
+    """Open put credit spreads when implied vol is RICH vs our own forecast.
+
+    The mirror of the singles' timing edge: the singles path refuses to BUY
+    when the quote is above model value; this path SELLS defined risk in that
+    exact condition — implied at least SPREADS_RICH_PTS above the Yang-Zhang
+    realized forecast, trend not falling, and the package priced liquidly."""
+    if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1":
+        return
+    mins_left = minutes_to_close(broker)
+    if mins_left is None or mins_left <= NO_NEW_ENTRY_MIN:
+        return
+    book = state.setdefault("spreads_open", {})
+    if len(book) >= engine.SPREADS_MAX_OPEN:
+        return
+    committed = sum(max((r["width"] - r["credit"]) * 100 * r.get("qty", 1), 0)
+                    for r in book.values())
+    for und in engine.SPREADS_UNDERLYINGS:
+        if len(book) >= engine.SPREADS_MAX_OPEN:
+            break
+        if any(r.get("underlying") == und for r in book.values()):
+            continue                       # one package per underlying
+        try:
+            spot = broker.stock_price(und)
+            bars = broker.daily_bars(und, days=120)
+            if not spot or bars is None or len(bars) < 30:
+                continue
+            fc = volmod.realized_vol(bars, window=21, method="yang_zhang")
+            if fc is None or fc != fc or fc <= 0:
+                continue
+            ind = broker.indicators(und) or {}
+            if ind.get("trend_up") is False:
+                notes.append(f"SPREAD SKIP {und} — downtrend (no bull puts "
+                             f"into a falling market)")
+                continue
+            cand = broker.find_put_spread(und, spot, float(fc))
+            if not cand:
+                notes.append(f"SPREAD SKIP {und} — no liquid strike pair in "
+                             f"{engine.SPREADS_DTE_MIN}-{engine.SPREADS_DTE_MAX} DTE")
+                continue
+            s_sym, l_sym = cand["short"].symbol, cand["long"].symbol
+            # implied of the SHORT leg vs forecast: the richness we are selling
+            lq = broker.option_quote(s_sym)
+            iv = None
+            if lq and cand["dte"]:
+                iv = execution.implied_vol(
+                    lq["mid"], spot, float(cand["short"].strike_price),
+                    cand["dte"] / 365.0, is_call=False)
+            if iv is None:
+                notes.append(f"SPREAD SKIP {und} — implied vol unreadable")
+                continue
+            if iv - fc < engine.SPREADS_RICH_PTS:
+                notes.append(f"SPREAD NO EDGE {und} — implied {iv*100:.1f}% vs "
+                             f"forecast {fc*100:.1f}% (need +{engine.SPREADS_RICH_PTS*100:.0f}pts)")
+                continue
+            q = broker.spread_quote(s_sym, l_sym)
+            if not q:
+                notes.append(f"SPREAD SKIP {und} — no two-sided net quote")
+                continue
+            credit = round(q["mid"] - 0.01, 2)     # sell just under net mid
+            width = cand["width"]
+            if credit <= 0 or credit / width < engine.SPREADS_MIN_CREDIT_FRAC:
+                notes.append(f"SPREAD SKIP {und} — credit {credit:.2f} is "
+                             f"{credit/width*100 if width else 0:.0f}% of width "
+                             f"(floor {engine.SPREADS_MIN_CREDIT_FRAC*100:.0f}%)")
+                continue
+            net_cost = (q["ask"] - q["bid"]) / credit if credit else 9.9
+            if net_cost > engine.SPREADS_NET_COST_FRAC:
+                notes.append(f"SPREAD SCREENED OUT {und} — package round trip "
+                             f"{net_cost*100:.1f}% of credit (cap "
+                             f"{engine.SPREADS_NET_COST_FRAC*100:.0f}%)")
+                continue
+            max_loss = (width - credit) * 100
+            if max_loss > engine.SPREADS_MAX_LOSS:
+                notes.append(f"SPREAD SKIP {und} — max loss ${max_loss:.0f} > "
+                             f"${engine.SPREADS_MAX_LOSS:.0f}")
+                continue
+            if committed + max_loss > engine.SPREADS_ALLOCATION:
+                notes.append(f"SPREAD BUDGET STOP {und} — ${committed:.0f} "
+                             f"committed + ${max_loss:.0f} > "
+                             f"${engine.SPREADS_ALLOCATION:.0f} allocation")
+                continue
+            tag = f"SPXS-{int(round(credit*100))}-{int(round(width*100))}-{int(time_mod.time())}"
+            broker.submit_spread(s_sym, l_sym, 1, credit, tag)
+            exp_iso = (parse_occ(s_sym) or {}).get("expiration")
+            book[f"{s_sym}|{l_sym}"] = {
+                "short": s_sym, "long": l_sym, "qty": 1, "underlying": und,
+                "width": width, "short_strike": float(cand["short"].strike_price),
+                "long_strike": float(cand["long"].strike_price),
+                "expiry_ymd": cand["expiry_ymd"], "expiry_iso": exp_iso,
+                "credit": credit, "opened": today(), "dte_entry": cand["dte"],
+                "net_cost_frac": round(net_cost, 4),
+                "thesis": f"IV {iv*100:.1f}% rich vs YZ forecast {fc*100:.1f}%",
+            }
+            committed += max_loss
+            notes.append(f"OPENED SPREAD {und} {cand['short'].strike_price}/"
+                         f"{cand['long'].strike_price}P exp {cand['expiry_ymd']} — "
+                         f"credit {credit:.2f} on {width:g} wide (max loss "
+                         f"${max_loss:.0f}, RT {net_cost*100:.1f}% of credit, "
+                         f"IV {iv*100:.1f}% vs forecast {fc*100:.1f}%)")
+        except Exception as e:
+            notes.append(f"SPREAD ENTRY ERROR {und}: {str(e)[:90]}")
+
+
 def ensure_broker_stops(broker: Broker, state: dict, notes: list):
     """Make sure every open position has a resting stop underneath it.
 
@@ -307,10 +616,13 @@ def ensure_broker_stops(broker: Broker, state: dict, notes: list):
         covered = {o.symbol for o in broker.open_sell_orders()}
     except Exception:
         return
+    _, spread_members = engine.detect_spreads(broker.positions())
     for p in broker.positions():
-        if p.symbol in covered:
-            continue
+        if p.symbol in covered or p.symbol in spread_members:
+            continue                 # a spread leg NEVER gets a singles stop
         try:
+            if int(float(p.qty)) < 0:
+                continue             # short leg / assignment debris
             entry = float(p.avg_entry_price or 0)
             qty = abs(int(float(p.qty)))
             if entry <= 0 or qty <= 0:
@@ -663,6 +975,8 @@ def run():
         }
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
     manage_exits(broker, state, notes, sleeve_map, pos_feat)
+    reconcile_assignments(broker, notes)
+    manage_spreads(broker, state, notes)
     ensure_broker_stops(broker, state, notes)
     if journal:                                    # Alpaca is authoritative for settled trades
         state["journal"] = journal
@@ -672,6 +986,11 @@ def run():
             "pnl": j["pnl"], "pnl_pct": j["pnl_pct"], "exit_reason": j.get("exit_reason", "closed"),
             "closed_on": j.get("closed_on"), "thesis": "", "features": j["features"],
         } for j in journal]
+    # Spread history lives in spreads_closed (the singles rebuild excludes
+    # mleg orders); merge it so the learner and reports see the whole book.
+    for r in state.get("spreads_closed", []):
+        state["journal"].append(r)
+        state["closed"].append(r)
     lrn = learn.learn(state)                       # recompute weights/gates/lessons
     if lrn["n_trades"]:
         notes.append(f"Learner: {lrn['n_trades']} settled trades | "
@@ -682,6 +1001,8 @@ def run():
     # now reject, so pull anything whose spread has widened past the gate.
     for o in broker.open_orders():
         try:
+            if str(getattr(o, "order_class", "") or "").lower() == "mleg":
+                continue     # packages are managed by manage_spreads
             # BUYs only. The resting protective stops are working SELL orders,
             # and cancelling those because the spread widened would remove the
             # floor at exactly the moment it is most needed.
@@ -705,6 +1026,7 @@ def run():
             pending.add((coid.split("-")[1], info["underlying"]))
     signals = all_signals(broker, api_key, secret)
     open_new_trades(broker, state, signals, api_key, secret, notes, pending)
+    try_spread_entries(broker, state, notes)
     # Again, because anything that just filled has no floor under it yet. The
     # call skips symbols already covered, so a second pass costs one API read.
     ensure_broker_stops(broker, state, notes)

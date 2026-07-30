@@ -351,3 +351,22 @@ Mechanically, affordability now joins strike SELECTION (`best_quoted`'s
 fits the per-trade budget, rather than choosing an unaffordable strike and
 rejecting it downstream. If nothing fits, the TOO RICH note still reports the
 truth. All quality gates are unchanged and still deliver the only verdict.
+
+## Addendum 2026-07-30 (night): spreads sleeve BUILT
+
+Shipped per SPREADS_DESIGN.md, started early at Connor's request (traveling
+weekend). What exists as of this commit: mleg order plumbing with the sign
+convention isolated to one function (negative limit = credit, verified
+against the SDK reference and pinned by test); stateless package detection
+from the raw book; the three documented exits (50%-of-credit take, 2x-credit
+stop, 2-DTE time) applied to net package value by both the hourly runs and
+the watcher (with a 3s persistence window so one bad joint quote cannot
+close a package); entry trigger = short-leg implied at least 2 vol points
+RICH vs the Yang-Zhang forecast, trend not falling, credit >= 20% of width,
+package round trip <= 8% of credit, max loss <= $400, <= 2 open, $1,000
+dedicated allocation; the overnight/weekend exemption wired so flatten and
+stop-arming refuse spread legs everywhere; assignment repair (stock in the
+book -> flattened at market, loudly); and the singles journal hard-filtered
+against mleg orders so spread history (kept in spreads_closed) can never
+fabricate single-leg round trips for the learner. 118 new checks; suite
+1,432 green.
