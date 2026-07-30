@@ -516,6 +516,40 @@ check("...and its docstring says why (noise, staleness, speed bump)",
 
 # --------------------------------------------------------------------------
 print()
+
+
+print()
+print("=" * 74)
+print("EXTRA. daily_variance + forecast_vol — the HAR wiring (live 2026-07-31)")
+print("=" * 74)
+import numpy as _np, pandas as _pd
+_rng = _np.random.default_rng(11)
+_n = 260; _sig = 0.20 / _np.sqrt(252)
+_r = _rng.normal(0, _sig, _n); _px = 100 * _np.exp(_np.cumsum(_r))
+_df = _pd.DataFrame({"open": _px * (1 + _rng.normal(0, 0.0008, _n)),
+                     "high": _px * 1.006, "low": _px * 0.994, "close": _px})
+_f = V.forecast_vol(_df)
+check("synthetic 20-vol GBM forecasts in a sane band (12%-32%)",
+      _f is not None and 0.12 <= _f <= 0.32, str(_f))
+
+_dfg = _df.copy()
+_dfg["open"] = _dfg["close"].shift(1).fillna(_dfg["open"]) * 1.02   # 2% gaps nightly
+_vg, _v0 = V.daily_variance(_dfg), V.daily_variance(_df)
+check("overnight gaps RAISE measured variance (gap-inclusive by construction)",
+      _vg is not None and _v0 is not None and _vg.mean() > _v0.mean() * 1.5,
+      f"{_vg.mean():.2e} vs {_v0.mean():.2e}")
+
+check("short history -> None, no guess", V.forecast_vol(_df.head(20)) is None)
+for _g in (None, 42, "x", _pd.DataFrame(), _pd.DataFrame({"close": [1, 2]}),
+           _pd.DataFrame({"open": [0, -1], "high": [0, 0], "low": [0, 0], "close": [0, 0]})):
+    if V.forecast_vol(_g) is not None:
+        check("garbage battery: every bad input -> None", False, str(type(_g))); break
+else:
+    check("garbage battery: every bad input -> None", True)
+check("daily_variance on garbage -> None",
+      all(V.daily_variance(_g) is None for _g in (None, _pd.DataFrame({"a": [1]}))))
+
+
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")
 if FAIL:

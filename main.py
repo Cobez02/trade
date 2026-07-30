@@ -514,7 +514,9 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
             bars = broker.daily_bars(und, days=120)
             if not spot or bars is None or len(bars) < 30:
                 continue
-            fc = volmod.realized_vol(bars, window=21, method="yang_zhang")
+            fc = volmod.forecast_vol(bars, horizon=7)
+            if fc is None:
+                fc = volmod.realized_vol(bars, window=21, method="yang_zhang")
             if fc is None or fc != fc or fc <= 0:
                 continue
             ind = broker.indicators(und) or {}
@@ -787,9 +789,19 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 bars = broker.daily_bars(und, days=120)
                 if bars is not None and len(bars) >= 30:
                     closes = [float(c) for c in bars["close"].tolist()]
-                    rv = volmod.realized_vol(bars, window=21, method="yang_zhang")
-                    if rv is not None and rv == rv and rv > 0:
-                        ref_vol = float(rv)
+                    # HAR-RV forecast first (the conditional forecast the
+                    # research phase built — Jensen-corrected, gap-inclusive);
+                    # trailing Yang-Zhang only as the fallback ESTIMATE when
+                    # the fit is unusable. The distinction is the alpha: HAR
+                    # conditions on the 1/5/22-day cascade instead of assuming
+                    # yesterday's vol level simply persists.
+                    fv = volmod.forecast_vol(bars, horizon=7)
+                    if fv is not None:
+                        ref_vol = float(fv)
+                    else:
+                        rv = volmod.realized_vol(bars, window=21, method="yang_zhang")
+                        if rv is not None and rv == rv and rv > 0:
+                            ref_vol = float(rv)
             except Exception:
                 ref_vol = None
             feat["ref_vol"] = round(ref_vol, 4) if ref_vol else None

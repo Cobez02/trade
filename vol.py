@@ -612,3 +612,59 @@ def recommended_sampling_minutes() -> int:
     — it is free and reduces variance.
     """
     return 5
+
+
+@_never_raises(None)
+def daily_variance(df) -> "pd.Series | None":
+    """Per-day variance series from daily OHLC, GAP-INCLUSIVE.
+
+    Built for har_fit/har_forecast, which want DAILY VARIANCE. Each day is
+    the overnight gap term plus a single-bar Garman-Klass intraday term:
+
+        v_t = ln(O_t / C_{t-1})^2  +  0.5 ln(H_t/L_t)^2 - (2 ln 2 - 1) ln(C_t/O_t)^2
+
+    The gap term is not optional decoration: the research phase measured
+    gap-blind estimators (Parkinson, plain GK) 2.2-2.5 vol points LOW on this
+    watchlist, and a low-biased forecast makes every option look expensive to
+    buy and every spread look safe to sell — both in the losing direction.
+    Returns a pandas Series indexed like df, or None on unusable input.
+    """
+    need = {"open", "high", "low", "close"}
+    if df is None or not need.issubset(set(map(str.lower, map(str, df.columns)))):
+        return None
+    cols = {str(c).lower(): c for c in df.columns}
+    o = pd.to_numeric(df[cols["open"]], errors="coerce").astype(float)
+    h = pd.to_numeric(df[cols["high"]], errors="coerce").astype(float)
+    l = pd.to_numeric(df[cols["low"]], errors="coerce").astype(float)
+    c = pd.to_numeric(df[cols["close"]], errors="coerce").astype(float)
+    prev_c = c.shift(1)
+    with np.errstate(all="ignore"):
+        gap = np.log(o / prev_c) ** 2
+        gk = 0.5 * np.log(h / l) ** 2 - (2 * math.log(2) - 1) * np.log(c / o) ** 2
+    v = (gap + gk.clip(lower=0.0)).replace([np.inf, -np.inf], np.nan).dropna()
+    v = v[v > 0]
+    return v if len(v) else None
+
+
+@_never_raises(None)
+def forecast_vol(df, horizon: int = 5) -> float | None:
+    """One call from daily bars to an annualized HAR-RV vol forecast.
+
+    This is the alpha-relevant upgrade over using trailing realized vol AS the
+    forecast: HAR (Corsi) conditions on the 1/5/22-day cascade instead of
+    assuming yesterday's level persists, and the research phase's fit carries
+    the Jensen correction that retail HAR implementations habitually drop
+    (omitting it biases forecasts LOW — the dangerous direction for a book
+    that now sells spreads). Returns None whenever the fit is not usable —
+    callers fall back to trailing realized vol and say so.
+    """
+    v = daily_variance(df)
+    if v is None or len(v) < 40:
+        return None
+    model = har_fit(v)
+    if not model or (model.get("n") or 0) < 30:
+        return None
+    f = har_forecast(model, v, horizon=max(1, int(horizon)))
+    if f is None or not math.isfinite(f) or not (0.01 <= f <= 4.0):
+        return None
+    return float(f)
