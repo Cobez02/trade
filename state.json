@@ -2,7 +2,68 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "AMZN260807C00280000": {
+      "sleeve": "news",
+      "underlying": "AMZN",
+      "direction": "bull",
+      "type": "call",
+      "strike": 280.0,
+      "expiration": "2026-08-07",
+      "qty": 2,
+      "entry_price": 2.07,
+      "entry_cost": 414.0,
+      "entry_date": "2026-07-31",
+      "thesis": "News flow +3 across 2 articles (keyword sentiment)",
+      "spot_at_entry": 271.065,
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "signal_score": 3,
+        "rsi": 63.9,
+        "macd_hist": 1.197,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 7,
+        "moneyness_pct": 0.033,
+        "spread_pct": 0.01,
+        "type": "call",
+        "ref_vol": 0.3836,
+        "iv_at_entry": 0.3541,
+        "vol_edge_pts": 2.94
+      }
+    },
+    "HOOD260807C00093000": {
+      "sleeve": "news",
+      "underlying": "HOOD",
+      "direction": "bull",
+      "type": "call",
+      "strike": 93.0,
+      "expiration": "2026-08-07",
+      "qty": 4,
+      "entry_price": 1.28,
+      "entry_cost": 512.0,
+      "entry_date": "2026-07-31",
+      "thesis": "News flow +2 across 1 articles (keyword sentiment)",
+      "spot_at_entry": 87.45,
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "signal_score": 2,
+        "rsi": 28.1,
+        "macd_hist": -2.907,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 7,
+        "moneyness_pct": 0.0635,
+        "spread_pct": 0.024,
+        "type": "call",
+        "ref_vol": 0.716,
+        "iv_at_entry": 0.6685,
+        "vol_edge_pts": 4.76
+      }
+    }
+  },
   "closed": [
     {
       "symbol": "TSLA260803C00310000",
@@ -404,9 +465,9 @@
     },
     {
       "date": "2026-07-31",
-      "equity": 10980.44,
-      "benchmark_equity": 10109.88,
-      "spy": 746.17
+      "equity": 10974.4,
+      "benchmark_equity": 10108.26,
+      "spy": 746.05
     }
   ],
   "run_log": [
@@ -910,6 +971,20 @@
         "TSLA: strike scan: 3 quoted, spreads [2.4%, 2.2%, 4.8%], tightest 2.2%",
         "NO EDGE TSLA bull [tech] \u2014 implied 45.6% vs forecast 45.5%; buy: bsm 4.6468 vs mid 4.6500 -> -0.07% (quote is against you, wait)"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T18:27:16.203606+00:00",
+      "notes": [
+        "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "AMZN: strike scan: 3 quoted, spreads [3.6%, 6.6%, 1.0%], tightest 1.0%",
+        "OPENED 2x AMZN260807C00280000 [news] @ $2.07 ($414, sleeve \u00d71.0, learned \u00d71.0, vol edge +2.9pts, round trip 0.8%) \u2014 News flow +3 across 2 articles (keyword sentiment)",
+        "HOOD: strike scan: 3 quoted, spreads [6.8%, 5.3%, 2.4%], tightest 2.4%",
+        "OPENED 4x HOOD260807C00093000 [news] @ $1.28 ($512, sleeve \u00d71.0, learned \u00d71.0, vol edge +4.8pts, round trip 1.8%) \u2014 News flow +2 across 1 articles (keyword sentiment)",
+        "TSLA: strike scan: 3 quoted, spreads [4.9%, 2.0%, 1.9%], tightest 2.0%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 45.7% vs forecast 45.5%; buy: bsm 4.9047 vs mid 4.9300 -> -0.51% (quote is against you, wait)",
+        "STOP ARMED AMZN260807C00280000 x2 @ $0.82 (-60% from $2.05) \u2014 holds whether or not anything of ours is running"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1304,24 +1379,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "MSFT",
+        "underlying": "AMZN",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "TGRW",
+        "underlying": "HOOD",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "VOOG",
+        "underlying": "LNC",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "XLK",
+        "underlying": "LTH",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
