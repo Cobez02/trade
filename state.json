@@ -2,38 +2,7 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {
-    "AMZN260807C00270000": {
-      "sleeve": "news",
-      "underlying": "AMZN",
-      "direction": "bull",
-      "type": "call",
-      "strike": 270.0,
-      "expiration": "2026-08-07",
-      "qty": 1,
-      "entry_price": 3.8,
-      "entry_cost": 380.0,
-      "entry_date": "2026-07-31",
-      "thesis": "News flow +4 across 2 articles (keyword sentiment)",
-      "spot_at_entry": 266.66,
-      "features": {
-        "sleeve": "news",
-        "direction": "bull",
-        "signal_score": 4,
-        "rsi": 61.9,
-        "macd_hist": 0.916,
-        "macd_rising": true,
-        "trend_up": false,
-        "dte": 7,
-        "moneyness_pct": 0.0125,
-        "spread_pct": 0.019,
-        "type": "call",
-        "ref_vol": 0.3838,
-        "iv_at_entry": 0.3554,
-        "vol_edge_pts": 2.84
-      }
-    }
-  },
+  "positions": {},
   "closed": [
     {
       "symbol": "TSLA260803C00310000",
@@ -436,8 +405,8 @@
     {
       "date": "2026-07-31",
       "equity": 10980.44,
-      "benchmark_equity": 10053.52,
-      "spy": 742.01
+      "benchmark_equity": 10085.77,
+      "spy": 744.39
     }
   ],
   "run_log": [
@@ -905,6 +874,19 @@
         "TSLA: strike scan: 3 quoted, spreads [2.4%, 2.2%, 3.6%], tightest 2.2%",
         "NO EDGE TSLA bull [tech] \u2014 implied 46.4% vs forecast 45.5%; buy: bsm 4.3589 vs mid 4.4900 -> -2.92% (quote is against you, wait)"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T16:31:09.368969+00:00",
+      "notes": [
+        "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "AAPL: strike scan: 3 quoted, spreads [4.5%, 2.1%, 3.5%], tightest 2.1%",
+        "NO EDGE AAPL bull [news] \u2014 implied 32.9% vs forecast 32.7%; buy: bsm 5.6003 vs mid 5.6300 -> -0.53% (quote is against you, wait)",
+        "no liquid contract for XPO [news]",
+        "no liquid contract for NVT [news]",
+        "TSLA: strike scan: 3 quoted, spreads [4.2%, 3.7%, 3.6%], tightest 3.7%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 46.2% vs forecast 45.5%; buy: bsm 4.9811 vs mid 5.0750 -> -1.85% (quote is against you, wait)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1304,31 +1286,32 @@
         "thesis": "News flow +4 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "PGY",
+        "underlying": "AAPL",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "GDDY",
+        "underlying": "XPO",
         "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "GIL",
+        "underlying": "NVT",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 16 oversold + MACD turning up"
+        "thesis": "Technical: RSI 17 oversold + MACD turning up"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "90 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "116 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "67 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
