@@ -405,8 +405,8 @@
     {
       "date": "2026-07-31",
       "equity": 10980.44,
-      "benchmark_equity": 10095.99,
-      "spy": 745.145
+      "benchmark_equity": 10109.88,
+      "spy": 746.17
     }
   ],
   "run_log": [
@@ -895,6 +895,21 @@
         "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T17:30:00.204522+00:00",
+      "notes": [
+        "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "CANCELLED working order AMZN260807C00270000 qty=1 \u2014 spread widened to 4% (> 4%)",
+        "MSFT: strike scan: 3 quoted, spreads [8.7%, 4.5%, 6.3%], tightest 4.5%",
+        "SCREENED OUT MSFT bull [news] \u2014 spread: spread 4.5% > 4% \u2014 modelled round trip 3.3% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for TGRW [news]",
+        "no liquid contract for VOOG [news]",
+        "no liquid contract for XLK [news]",
+        "TSLA: strike scan: 3 quoted, spreads [2.4%, 2.2%, 4.8%], tightest 2.2%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 45.6% vs forecast 45.5%; buy: bsm 4.6468 vs mid 4.6500 -> -0.07% (quote is against you, wait)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1289,31 +1304,31 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "CHD",
+        "underlying": "MSFT",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "MA",
+        "underlying": "TGRW",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "PB",
+        "underlying": "VOOG",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "NBIX",
+        "underlying": "XLK",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 17 oversold + MACD turning up"
+        "thesis": "Technical: RSI 18 oversold + MACD turning up"
       }
     ],
     "flow": [],
