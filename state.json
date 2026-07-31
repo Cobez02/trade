@@ -405,8 +405,8 @@
     {
       "date": "2026-07-31",
       "equity": 10980.44,
-      "benchmark_equity": 10085.77,
-      "spy": 744.39
+      "benchmark_equity": 10095.99,
+      "spy": 745.145
     }
   ],
   "run_log": [
@@ -887,6 +887,14 @@
         "TSLA: strike scan: 3 quoted, spreads [4.2%, 3.7%, 3.6%], tightest 3.7%",
         "NO EDGE TSLA bull [tech] \u2014 implied 46.2% vs forecast 45.5%; buy: bsm 4.9811 vs mid 5.0750 -> -1.85% (quote is against you, wait)"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T17:12:57.938845+00:00",
+      "notes": [
+        "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1281,24 +1289,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "AMZN",
+        "underlying": "CHD",
         "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "AAPL",
-        "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "XPO",
+        "underlying": "MA",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "NVT",
+        "underlying": "PB",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "NBIX",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
