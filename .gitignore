@@ -20,3 +20,6 @@ backtest_result.json
 # backtest_result.json / sensitivity_result.json / BACKTEST_REPORT.md
 bt_run.log
 sens_run.log
+
+# insider study scratch log (committed artifacts: insider_result.json + INSIDER_REPORT.md)
+insider_run.log
