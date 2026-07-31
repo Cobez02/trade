@@ -1,0 +1,2148 @@
+{
+ "spreads": {
+  "headline": {
+   "label": "spreads 2020-2026",
+   "n": 0
+  },
+  "regimes": [
+   {
+    "label": "2020H2 rebound",
+    "n": 0
+   },
+   {
+    "label": "2022 bear",
+    "n": 0
+   },
+   {
+    "label": "2023-24 recovery",
+    "n": 0
+   },
+   {
+    "label": "2025-26 modern",
+    "n": 0
+   }
+  ],
+  "stress": {
+   "label": "spreads STRESS",
+   "n": 0
+  },
+  "trades": []
+ },
+ "singles": {
+  "headline": {
+   "label": "tech singles 2020-2026",
+   "n": 203,
+   "total": 2653.4,
+   "win_rate": 0.36,
+   "profit_factor": 1.24,
+   "avg": 13.07,
+   "skew": 1.31,
+   "sr_trade": 0.079,
+   "sr_ann": 0.49,
+   "trades_per_year": 38.6,
+   "max_dd": -1761.6,
+   "psr": 0.88,
+   "min_trl": 397,
+   "flagged": 120
+  },
+  "regimes": [
+   {
+    "label": "2020H2 rebound",
+    "n": 40,
+    "total": -457.0,
+    "win_rate": 0.35,
+    "profit_factor": 0.79,
+    "avg": -11.43,
+    "skew": 1.02,
+    "sr_trade": -0.098,
+    "sr_ann": -0.62,
+    "trades_per_year": 40.2,
+    "max_dd": -735.4,
+    "psr": 0.281,
+    "min_trl": null,
+    "flagged": 24
+   },
+   {
+    "label": "2022 bear",
+    "n": 29,
+    "total": 2210.2,
+    "win_rate": 0.483,
+    "profit_factor": 2.17,
+    "avg": 76.21,
+    "skew": 0.83,
+    "sr_trade": 0.309,
+    "sr_ann": 1.75,
+    "trades_per_year": 32.1,
+    "max_dd": -517.8,
+    "psr": 0.968,
+    "min_trl": 23,
+    "flagged": 14
+   },
+   {
+    "label": "2023-24 recovery",
+    "n": 95,
+    "total": 1602.0,
+    "win_rate": 0.358,
+    "profit_factor": 1.45,
+    "avg": 16.86,
+    "skew": 1.78,
+    "sr_trade": 0.133,
+    "sr_ann": 0.93,
+    "trades_per_year": 49.6,
+    "max_dd": -574.6,
+    "psr": 0.925,
+    "min_trl": 123,
+    "flagged": 55
+   },
+   {
+    "label": "2025-26 modern",
+    "n": 39,
+    "total": -701.8,
+    "win_rate": 0.282,
+    "profit_factor": 0.8,
+    "avg": -17.99,
+    "skew": 0.97,
+    "sr_trade": -0.089,
+    "sr_ann": -0.58,
+    "trades_per_year": 42.1,
+    "max_dd": -1881.4,
+    "psr": 0.3,
+    "min_trl": null,
+    "flagged": 27
+   }
+  ],
+  "trades": [
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2020-11-17",
+    "exit_date": "2020-11-18",
+    "exit_reason": "take-profit +89%",
+    "pnl": 107.8,
+    "pnl_pct": 0.878,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2020-11-18",
+    "exit_date": "2020-11-19",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -66.2,
+    "pnl_pct": -0.3529,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2020-12-11",
+    "exit_date": "2020-12-15",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -143.2,
+    "pnl_pct": -0.6164,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-01-07",
+    "exit_date": "2021-01-08",
+    "exit_reason": "take-profit +70%",
+    "pnl": 41.8,
+    "pnl_pct": 0.6885,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2021-01-13",
+    "exit_date": "2021-01-15",
+    "exit_reason": "take-profit +99%",
+    "pnl": 125.8,
+    "pnl_pct": 0.9692,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-01-20",
+    "exit_date": "2021-01-21",
+    "exit_reason": "stop-loss -41%",
+    "pnl": -29.2,
+    "pnl_pct": -0.4143,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-02-05",
+    "exit_date": "2021-02-08",
+    "exit_reason": "take-profit +49%",
+    "pnl": 37.8,
+    "pnl_pct": 0.4872,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-03-11",
+    "exit_date": "2021-03-12",
+    "exit_reason": "stop-loss -34%",
+    "pnl": -34.2,
+    "pnl_pct": -0.3434,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-03-29",
+    "exit_date": "2021-03-30",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -46.2,
+    "pnl_pct": -0.6765,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2021-04-19",
+    "exit_date": "2021-04-20",
+    "exit_reason": "take-profit +89%",
+    "pnl": 81.8,
+    "pnl_pct": 0.8817,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2021-04-20",
+    "exit_date": "2021-04-21",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -86.2,
+    "pnl_pct": -0.7963,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2021-04-21",
+    "exit_date": "2021-04-22",
+    "exit_reason": "take-profit +68%",
+    "pnl": 78.8,
+    "pnl_pct": 0.6752,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-09-22",
+    "exit_date": "2021-09-23",
+    "exit_reason": "take-profit +131%",
+    "pnl": 134.8,
+    "pnl_pct": 1.2981,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2021-10-25",
+    "exit_date": "2021-10-28",
+    "exit_reason": "stop-loss -72%",
+    "pnl": -50.2,
+    "pnl_pct": -0.7246,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2021-12-10",
+    "exit_date": "2021-12-13",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -33.2,
+    "pnl_pct": -0.7174,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-01-28",
+    "exit_date": "2022-01-31",
+    "exit_reason": "take-profit +73%",
+    "pnl": 186.8,
+    "pnl_pct": 0.7248,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-03-30",
+    "exit_date": "2022-03-31",
+    "exit_reason": "take-profit +97%",
+    "pnl": 153.8,
+    "pnl_pct": 0.9625,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-03-31",
+    "exit_date": "2022-04-01",
+    "exit_reason": "stop-loss -44%",
+    "pnl": -51.2,
+    "pnl_pct": -0.4397,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-04-01",
+    "exit_date": "2022-04-04",
+    "exit_reason": "stop-loss -76%",
+    "pnl": -105.2,
+    "pnl_pct": -0.7609,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-04-04",
+    "exit_date": "2022-04-05",
+    "exit_reason": "take-profit +155%",
+    "pnl": 178.8,
+    "pnl_pct": 1.5431,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-04-19",
+    "exit_date": "2022-04-21",
+    "exit_reason": "stop-loss -87%",
+    "pnl": -51.2,
+    "pnl_pct": -0.8793,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-05-24",
+    "exit_date": "2022-05-26",
+    "exit_reason": "take-profit +108%",
+    "pnl": 336.8,
+    "pnl_pct": 1.0531,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-06-21",
+    "exit_date": "2022-06-24",
+    "exit_reason": "take-profit +243%",
+    "pnl": 574.8,
+    "pnl_pct": 2.3092,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-06-28",
+    "exit_date": "2022-06-30",
+    "exit_reason": "stop-loss -78%",
+    "pnl": -189.2,
+    "pnl_pct": -0.7778,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-08-08",
+    "exit_date": "2022-08-10",
+    "exit_reason": "stop-loss -86%",
+    "pnl": -156.2,
+    "pnl_pct": -0.8619,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-08-11",
+    "exit_date": "2022-08-12",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -101.2,
+    "pnl_pct": -0.8211,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2022-08-16",
+    "exit_date": "2022-08-19",
+    "exit_reason": "take-profit +85%",
+    "pnl": 97.8,
+    "pnl_pct": 0.8376,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-09-01",
+    "exit_date": "2022-09-02",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -123.2,
+    "pnl_pct": -0.7546,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-10-03",
+    "exit_date": "2022-10-04",
+    "exit_reason": "take-profit +172%",
+    "pnl": 527.8,
+    "pnl_pct": 1.7087,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-12-21",
+    "exit_date": "2022-12-22",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -107.2,
+    "pnl_pct": -0.8295,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2022-12-22",
+    "exit_date": "2022-12-27",
+    "exit_reason": "stop-loss -52%",
+    "pnl": -75.2,
+    "pnl_pct": -0.5282,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-01-03",
+    "exit_date": "2023-01-05",
+    "exit_reason": "stop-loss -43%",
+    "pnl": -78.2,
+    "pnl_pct": -0.4309,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-02-07",
+    "exit_date": "2023-02-08",
+    "exit_reason": "take-profit +62%",
+    "pnl": 138.8,
+    "pnl_pct": 0.607,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-02-28",
+    "exit_date": "2023-03-03",
+    "exit_reason": "take-profit +188%",
+    "pnl": 256.8,
+    "pnl_pct": 1.8623,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-04-10",
+    "exit_date": "2023-04-13",
+    "exit_reason": "stop-loss -89%",
+    "pnl": -119.2,
+    "pnl_pct": -0.8947,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-04-14",
+    "exit_date": "2023-04-17",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -36.2,
+    "pnl_pct": -0.5143,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-04-17",
+    "exit_date": "2023-04-21",
+    "exit_reason": "stop-loss -69%",
+    "pnl": -54.2,
+    "pnl_pct": -0.6923,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-05-18",
+    "exit_date": "2023-05-19",
+    "exit_reason": "stop-loss -38%",
+    "pnl": -20.2,
+    "pnl_pct": -0.3922,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-05-26",
+    "exit_date": "2023-05-30",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -53.2,
+    "pnl_pct": -0.4953,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-06-16",
+    "exit_date": "2023-06-21",
+    "exit_reason": "take-profit +55%",
+    "pnl": 24.8,
+    "pnl_pct": 0.5435,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-06-21",
+    "exit_date": "2023-06-22",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -27.2,
+    "pnl_pct": -0.6,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-06-22",
+    "exit_date": "2023-06-23",
+    "exit_reason": "take-profit +111%",
+    "pnl": 47.8,
+    "pnl_pct": 1.0909,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-07-13",
+    "exit_date": "2023-07-14",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -23.2,
+    "pnl_pct": -0.4792,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-07-26",
+    "exit_date": "2023-07-27",
+    "exit_reason": "take-profit +119%",
+    "pnl": 58.8,
+    "pnl_pct": 1.18,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-07-27",
+    "exit_date": "2023-07-28",
+    "exit_reason": "stop-loss -83%",
+    "pnl": -67.2,
+    "pnl_pct": -0.8375,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-08-01",
+    "exit_date": "2023-08-02",
+    "exit_reason": "take-profit +259%",
+    "pnl": 176.8,
+    "pnl_pct": 2.5652,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-08-21",
+    "exit_date": "2023-08-22",
+    "exit_reason": "stop-loss -38%",
+    "pnl": -35.2,
+    "pnl_pct": -0.3889,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-08-22",
+    "exit_date": "2023-08-23",
+    "exit_reason": "take-profit +132%",
+    "pnl": 129.8,
+    "pnl_pct": 1.3131,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-09-29",
+    "exit_date": "2023-10-02",
+    "exit_reason": "stop-loss -36%",
+    "pnl": -46.2,
+    "pnl_pct": -0.3651,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-10-02",
+    "exit_date": "2023-10-03",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -89.2,
+    "pnl_pct": -0.8165,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-10-04",
+    "exit_date": "2023-10-06",
+    "exit_reason": "take-profit +82%",
+    "pnl": 98.8,
+    "pnl_pct": 0.8182,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-10-06",
+    "exit_date": "2023-10-10",
+    "exit_reason": "take-profit +66%",
+    "pnl": 84.8,
+    "pnl_pct": 0.6538,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2023-10-31",
+    "exit_date": "2023-11-01",
+    "exit_reason": "take-profit +80%",
+    "pnl": 116.8,
+    "pnl_pct": 0.7959,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-11-16",
+    "exit_date": "2023-11-17",
+    "exit_reason": "stop-loss -57%",
+    "pnl": -26.2,
+    "pnl_pct": -0.5778,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-11-17",
+    "exit_date": "2023-11-20",
+    "exit_reason": "stop-loss -78%",
+    "pnl": -31.2,
+    "pnl_pct": -0.7949,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-11-20",
+    "exit_date": "2023-11-22",
+    "exit_reason": "stop-loss -77%",
+    "pnl": -26.2,
+    "pnl_pct": -0.7879,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-11-22",
+    "exit_date": "2023-11-24",
+    "exit_reason": "stop-loss -60%",
+    "pnl": -18.2,
+    "pnl_pct": -0.6207,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-12-01",
+    "exit_date": "2023-12-07",
+    "exit_reason": "stop-loss -80%",
+    "pnl": -43.2,
+    "pnl_pct": -0.8113,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-12-15",
+    "exit_date": "2023-12-18",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -22.2,
+    "pnl_pct": -0.6286,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-12-22",
+    "exit_date": "2023-12-26",
+    "exit_reason": "stop-loss -73%",
+    "pnl": -49.2,
+    "pnl_pct": -0.7424,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2023-12-27",
+    "exit_date": "2023-12-28",
+    "exit_reason": "stop-loss -44%",
+    "pnl": -15.2,
+    "pnl_pct": -0.4545,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-01-22",
+    "exit_date": "2024-01-25",
+    "exit_reason": "take-profit +64%",
+    "pnl": 23.8,
+    "pnl_pct": 0.6154,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-02-05",
+    "exit_date": "2024-02-06",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -30.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-02-23",
+    "exit_date": "2024-02-26",
+    "exit_reason": "stop-loss -65%",
+    "pnl": -38.2,
+    "pnl_pct": -0.6552,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-03-21",
+    "exit_date": "2024-03-22",
+    "exit_reason": "stop-loss -67%",
+    "pnl": -36.2,
+    "pnl_pct": -0.6792,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-04-22",
+    "exit_date": "2024-04-23",
+    "exit_reason": "take-profit +150%",
+    "pnl": 174.8,
+    "pnl_pct": 1.4957,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-05-16",
+    "exit_date": "2024-05-17",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -35.2,
+    "pnl_pct": -0.5385,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-05-17",
+    "exit_date": "2024-05-21",
+    "exit_reason": "stop-loss -63%",
+    "pnl": -34.2,
+    "pnl_pct": -0.6415,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-05-23",
+    "exit_date": "2024-05-24",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -39.2,
+    "pnl_pct": -0.7647,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-05-24",
+    "exit_date": "2024-05-28",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -15.2,
+    "pnl_pct": -0.3571,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-05-28",
+    "exit_date": "2024-05-29",
+    "exit_reason": "take-profit +160%",
+    "pnl": 89.8,
+    "pnl_pct": 1.5789,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-06-21",
+    "exit_date": "2024-06-25",
+    "exit_reason": "stop-loss -64%",
+    "pnl": -37.2,
+    "pnl_pct": -0.6491,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-06-25",
+    "exit_date": "2024-06-26",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -20.2,
+    "pnl_pct": -0.3226,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-06-26",
+    "exit_date": "2024-06-27",
+    "exit_reason": "stop-loss -56%",
+    "pnl": -31.2,
+    "pnl_pct": -0.5741,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-07-05",
+    "exit_date": "2024-07-10",
+    "exit_reason": "take-profit +279%",
+    "pnl": 135.8,
+    "pnl_pct": 2.7755,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-08-23",
+    "exit_date": "2024-08-27",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -57.2,
+    "pnl_pct": -0.4597,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-08-27",
+    "exit_date": "2024-08-28",
+    "exit_reason": "take-profit +154%",
+    "pnl": 116.8,
+    "pnl_pct": 1.5,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-08-28",
+    "exit_date": "2024-08-29",
+    "exit_reason": "stop-loss -72%",
+    "pnl": -114.2,
+    "pnl_pct": -0.7261,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-08-30",
+    "exit_date": "2024-09-03",
+    "exit_reason": "take-profit +412%",
+    "pnl": 421.8,
+    "pnl_pct": 4.0971,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-09-13",
+    "exit_date": "2024-09-18",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -45.2,
+    "pnl_pct": -0.5172,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-09-25",
+    "exit_date": "2024-09-26",
+    "exit_reason": "stop-loss -41%",
+    "pnl": -33.2,
+    "pnl_pct": -0.4177,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2024-09-26",
+    "exit_date": "2024-09-30",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -45.2,
+    "pnl_pct": -0.4639,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-10-10",
+    "exit_date": "2024-10-14",
+    "exit_reason": "take-profit +195%",
+    "pnl": 139.8,
+    "pnl_pct": 1.9444,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-11-07",
+    "exit_date": "2024-11-11",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -26.2,
+    "pnl_pct": -0.3611,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2024-11-25",
+    "exit_date": "2024-11-26",
+    "exit_reason": "take-profit +58%",
+    "pnl": 29.8,
+    "pnl_pct": 0.566,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-03-14",
+    "exit_date": "2025-03-18",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -113.2,
+    "pnl_pct": -0.4728,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-05-07",
+    "exit_date": "2025-05-08",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -144.2,
+    "pnl_pct": -0.4223,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-05-08",
+    "exit_date": "2025-05-12",
+    "exit_reason": "stop-loss -96%",
+    "pnl": -296.2,
+    "pnl_pct": -0.9642,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-05-15",
+    "exit_date": "2025-05-16",
+    "exit_reason": "stop-loss -58%",
+    "pnl": -109.2,
+    "pnl_pct": -0.5798,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-05-16",
+    "exit_date": "2025-05-21",
+    "exit_reason": "take-profit +203%",
+    "pnl": 311.8,
+    "pnl_pct": 2.0129,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-05-28",
+    "exit_date": "2025-05-29",
+    "exit_reason": "stop-loss -36%",
+    "pnl": -78.2,
+    "pnl_pct": -0.3662,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-06-27",
+    "exit_date": "2025-07-01",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -14.2,
+    "pnl_pct": -0.3182,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-08-13",
+    "exit_date": "2025-08-14",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -15.2,
+    "pnl_pct": -0.4839,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-09-10",
+    "exit_date": "2025-09-11",
+    "exit_reason": "take-profit +134%",
+    "pnl": 83.8,
+    "pnl_pct": 1.3333,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-10-02",
+    "exit_date": "2025-10-03",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -25.2,
+    "pnl_pct": -0.5556,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-10-24",
+    "exit_date": "2025-10-27",
+    "exit_reason": "take-profit +258%",
+    "pnl": 251.8,
+    "pnl_pct": 2.5714,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-10-30",
+    "exit_date": "2025-11-03",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -101.2,
+    "pnl_pct": -0.6601,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "PUT",
+    "entry_date": "2025-11-03",
+    "exit_date": "2025-11-04",
+    "exit_reason": "take-profit +151%",
+    "pnl": 223.8,
+    "pnl_pct": 1.4933,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-11-21",
+    "exit_date": "2025-11-24",
+    "exit_reason": "take-profit +83%",
+    "pnl": 202.8,
+    "pnl_pct": 0.8286,
+    "flagged": false
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2025-11-28",
+    "exit_date": "2025-12-01",
+    "exit_reason": "stop-loss -67%",
+    "pnl": -36.2,
+    "pnl_pct": -0.6792,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2026-02-25",
+    "exit_date": "2026-02-26",
+    "exit_reason": "stop-loss -86%",
+    "pnl": -77.2,
+    "pnl_pct": -0.8652,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2026-03-17",
+    "exit_date": "2026-03-18",
+    "exit_reason": "stop-loss -80%",
+    "pnl": -139.2,
+    "pnl_pct": -0.8081,
+    "flagged": true
+   },
+   {
+    "symbol": "SPY",
+    "type": "CALL",
+    "entry_date": "2026-07-06",
+    "exit_date": "2026-07-07",
+    "exit_reason": "stop-loss -77%",
+    "pnl": -29.2,
+    "pnl_pct": -0.7838,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2020-11-19",
+    "exit_date": "2020-11-23",
+    "exit_reason": "stop-loss -30%",
+    "pnl": -57.2,
+    "pnl_pct": -0.3167,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2020-12-03",
+    "exit_date": "2020-12-07",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -134.2,
+    "pnl_pct": -0.7444,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2020-12-08",
+    "exit_date": "2020-12-09",
+    "exit_reason": "take-profit +142%",
+    "pnl": 349.8,
+    "pnl_pct": 1.3889,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2020-12-11",
+    "exit_date": "2020-12-14",
+    "exit_reason": "stop-loss -43%",
+    "pnl": -108.2,
+    "pnl_pct": -0.4408,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2020-12-14",
+    "exit_date": "2020-12-15",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -119.2,
+    "pnl_pct": -0.6648,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2020-12-16",
+    "exit_date": "2020-12-21",
+    "exit_reason": "stop-loss -58%",
+    "pnl": -73.2,
+    "pnl_pct": -0.5794,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-01-20",
+    "exit_date": "2021-01-26",
+    "exit_reason": "take-profit +94%",
+    "pnl": 191.8,
+    "pnl_pct": 0.893,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-02-04",
+    "exit_date": "2021-02-10",
+    "exit_reason": "stop-loss -34%",
+    "pnl": -59.2,
+    "pnl_pct": -0.3598,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-03-05",
+    "exit_date": "2021-03-08",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -223.2,
+    "pnl_pct": -0.7534,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-04-15",
+    "exit_date": "2021-04-16",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -86.2,
+    "pnl_pct": -0.4343,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-04-16",
+    "exit_date": "2021-04-19",
+    "exit_reason": "take-profit +54%",
+    "pnl": 71.8,
+    "pnl_pct": 0.5217,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-05-14",
+    "exit_date": "2021-05-17",
+    "exit_reason": "stop-loss -55%",
+    "pnl": -89.2,
+    "pnl_pct": -0.5563,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-05-18",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -67.2,
+    "pnl_pct": -0.5115,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-05-18",
+    "exit_date": "2021-05-20",
+    "exit_reason": "take-profit +134%",
+    "pnl": 235.8,
+    "pnl_pct": 1.2896,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-07-07",
+    "exit_date": "2021-07-08",
+    "exit_reason": "take-profit +70%",
+    "pnl": 86.8,
+    "pnl_pct": 0.6797,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-07-08",
+    "exit_date": "2021-07-09",
+    "exit_reason": "stop-loss -67%",
+    "pnl": -116.2,
+    "pnl_pct": -0.6824,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-07-09",
+    "exit_date": "2021-07-12",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -78.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-07-14",
+    "exit_date": "2021-07-15",
+    "exit_reason": "take-profit +45%",
+    "pnl": 53.8,
+    "pnl_pct": 0.4355,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-08-06",
+    "exit_date": "2021-08-09",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -45.2,
+    "pnl_pct": -0.4891,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-09-22",
+    "exit_date": "2021-09-27",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -108.2,
+    "pnl_pct": -0.8182,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-10-01",
+    "exit_date": "2021-10-04",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -146.2,
+    "pnl_pct": -0.7978,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2021-10-05",
+    "exit_date": "2021-10-07",
+    "exit_reason": "take-profit +109%",
+    "pnl": 154.8,
+    "pnl_pct": 1.069,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-10-27",
+    "exit_date": "2021-10-28",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -72.2,
+    "pnl_pct": -0.5294,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-11-12",
+    "exit_date": "2021-11-15",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -67.2,
+    "pnl_pct": -0.4323,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2021-11-15",
+    "exit_date": "2021-11-16",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -71.2,
+    "pnl_pct": -0.5221,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-01-14",
+    "exit_date": "2022-01-18",
+    "exit_reason": "stop-loss -85%",
+    "pnl": -155.2,
+    "pnl_pct": -0.8564,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-01-26",
+    "exit_date": "2022-01-27",
+    "exit_reason": "stop-loss -36%",
+    "pnl": -180.2,
+    "pnl_pct": -0.3696,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-01-28",
+    "exit_date": "2022-01-31",
+    "exit_reason": "take-profit +119%",
+    "pnl": 432.8,
+    "pnl_pct": 1.1578,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2022-03-30",
+    "exit_date": "2022-03-31",
+    "exit_reason": "take-profit +51%",
+    "pnl": 119.8,
+    "pnl_pct": 0.4938,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-05-20",
+    "exit_date": "2022-05-23",
+    "exit_reason": "take-profit +48%",
+    "pnl": 171.8,
+    "pnl_pct": 0.4649,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-05-24",
+    "exit_date": "2022-05-26",
+    "exit_reason": "take-profit +128%",
+    "pnl": 449.8,
+    "pnl_pct": 1.2605,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-06-17",
+    "exit_date": "2022-06-21",
+    "exit_reason": "take-profit +58%",
+    "pnl": 185.8,
+    "pnl_pct": 0.5552,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-06-21",
+    "exit_date": "2022-06-24",
+    "exit_reason": "take-profit +200%",
+    "pnl": 603.8,
+    "pnl_pct": 1.9421,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2022-08-02",
+    "exit_date": "2022-08-03",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -212.2,
+    "pnl_pct": -0.8123,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2022-08-16",
+    "exit_date": "2022-08-17",
+    "exit_reason": "take-profit +48%",
+    "pnl": 73.8,
+    "pnl_pct": 0.4684,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-09-01",
+    "exit_date": "2022-09-02",
+    "exit_reason": "stop-loss -72%",
+    "pnl": -143.2,
+    "pnl_pct": -0.7259,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-12-21",
+    "exit_date": "2022-12-22",
+    "exit_reason": "stop-loss -89%",
+    "pnl": -117.2,
+    "pnl_pct": -0.9,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-12-23",
+    "exit_date": "2022-12-27",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -116.2,
+    "pnl_pct": -0.7582,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2022-12-29",
+    "exit_date": "2023-01-03",
+    "exit_reason": "stop-loss -73%",
+    "pnl": -133.2,
+    "pnl_pct": -0.743,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-01-03",
+    "exit_date": "2023-01-05",
+    "exit_reason": "stop-loss -57%",
+    "pnl": -131.2,
+    "pnl_pct": -0.5721,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-02-28",
+    "exit_date": "2023-03-01",
+    "exit_reason": "stop-loss -40%",
+    "pnl": -68.2,
+    "pnl_pct": -0.4121,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-03-16",
+    "exit_date": "2023-03-20",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -83.2,
+    "pnl_pct": -0.318,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-04-04",
+    "exit_date": "2023-04-05",
+    "exit_reason": "take-profit +51%",
+    "pnl": 66.8,
+    "pnl_pct": 0.5,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-05-10",
+    "exit_date": "2023-05-12",
+    "exit_reason": "stop-loss -72%",
+    "pnl": -63.2,
+    "pnl_pct": -0.7326,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-05-31",
+    "exit_date": "2023-06-01",
+    "exit_reason": "stop-loss -73%",
+    "pnl": -122.2,
+    "pnl_pct": -0.7349,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-06-05",
+    "exit_date": "2023-06-06",
+    "exit_reason": "stop-loss -30%",
+    "pnl": -40.2,
+    "pnl_pct": -0.315,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-06-06",
+    "exit_date": "2023-06-07",
+    "exit_reason": "take-profit +187%",
+    "pnl": 231.8,
+    "pnl_pct": 1.8268,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-06-20",
+    "exit_date": "2023-06-21",
+    "exit_reason": "take-profit +73%",
+    "pnl": 96.8,
+    "pnl_pct": 0.708,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-07-14",
+    "exit_date": "2023-07-18",
+    "exit_reason": "take-profit +117%",
+    "pnl": 146.8,
+    "pnl_pct": 1.1308,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-08-21",
+    "exit_date": "2023-08-23",
+    "exit_reason": "take-profit +151%",
+    "pnl": 218.8,
+    "pnl_pct": 1.4698,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-09-29",
+    "exit_date": "2023-10-03",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -138.2,
+    "pnl_pct": -0.7459,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-10-04",
+    "exit_date": "2023-10-05",
+    "exit_reason": "stop-loss -33%",
+    "pnl": -61.2,
+    "pnl_pct": -0.3408,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-10-31",
+    "exit_date": "2023-11-01",
+    "exit_reason": "take-profit +111%",
+    "pnl": 218.8,
+    "pnl_pct": 1.1005,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-16",
+    "exit_date": "2023-11-17",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -37.2,
+    "pnl_pct": -0.3558,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-17",
+    "exit_date": "2023-11-20",
+    "exit_reason": "stop-loss -78%",
+    "pnl": -70.2,
+    "pnl_pct": -0.7865,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-20",
+    "exit_date": "2023-11-21",
+    "exit_reason": "take-profit +61%",
+    "pnl": 52.8,
+    "pnl_pct": 0.5889,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-22",
+    "exit_date": "2023-11-24",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -26.2,
+    "pnl_pct": -0.3662,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-24",
+    "exit_date": "2023-11-28",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -56.2,
+    "pnl_pct": -0.6154,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-11-29",
+    "exit_date": "2023-12-01",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -50.2,
+    "pnl_pct": -0.5435,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-12-01",
+    "exit_date": "2023-12-04",
+    "exit_reason": "take-profit +88%",
+    "pnl": 82.8,
+    "pnl_pct": 0.8646,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2023-12-12",
+    "exit_date": "2023-12-13",
+    "exit_reason": "take-profit +131%",
+    "pnl": 108.8,
+    "pnl_pct": 1.2674,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2023-12-22",
+    "exit_date": "2023-12-26",
+    "exit_reason": "stop-loss -72%",
+    "pnl": -60.2,
+    "pnl_pct": -0.7229,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-01-19",
+    "exit_date": "2024-01-22",
+    "exit_reason": "stop-loss -35%",
+    "pnl": -42.2,
+    "pnl_pct": -0.3529,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-02-02",
+    "exit_date": "2024-02-05",
+    "exit_reason": "stop-loss -39%",
+    "pnl": -46.2,
+    "pnl_pct": -0.4035,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-02-06",
+    "exit_date": "2024-02-07",
+    "exit_reason": "stop-loss -69%",
+    "pnl": -96.2,
+    "pnl_pct": -0.6957,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-03-01",
+    "exit_date": "2024-03-04",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -59.2,
+    "pnl_pct": -0.4876,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-04-22",
+    "exit_date": "2024-04-23",
+    "exit_reason": "take-profit +138%",
+    "pnl": 262.8,
+    "pnl_pct": 1.3557,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-05-28",
+    "exit_date": "2024-05-29",
+    "exit_reason": "take-profit +80%",
+    "pnl": 81.8,
+    "pnl_pct": 0.7885,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-05-29",
+    "exit_date": "2024-05-30",
+    "exit_reason": "take-profit +109%",
+    "pnl": 154.8,
+    "pnl_pct": 1.069,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-07-15",
+    "exit_date": "2024-07-17",
+    "exit_reason": "take-profit +440%",
+    "pnl": 631.8,
+    "pnl_pct": 4.2703,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-08-01",
+    "exit_date": "2024-08-02",
+    "exit_reason": "stop-loss -68%",
+    "pnl": -243.2,
+    "pnl_pct": -0.6845,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-08-23",
+    "exit_date": "2024-08-26",
+    "exit_reason": "take-profit +52%",
+    "pnl": 139.8,
+    "pnl_pct": 0.5109,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-08-26",
+    "exit_date": "2024-08-27",
+    "exit_reason": "stop-loss -33%",
+    "pnl": -97.2,
+    "pnl_pct": -0.3404,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-08-27",
+    "exit_date": "2024-08-28",
+    "exit_reason": "take-profit +107%",
+    "pnl": 246.8,
+    "pnl_pct": 1.0165,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2024-09-25",
+    "exit_date": "2024-09-26",
+    "exit_reason": "stop-loss -41%",
+    "pnl": -62.2,
+    "pnl_pct": -0.4189,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-10-08",
+    "exit_date": "2024-10-11",
+    "exit_reason": "stop-loss -62%",
+    "pnl": -105.2,
+    "pnl_pct": -0.625,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-10-21",
+    "exit_date": "2024-10-23",
+    "exit_reason": "stop-loss -87%",
+    "pnl": -97.2,
+    "pnl_pct": -0.8739,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-11-07",
+    "exit_date": "2024-11-08",
+    "exit_reason": "stop-loss -37%",
+    "pnl": -71.2,
+    "pnl_pct": -0.3757,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2024-12-02",
+    "exit_date": "2024-12-04",
+    "exit_reason": "take-profit +152%",
+    "pnl": 173.8,
+    "pnl_pct": 1.5,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-01-21",
+    "exit_date": "2025-01-22",
+    "exit_reason": "take-profit +88%",
+    "pnl": 139.8,
+    "pnl_pct": 0.8696,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-02-05",
+    "exit_date": "2025-02-07",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -181.2,
+    "pnl_pct": -0.8117,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-03-05",
+    "exit_date": "2025-03-06",
+    "exit_reason": "stop-loss -68%",
+    "pnl": -255.2,
+    "pnl_pct": -0.6948,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-03-12",
+    "exit_date": "2025-03-13",
+    "exit_reason": "stop-loss -55%",
+    "pnl": -262.2,
+    "pnl_pct": -0.5551,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-03-14",
+    "exit_date": "2025-03-18",
+    "exit_reason": "stop-loss -63%",
+    "pnl": -224.2,
+    "pnl_pct": -0.631,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-07",
+    "exit_date": "2025-05-08",
+    "exit_reason": "stop-loss -44%",
+    "pnl": -156.2,
+    "pnl_pct": -0.4432,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-08",
+    "exit_date": "2025-05-12",
+    "exit_reason": "stop-loss -97%",
+    "pnl": -355.2,
+    "pnl_pct": -0.9699,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-15",
+    "exit_date": "2025-05-16",
+    "exit_reason": "stop-loss -44%",
+    "pnl": -109.2,
+    "pnl_pct": -0.4413,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-16",
+    "exit_date": "2025-05-21",
+    "exit_reason": "take-profit +89%",
+    "pnl": 209.8,
+    "pnl_pct": 0.875,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-27",
+    "exit_date": "2025-05-30",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -122.2,
+    "pnl_pct": -0.4692,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-05-30",
+    "exit_date": "2025-06-02",
+    "exit_reason": "stop-loss -57%",
+    "pnl": -156.2,
+    "pnl_pct": -0.5778,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-06-27",
+    "exit_date": "2025-07-01",
+    "exit_reason": "stop-loss -78%",
+    "pnl": -72.2,
+    "pnl_pct": -0.7826,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-08-12",
+    "exit_date": "2025-08-14",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -55.2,
+    "pnl_pct": -0.7143,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-09-09",
+    "exit_date": "2025-09-15",
+    "exit_reason": "take-profit +162%",
+    "pnl": 148.8,
+    "pnl_pct": 1.4057,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-10-24",
+    "exit_date": "2025-10-27",
+    "exit_reason": "take-profit +225%",
+    "pnl": 495.8,
+    "pnl_pct": 2.2342,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "PUT",
+    "entry_date": "2025-11-03",
+    "exit_date": "2025-11-04",
+    "exit_reason": "take-profit +208%",
+    "pnl": 305.8,
+    "pnl_pct": 1.2541,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-11-21",
+    "exit_date": "2025-11-24",
+    "exit_reason": "take-profit +141%",
+    "pnl": 511.8,
+    "pnl_pct": 1.2705,
+    "flagged": false
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2025-11-28",
+    "exit_date": "2025-12-01",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -91.2,
+    "pnl_pct": -0.4892,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2026-01-07",
+    "exit_date": "2026-01-08",
+    "exit_reason": "stop-loss -62%",
+    "pnl": -99.2,
+    "pnl_pct": -0.6306,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2026-01-27",
+    "exit_date": "2026-01-29",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -143.2,
+    "pnl_pct": -0.7186,
+    "flagged": true
+   },
+   {
+    "symbol": "QQQ",
+    "type": "CALL",
+    "entry_date": "2026-02-17",
+    "exit_date": "2026-02-19",
+    "exit_reason": "stop-loss -34%",
+    "pnl": -126.2,
+    "pnl_pct": -0.3462,
+    "flagged": true
+   }
+  ]
+ },
+ "elapsed_s": 2281.0
+}

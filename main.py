@@ -494,6 +494,16 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
     when the quote is above model value; this path SELLS defined risk in that
     exact condition — implied at least SPREADS_RICH_PTS above the Yang-Zhang
     realized forecast, trend not falling, and the package priced liquidly."""
+    # KILL SWITCH — default OFF as of the 2026-07-31 backtest (see
+    # BACKTEST_REPORT.md): six years of NBBO history, honest fills — the
+    # sleeve never trades at shipped settings, and every parameter
+    # neighborhood tested NEGATIVE (PF 0.81-0.98; stress -$1.1k to -$1.4k)
+    # in a window that EXCLUDES 2018 and Mar-2020, the worst known regimes
+    # for short premium. Entries stay off until Connor re-enables
+    # (SPXBOT_SPREADS=1 here and in trade.yml). manage_spreads() keeps
+    # running regardless: anything already open is managed to its exit.
+    if os.environ.get("SPXBOT_SPREADS", "0") != "1":
+        return
     if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1":
         return
     mins_left = minutes_to_close(broker)

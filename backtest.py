@@ -250,7 +250,14 @@ GATE_COUNTS = {}
 def _count(k):
     GATE_COUNTS[k] = GATE_COUNTS.get(k, 0) + 1
 
-def sim_spreads(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
+def sim_spreads(symbol: str, bars: pd.DataFrame, exps: list, log=print,
+                rich_pts: float = None, trend_veto: bool = True,
+                credit_floor: float = None) -> list:
+    """rich_pts/trend_veto exist ONLY for the disclosed sensitivity study in
+    the report; production values are the defaults, and the study is scored
+    with the multiple-testing discount (expected_max_sharpe) stated."""
+    rich = SPREADS_RICH_PTS if rich_pts is None else rich_pts
+    floor = SPREADS_MIN_CREDIT_FRAC if credit_floor is None else credit_floor
     trades, open_pos = [], None
     days = [d for d in bars.index if START <= d.date() <= END]
     widths = (2.0, 3.0) if symbol == "SPY" else (3.0, 4.0, 5.0)
@@ -293,7 +300,7 @@ def sim_spreads(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
         if ctx is None:
             _count("no_context"); continue
         spot, fc, closes = ctx
-        if trend_up(pd.Series(closes)) is False:
+        if trend_veto and trend_up(pd.Series(closes)) is False:
             _count("trend_veto"); continue
         pe = pick_for_day(exps, day.date())
         if pe is None or not (SPREADS_DTE_MIN <= pe[1] <= SPREADS_DTE_MAX):
@@ -312,7 +319,11 @@ def sim_spreads(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
         iv = execution.implied_vol(row_s["mid"], spot, ks, dte_e / 365.0, is_call=False)
         if iv is None:
             _count("iv_unreadable"); continue
-        if iv - fc < SPREADS_RICH_PTS:
+        if iv - fc < rich:
+            if os.environ.get("SPXBOT_BT_DEBUG"):
+                print(f"  [not_rich] {iso} spot={spot:.2f} fc={fc*100:.2f}% "
+                      f"ks={ks} dte={dte_e} mid={row_s['mid']} iv={(iv*100):.2f}% "
+                      f"diff={(iv-fc)*100:+.2f} rich_bar={rich*100:.1f}")
             _count("not_rich"); continue
         placed = False
         for w in widths:
@@ -324,7 +335,7 @@ def sim_spreads(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
                 continue
             width = round(ks - kl, 2)
             credit_gate = (row_s["mid"] - row_l["mid"]) - 0.01     # live: mid - 0.01
-            if credit_gate <= 0 or credit_gate / width < SPREADS_MIN_CREDIT_FRAC:
+            if credit_gate <= 0 or credit_gate / width < floor:
                 _count("credit_floor"); continue
             net_bid = row_s["bid"] - row_l["ask"]
             net_ask = row_s["ask"] - row_l["bid"]

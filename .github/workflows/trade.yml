@@ -51,6 +51,9 @@ jobs:
           SPXBOT_NO_NEW_ENTRY_MIN: "90"
           # The close-the-book crons manage exits only. Any other trigger
           # (hourly schedule, or a manual Actions run) does a full cycle.
+          # Spreads entries DISABLED by the 2026-07-31 backtest verdict
+          # (BACKTEST_REPORT.md). Flip to "1" to re-enable — owner decision.
+          SPXBOT_SPREADS: "0"
           SPXBOT_FLATTEN_ONLY: ${{ (github.event.schedule == '45,50,55 19 * * 1-5' || github.event.schedule == '45,50,55 16 * * 1-5') && '1' || '0' }}
         run: |
           python main.py | tee run.log

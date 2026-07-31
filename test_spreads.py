@@ -181,6 +181,27 @@ check("ordinary singles still journal normally",
 
 # --------------------------------------------------------------------------
 print()
+
+
+print()
+print("=" * 74)
+print("6. Spreads kill switch — entries gated, management never")
+print("=" * 74)
+import os as _os, importlib as _imp
+_os.environ["SPXBOT_SPREADS"] = "0"
+_imp.reload(M)
+try:
+    M.try_spread_entries(None, {}, [])       # broker=None: crashes if ungated
+    check("disabled switch returns before touching the broker", True)
+except Exception as e:
+    check("disabled switch returns before touching the broker", False, str(e)[:60])
+src_main = open("main.py").read()
+check("manage_spreads is NOT behind the kill switch (open packages stay managed)",
+      'SPXBOT_SPREADS' not in src_main.split("def manage_spreads")[1].split("def ")[0])
+_os.environ.pop("SPXBOT_SPREADS", None)
+_imp.reload(M)
+
+
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")
 print("=" * 74)
