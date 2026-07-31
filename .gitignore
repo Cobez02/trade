@@ -13,3 +13,5 @@ watcher_exits.json
 # to GitHub Actions as repository secrets, never as a tracked file.
 config.env
 *.env
+bt_run.log
+backtest_result.json
