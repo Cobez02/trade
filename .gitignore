@@ -24,3 +24,4 @@ sens_run.log
 # insider study scratch log (committed artifacts: insider_result.json + INSIDER_REPORT.md)
 insider_run.log
 sens_insider.log
+tsla_cap_run.log

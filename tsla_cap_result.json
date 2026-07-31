@@ -1,0 +1,2288 @@
+{
+ "cap600_production": {
+  "cap": 600.0,
+  "score": {
+   "label": "cap600_production",
+   "n": 42,
+   "total": 941.6,
+   "win_rate": 0.357,
+   "profit_factor": 1.14,
+   "avg": 22.42,
+   "skew": 1.01,
+   "sr_trade": 0.055,
+   "sr_ann": 0.19,
+   "trades_per_year": 12.5,
+   "max_dd": -2569.2,
+   "psr": 0.642,
+   "min_trl": 845,
+   "flagged": 26,
+   "mean_pnl_pct": 0.0155
+  },
+  "trades": [
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-02",
+    "exit_date": "2022-09-07",
+    "exit_reason": "take-profit +114%",
+    "pnl": 534.8,
+    "pnl_pct": 1.1146,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-08",
+    "exit_date": "2022-09-09",
+    "exit_reason": "take-profit +87%",
+    "pnl": 489.8,
+    "pnl_pct": 0.8522,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-09",
+    "exit_date": "2022-09-13",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -365.2,
+    "pnl_pct": -0.8022,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-11-23",
+    "exit_date": "2022-11-29",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -305.2,
+    "pnl_pct": -0.5083,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-06",
+    "exit_date": "2023-01-09",
+    "exit_reason": "take-profit +80%",
+    "pnl": 319.8,
+    "pnl_pct": 0.7901,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-10",
+    "exit_date": "2023-01-17",
+    "exit_reason": "take-profit +134%",
+    "pnl": 624.8,
+    "pnl_pct": 1.3158,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-17",
+    "exit_date": "2023-02-21",
+    "exit_reason": "take-profit +94%",
+    "pnl": 499.8,
+    "pnl_pct": 0.9174,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-13",
+    "exit_date": "2023-03-14",
+    "exit_reason": "take-profit +86%",
+    "pnl": 364.8,
+    "pnl_pct": 0.8202,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-17",
+    "exit_date": "2023-03-21",
+    "exit_reason": "take-profit +237%",
+    "pnl": 1099.8,
+    "pnl_pct": 2.3404,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-23",
+    "exit_date": "2023-03-24",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -175.2,
+    "pnl_pct": -0.3153,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-04-28",
+    "exit_date": "2023-05-01",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -131.2,
+    "pnl_pct": -0.5078,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-01",
+    "exit_date": "2023-05-03",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -99.2,
+    "pnl_pct": -0.4829,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-03",
+    "exit_date": "2023-05-05",
+    "exit_reason": "take-profit +106%",
+    "pnl": 449.8,
+    "pnl_pct": 1.0227,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-05-24",
+    "exit_date": "2023-05-26",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -309.2,
+    "pnl_pct": -0.7446,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-07",
+    "exit_date": "2023-06-08",
+    "exit_reason": "stop-loss -58%",
+    "pnl": -297.2,
+    "pnl_pct": -0.5881,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-23",
+    "exit_date": "2023-06-26",
+    "exit_reason": "take-profit +151%",
+    "pnl": 809.8,
+    "pnl_pct": 1.4862,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-11",
+    "exit_date": "2023-08-14",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -212.2,
+    "pnl_pct": -0.4764,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-14",
+    "exit_date": "2023-08-15",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -234.2,
+    "pnl_pct": -0.7091,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-23",
+    "exit_date": "2023-08-24",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -307.2,
+    "pnl_pct": -0.5339,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-24",
+    "exit_date": "2023-08-25",
+    "exit_reason": "take-profit +79%",
+    "pnl": 404.8,
+    "pnl_pct": 0.7642,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-05",
+    "exit_date": "2023-10-09",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -207.2,
+    "pnl_pct": -0.4224,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-24",
+    "exit_date": "2023-10-25",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -190.2,
+    "pnl_pct": -0.3304,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-25",
+    "exit_date": "2023-10-26",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -300.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-27",
+    "exit_date": "2023-10-30",
+    "exit_reason": "stop-loss -76%",
+    "pnl": -376.2,
+    "pnl_pct": -0.7596,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-31",
+    "exit_date": "2023-11-02",
+    "exit_reason": "take-profit +185%",
+    "pnl": 969.8,
+    "pnl_pct": 1.8131,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-11-02",
+    "exit_date": "2023-11-09",
+    "exit_reason": "stop-loss -97%",
+    "pnl": -394.2,
+    "pnl_pct": -0.9728,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-11-20",
+    "exit_date": "2023-11-21",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -194.2,
+    "pnl_pct": -0.7132,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-29",
+    "exit_date": "2024-01-31",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -171.2,
+    "pnl_pct": -0.7435,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-31",
+    "exit_date": "2024-02-05",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -305.2,
+    "pnl_pct": -0.7531,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-05",
+    "exit_date": "2024-02-06",
+    "exit_reason": "take-profit +51%",
+    "pnl": 110.8,
+    "pnl_pct": 0.4847,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-06",
+    "exit_date": "2024-02-09",
+    "exit_reason": "take-profit +71%",
+    "pnl": 324.8,
+    "pnl_pct": 0.6915,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-12",
+    "exit_date": "2024-02-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -195.2,
+    "pnl_pct": -0.619,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-12",
+    "exit_date": "2024-03-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -273.2,
+    "pnl_pct": -0.6135,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-18",
+    "exit_date": "2024-03-19",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -157.2,
+    "pnl_pct": -0.5992,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-19",
+    "exit_date": "2024-03-22",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -160.2,
+    "pnl_pct": -0.4638,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-22",
+    "exit_date": "2024-03-26",
+    "exit_reason": "take-profit +113%",
+    "pnl": 205.8,
+    "pnl_pct": 0.7254,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-05-17",
+    "exit_date": "2024-05-20",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -136.2,
+    "pnl_pct": -0.4772,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-06-14",
+    "exit_date": "2024-06-17",
+    "exit_reason": "take-profit +179%",
+    "pnl": 544.8,
+    "pnl_pct": 1.7581,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-08-08",
+    "exit_date": "2024-08-12",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -229.2,
+    "pnl_pct": -0.4673,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-12-22",
+    "exit_date": "2025-12-24",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -210.2,
+    "pnl_pct": -0.4615,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-09",
+    "exit_date": "2026-01-14",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -469.2,
+    "pnl_pct": -0.8157,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-16",
+    "exit_date": "2026-01-20",
+    "exit_reason": "stop-loss -86%",
+    "pnl": -407.2,
+    "pnl_pct": -0.866,
+    "flagged": true
+   }
+  ]
+ },
+ "cap900": {
+  "cap": 900.0,
+  "score": {
+   "label": "cap900",
+   "n": 74,
+   "total": -3534.8,
+   "win_rate": 0.297,
+   "profit_factor": 0.79,
+   "avg": -47.77,
+   "skew": 1.18,
+   "sr_trade": -0.101,
+   "sr_ann": -0.4,
+   "trades_per_year": 15.6,
+   "max_dd": -4742.8,
+   "psr": 0.209,
+   "min_trl": null,
+   "flagged": 49,
+   "mean_pnl_pct": -0.0807
+  },
+  "trades": [
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-08-30",
+    "exit_date": "2021-09-01",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -330.2,
+    "pnl_pct": -0.4925,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-08-31",
+    "exit_date": "2022-09-02",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -357.2,
+    "pnl_pct": -0.5492,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-02",
+    "exit_date": "2022-09-07",
+    "exit_reason": "take-profit +114%",
+    "pnl": 534.8,
+    "pnl_pct": 1.1146,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-07",
+    "exit_date": "2022-09-09",
+    "exit_reason": "take-profit +112%",
+    "pnl": 739.8,
+    "pnl_pct": 1.0963,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-09",
+    "exit_date": "2022-09-13",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -365.2,
+    "pnl_pct": -0.8022,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-14",
+    "exit_date": "2022-09-21",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -538.2,
+    "pnl_pct": -0.7079,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-11-15",
+    "exit_date": "2022-11-16",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -360.2,
+    "pnl_pct": -0.5496,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-11-23",
+    "exit_date": "2022-11-29",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -305.2,
+    "pnl_pct": -0.5083,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-06",
+    "exit_date": "2023-01-09",
+    "exit_reason": "take-profit +80%",
+    "pnl": 319.8,
+    "pnl_pct": 0.7901,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-10",
+    "exit_date": "2023-01-17",
+    "exit_reason": "take-profit +134%",
+    "pnl": 624.8,
+    "pnl_pct": 1.3158,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-01-31",
+    "exit_date": "2023-02-01",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -350.2,
+    "pnl_pct": -0.5147,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-03",
+    "exit_date": "2023-02-06",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -305.2,
+    "pnl_pct": -0.4692,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-07",
+    "exit_date": "2023-02-09",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -425.2,
+    "pnl_pct": -0.506,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-10",
+    "exit_date": "2023-02-14",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -567.2,
+    "pnl_pct": -0.8217,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-14",
+    "exit_date": "2023-02-15",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -245.2,
+    "pnl_pct": -0.3333,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-15",
+    "exit_date": "2023-02-16",
+    "exit_reason": "take-profit +83%",
+    "pnl": 569.8,
+    "pnl_pct": 0.8143,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-17",
+    "exit_date": "2023-02-21",
+    "exit_reason": "take-profit +94%",
+    "pnl": 499.8,
+    "pnl_pct": 0.9174,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-13",
+    "exit_date": "2023-03-14",
+    "exit_reason": "take-profit +86%",
+    "pnl": 364.8,
+    "pnl_pct": 0.8202,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-17",
+    "exit_date": "2023-03-21",
+    "exit_reason": "take-profit +237%",
+    "pnl": 1099.8,
+    "pnl_pct": 2.3404,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-23",
+    "exit_date": "2023-03-24",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -175.2,
+    "pnl_pct": -0.3153,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-04-28",
+    "exit_date": "2023-05-01",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -131.2,
+    "pnl_pct": -0.5078,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-01",
+    "exit_date": "2023-05-03",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -99.2,
+    "pnl_pct": -0.4829,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-03",
+    "exit_date": "2023-05-05",
+    "exit_reason": "take-profit +106%",
+    "pnl": 449.8,
+    "pnl_pct": 1.0227,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-05-24",
+    "exit_date": "2023-05-26",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -309.2,
+    "pnl_pct": -0.7446,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-07",
+    "exit_date": "2023-06-08",
+    "exit_reason": "stop-loss -58%",
+    "pnl": -297.2,
+    "pnl_pct": -0.5881,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-14",
+    "exit_date": "2023-06-16",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -300.2,
+    "pnl_pct": -0.4317,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-16",
+    "exit_date": "2023-06-20",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -503.2,
+    "pnl_pct": -0.8246,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-22",
+    "exit_date": "2023-06-26",
+    "exit_reason": "take-profit +200%",
+    "pnl": 1309.8,
+    "pnl_pct": 1.9552,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-07-05",
+    "exit_date": "2023-07-06",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -305.2,
+    "pnl_pct": -0.4552,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-08",
+    "exit_date": "2023-08-09",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -305.2,
+    "pnl_pct": -0.5041,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-11",
+    "exit_date": "2023-08-14",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -212.2,
+    "pnl_pct": -0.4764,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-14",
+    "exit_date": "2023-08-15",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -234.2,
+    "pnl_pct": -0.7091,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-23",
+    "exit_date": "2023-08-24",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -307.2,
+    "pnl_pct": -0.5339,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-24",
+    "exit_date": "2023-08-25",
+    "exit_reason": "take-profit +79%",
+    "pnl": 404.8,
+    "pnl_pct": 0.7642,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-03",
+    "exit_date": "2023-10-04",
+    "exit_reason": "take-profit +114%",
+    "pnl": 769.8,
+    "pnl_pct": 1.1159,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-05",
+    "exit_date": "2023-10-09",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -207.2,
+    "pnl_pct": -0.4224,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-24",
+    "exit_date": "2023-10-25",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -190.2,
+    "pnl_pct": -0.3304,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-25",
+    "exit_date": "2023-10-26",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -300.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-27",
+    "exit_date": "2023-10-30",
+    "exit_reason": "stop-loss -76%",
+    "pnl": -376.2,
+    "pnl_pct": -0.7596,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-31",
+    "exit_date": "2023-11-02",
+    "exit_reason": "take-profit +185%",
+    "pnl": 969.8,
+    "pnl_pct": 1.8131,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-11-02",
+    "exit_date": "2023-11-09",
+    "exit_reason": "stop-loss -97%",
+    "pnl": -394.2,
+    "pnl_pct": -0.9728,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-11-20",
+    "exit_date": "2023-11-21",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -194.2,
+    "pnl_pct": -0.7132,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-29",
+    "exit_date": "2024-01-31",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -171.2,
+    "pnl_pct": -0.7435,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-31",
+    "exit_date": "2024-02-05",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -305.2,
+    "pnl_pct": -0.7531,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-05",
+    "exit_date": "2024-02-06",
+    "exit_reason": "take-profit +51%",
+    "pnl": 110.8,
+    "pnl_pct": 0.4847,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-06",
+    "exit_date": "2024-02-09",
+    "exit_reason": "take-profit +71%",
+    "pnl": 324.8,
+    "pnl_pct": 0.6915,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-12",
+    "exit_date": "2024-02-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -195.2,
+    "pnl_pct": -0.619,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-12",
+    "exit_date": "2024-03-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -273.2,
+    "pnl_pct": -0.6135,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-18",
+    "exit_date": "2024-03-19",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -157.2,
+    "pnl_pct": -0.5992,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-19",
+    "exit_date": "2024-03-22",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -160.2,
+    "pnl_pct": -0.4638,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-22",
+    "exit_date": "2024-03-26",
+    "exit_reason": "take-profit +113%",
+    "pnl": 205.8,
+    "pnl_pct": 0.7254,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-05-17",
+    "exit_date": "2024-05-20",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -136.2,
+    "pnl_pct": -0.4772,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-06-14",
+    "exit_date": "2024-06-17",
+    "exit_reason": "take-profit +179%",
+    "pnl": 544.8,
+    "pnl_pct": 1.7581,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-07-11",
+    "exit_date": "2024-07-12",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -345.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-07-12",
+    "exit_date": "2024-07-15",
+    "exit_reason": "stop-loss -37%",
+    "pnl": -235.2,
+    "pnl_pct": -0.373,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-08-08",
+    "exit_date": "2024-08-12",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -229.2,
+    "pnl_pct": -0.4673,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-10-24",
+    "exit_date": "2024-10-25",
+    "exit_reason": "take-profit +56%",
+    "pnl": 364.8,
+    "pnl_pct": 0.5407,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-11-21",
+    "exit_date": "2024-11-22",
+    "exit_reason": "stop-loss -57%",
+    "pnl": -490.2,
+    "pnl_pct": -0.5833,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-02-13",
+    "exit_date": "2025-02-18",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -420.2,
+    "pnl_pct": -0.5455,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-02-20",
+    "exit_date": "2025-02-21",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -528.2,
+    "pnl_pct": -0.7087,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-03-14",
+    "exit_date": "2025-03-17",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -582.2,
+    "pnl_pct": -0.6651,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-03-20",
+    "exit_date": "2025-03-21",
+    "exit_reason": "take-profit +82%",
+    "pnl": 614.8,
+    "pnl_pct": 0.7987,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-05-22",
+    "exit_date": "2025-05-27",
+    "exit_reason": "stop-loss -87%",
+    "pnl": -700.2,
+    "pnl_pct": -0.8696,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-08-22",
+    "exit_date": "2025-08-26",
+    "exit_reason": "take-profit +69%",
+    "pnl": 414.8,
+    "pnl_pct": 0.686,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-09-05",
+    "exit_date": "2025-09-08",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -325.2,
+    "pnl_pct": -0.5039,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-11-21",
+    "exit_date": "2025-11-24",
+    "exit_reason": "take-profit +170%",
+    "pnl": 1154.8,
+    "pnl_pct": 1.3669,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-12-11",
+    "exit_date": "2025-12-12",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -360.2,
+    "pnl_pct": -0.4706,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-12-22",
+    "exit_date": "2025-12-24",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -210.2,
+    "pnl_pct": -0.4615,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-09",
+    "exit_date": "2026-01-14",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -469.2,
+    "pnl_pct": -0.8157,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-14",
+    "exit_date": "2026-01-16",
+    "exit_reason": "stop-loss -39%",
+    "pnl": -300.2,
+    "pnl_pct": -0.3947,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-16",
+    "exit_date": "2026-01-20",
+    "exit_reason": "stop-loss -86%",
+    "pnl": -407.2,
+    "pnl_pct": -0.866,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2026-05-12",
+    "exit_date": "2026-05-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -495.2,
+    "pnl_pct": -0.6188,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2026-05-14",
+    "exit_date": "2026-05-15",
+    "exit_reason": "take-profit +138%",
+    "pnl": 1029.8,
+    "pnl_pct": 1.3377,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-05-27",
+    "exit_date": "2026-05-29",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -470.2,
+    "pnl_pct": -0.5987,
+    "flagged": true
+   }
+  ]
+ },
+ "uncapped": {
+  "cap": 1000000000.0,
+  "score": {
+   "label": "uncapped",
+   "n": 106,
+   "total": -159.2,
+   "win_rate": 0.33,
+   "profit_factor": 1.0,
+   "avg": -1.5,
+   "skew": 1.21,
+   "sr_trade": -0.001,
+   "sr_ann": -0.01,
+   "trades_per_year": 19.3,
+   "max_dd": -9331.0,
+   "psr": 0.494,
+   "min_trl": null,
+   "flagged": 64,
+   "mean_pnl_pct": -0.0315
+  },
+  "trades": [
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2020-12-01",
+    "exit_date": "2020-12-03",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -1410.2,
+    "pnl_pct": -0.487,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2020-12-03",
+    "exit_date": "2020-12-07",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -1580.2,
+    "pnl_pct": -0.792,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2020-12-31",
+    "exit_date": "2021-01-06",
+    "exit_reason": "take-profit +121%",
+    "pnl": 2359.8,
+    "pnl_pct": 1.1859,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2021-01-11",
+    "exit_date": "2021-01-12",
+    "exit_reason": "stop-loss -73%",
+    "pnl": -1755.2,
+    "pnl_pct": -0.7282,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2021-01-13",
+    "exit_date": "2021-01-19",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -1450.2,
+    "pnl_pct": -0.4754,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-02-24",
+    "exit_date": "2021-02-25",
+    "exit_reason": "stop-loss -65%",
+    "pnl": -1635.2,
+    "pnl_pct": -0.6633,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-03-01",
+    "exit_date": "2021-03-02",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -1050.2,
+    "pnl_pct": -0.75,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-03-02",
+    "exit_date": "2021-03-03",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -1145.2,
+    "pnl_pct": -0.4412,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-05-14",
+    "exit_date": "2021-05-17",
+    "exit_reason": "stop-loss -55%",
+    "pnl": -760.2,
+    "pnl_pct": -0.5568,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-05-19",
+    "exit_reason": "stop-loss -77%",
+    "pnl": -904.2,
+    "pnl_pct": -0.7726,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-05-19",
+    "exit_date": "2021-05-20",
+    "exit_reason": "take-profit +66%",
+    "pnl": 1084.8,
+    "pnl_pct": 0.6382,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-05-21",
+    "exit_date": "2021-05-24",
+    "exit_reason": "take-profit +93%",
+    "pnl": 1084.8,
+    "pnl_pct": 0.8967,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-05-24",
+    "exit_date": "2021-05-27",
+    "exit_reason": "take-profit +89%",
+    "pnl": 789.8,
+    "pnl_pct": 0.8449,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2021-06-29",
+    "exit_date": "2021-07-02",
+    "exit_reason": "stop-loss -37%",
+    "pnl": -675.2,
+    "pnl_pct": -0.3803,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2021-08-11",
+    "exit_date": "2021-08-12",
+    "exit_reason": "stop-loss -39%",
+    "pnl": -415.2,
+    "pnl_pct": -0.4069,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2021-08-13",
+    "exit_date": "2021-08-16",
+    "exit_reason": "take-profit +165%",
+    "pnl": 1524.8,
+    "pnl_pct": 1.6138,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-08-30",
+    "exit_date": "2021-09-01",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -330.2,
+    "pnl_pct": -0.4925,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-12-17",
+    "exit_date": "2021-12-20",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -1475.2,
+    "pnl_pct": -0.7091,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2021-12-21",
+    "exit_date": "2021-12-22",
+    "exit_reason": "take-profit +147%",
+    "pnl": 3899.8,
+    "pnl_pct": 1.4391,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-02-02",
+    "exit_date": "2022-02-07",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -910.2,
+    "pnl_pct": -0.3193,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2022-04-05",
+    "exit_date": "2022-04-06",
+    "exit_reason": "take-profit +83%",
+    "pnl": 2264.8,
+    "pnl_pct": 0.8118,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2022-04-06",
+    "exit_date": "2022-04-11",
+    "exit_reason": "take-profit +115%",
+    "pnl": 3139.8,
+    "pnl_pct": 1.1356,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-04-25",
+    "exit_date": "2022-04-26",
+    "exit_reason": "stop-loss -94%",
+    "pnl": -1848.2,
+    "pnl_pct": -0.9405,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-05-18",
+    "exit_date": "2022-05-20",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -2110.2,
+    "pnl_pct": -0.6677,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-05-23",
+    "exit_date": "2022-05-24",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -1600.2,
+    "pnl_pct": -0.8,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-05-25",
+    "exit_date": "2022-05-26",
+    "exit_reason": "take-profit +111%",
+    "pnl": 2649.8,
+    "pnl_pct": 1.0794,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-05-26",
+    "exit_date": "2022-05-27",
+    "exit_reason": "take-profit +127%",
+    "pnl": 2699.8,
+    "pnl_pct": 1.2301,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2022-08-04",
+    "exit_date": "2022-08-05",
+    "exit_reason": "take-profit +126%",
+    "pnl": 2994.8,
+    "pnl_pct": 1.2126,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2022-08-05",
+    "exit_date": "2022-08-10",
+    "exit_reason": "stop-loss -76%",
+    "pnl": -1395.2,
+    "pnl_pct": -0.7644,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-08-31",
+    "exit_date": "2022-09-02",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -357.2,
+    "pnl_pct": -0.5492,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-02",
+    "exit_date": "2022-09-07",
+    "exit_reason": "take-profit +114%",
+    "pnl": 534.8,
+    "pnl_pct": 1.1146,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-07",
+    "exit_date": "2022-09-09",
+    "exit_reason": "take-profit +112%",
+    "pnl": 739.8,
+    "pnl_pct": 1.0963,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-09",
+    "exit_date": "2022-09-13",
+    "exit_reason": "stop-loss -79%",
+    "pnl": -365.2,
+    "pnl_pct": -0.8022,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-09-14",
+    "exit_date": "2022-09-21",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -538.2,
+    "pnl_pct": -0.7079,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-11-15",
+    "exit_date": "2022-11-16",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -360.2,
+    "pnl_pct": -0.5496,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2022-11-23",
+    "exit_date": "2022-11-29",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -305.2,
+    "pnl_pct": -0.5083,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-06",
+    "exit_date": "2023-01-09",
+    "exit_reason": "take-profit +80%",
+    "pnl": 319.8,
+    "pnl_pct": 0.7901,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-01-10",
+    "exit_date": "2023-01-17",
+    "exit_reason": "take-profit +134%",
+    "pnl": 624.8,
+    "pnl_pct": 1.3158,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-01-31",
+    "exit_date": "2023-02-01",
+    "exit_reason": "stop-loss -51%",
+    "pnl": -350.2,
+    "pnl_pct": -0.5147,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-03",
+    "exit_date": "2023-02-06",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -305.2,
+    "pnl_pct": -0.4692,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-07",
+    "exit_date": "2023-02-09",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -425.2,
+    "pnl_pct": -0.506,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-10",
+    "exit_date": "2023-02-14",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -567.2,
+    "pnl_pct": -0.8217,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-14",
+    "exit_date": "2023-02-15",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -245.2,
+    "pnl_pct": -0.3333,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-15",
+    "exit_date": "2023-02-16",
+    "exit_reason": "take-profit +83%",
+    "pnl": 569.8,
+    "pnl_pct": 0.8143,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-02-17",
+    "exit_date": "2023-02-21",
+    "exit_reason": "take-profit +94%",
+    "pnl": 499.8,
+    "pnl_pct": 0.9174,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-13",
+    "exit_date": "2023-03-14",
+    "exit_reason": "take-profit +86%",
+    "pnl": 364.8,
+    "pnl_pct": 0.8202,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-17",
+    "exit_date": "2023-03-21",
+    "exit_reason": "take-profit +237%",
+    "pnl": 1099.8,
+    "pnl_pct": 2.3404,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-03-23",
+    "exit_date": "2023-03-24",
+    "exit_reason": "stop-loss -31%",
+    "pnl": -175.2,
+    "pnl_pct": -0.3153,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-04-28",
+    "exit_date": "2023-05-01",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -131.2,
+    "pnl_pct": -0.5078,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-01",
+    "exit_date": "2023-05-03",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -99.2,
+    "pnl_pct": -0.4829,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-05-03",
+    "exit_date": "2023-05-05",
+    "exit_reason": "take-profit +106%",
+    "pnl": 449.8,
+    "pnl_pct": 1.0227,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-05-24",
+    "exit_date": "2023-05-26",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -309.2,
+    "pnl_pct": -0.7446,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-07",
+    "exit_date": "2023-06-08",
+    "exit_reason": "stop-loss -58%",
+    "pnl": -297.2,
+    "pnl_pct": -0.5881,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-14",
+    "exit_date": "2023-06-16",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -300.2,
+    "pnl_pct": -0.4317,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-16",
+    "exit_date": "2023-06-20",
+    "exit_reason": "stop-loss -82%",
+    "pnl": -503.2,
+    "pnl_pct": -0.8246,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-06-22",
+    "exit_date": "2023-06-26",
+    "exit_reason": "take-profit +200%",
+    "pnl": 1309.8,
+    "pnl_pct": 1.9552,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-07-05",
+    "exit_date": "2023-07-06",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -305.2,
+    "pnl_pct": -0.4552,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-08",
+    "exit_date": "2023-08-09",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -305.2,
+    "pnl_pct": -0.5041,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-11",
+    "exit_date": "2023-08-14",
+    "exit_reason": "stop-loss -47%",
+    "pnl": -212.2,
+    "pnl_pct": -0.4764,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-14",
+    "exit_date": "2023-08-15",
+    "exit_reason": "stop-loss -70%",
+    "pnl": -234.2,
+    "pnl_pct": -0.7091,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-23",
+    "exit_date": "2023-08-24",
+    "exit_reason": "stop-loss -53%",
+    "pnl": -307.2,
+    "pnl_pct": -0.5339,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-08-24",
+    "exit_date": "2023-08-25",
+    "exit_reason": "take-profit +79%",
+    "pnl": 404.8,
+    "pnl_pct": 0.7642,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-03",
+    "exit_date": "2023-10-04",
+    "exit_reason": "take-profit +114%",
+    "pnl": 769.8,
+    "pnl_pct": 1.1159,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-05",
+    "exit_date": "2023-10-09",
+    "exit_reason": "stop-loss -42%",
+    "pnl": -207.2,
+    "pnl_pct": -0.4224,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-24",
+    "exit_date": "2023-10-25",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -190.2,
+    "pnl_pct": -0.3304,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-25",
+    "exit_date": "2023-10-26",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -300.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-27",
+    "exit_date": "2023-10-30",
+    "exit_reason": "stop-loss -76%",
+    "pnl": -376.2,
+    "pnl_pct": -0.7596,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-10-31",
+    "exit_date": "2023-11-02",
+    "exit_reason": "take-profit +185%",
+    "pnl": 969.8,
+    "pnl_pct": 1.8131,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2023-11-02",
+    "exit_date": "2023-11-09",
+    "exit_reason": "stop-loss -97%",
+    "pnl": -394.2,
+    "pnl_pct": -0.9728,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2023-11-20",
+    "exit_date": "2023-11-21",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -194.2,
+    "pnl_pct": -0.7132,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-29",
+    "exit_date": "2024-01-31",
+    "exit_reason": "stop-loss -74%",
+    "pnl": -171.2,
+    "pnl_pct": -0.7435,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-01-31",
+    "exit_date": "2024-02-05",
+    "exit_reason": "stop-loss -75%",
+    "pnl": -305.2,
+    "pnl_pct": -0.7531,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-05",
+    "exit_date": "2024-02-06",
+    "exit_reason": "take-profit +51%",
+    "pnl": 110.8,
+    "pnl_pct": 0.4847,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-06",
+    "exit_date": "2024-02-09",
+    "exit_reason": "take-profit +71%",
+    "pnl": 324.8,
+    "pnl_pct": 0.6915,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-02-12",
+    "exit_date": "2024-02-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -195.2,
+    "pnl_pct": -0.619,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-12",
+    "exit_date": "2024-03-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -273.2,
+    "pnl_pct": -0.6135,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-18",
+    "exit_date": "2024-03-19",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -157.2,
+    "pnl_pct": -0.5992,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-19",
+    "exit_date": "2024-03-22",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -160.2,
+    "pnl_pct": -0.4638,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-03-22",
+    "exit_date": "2024-03-26",
+    "exit_reason": "take-profit +113%",
+    "pnl": 205.8,
+    "pnl_pct": 0.7254,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-05-17",
+    "exit_date": "2024-05-20",
+    "exit_reason": "stop-loss -48%",
+    "pnl": -136.2,
+    "pnl_pct": -0.4772,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-06-14",
+    "exit_date": "2024-06-17",
+    "exit_reason": "take-profit +179%",
+    "pnl": 544.8,
+    "pnl_pct": 1.7581,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-07-11",
+    "exit_date": "2024-07-12",
+    "exit_reason": "stop-loss -49%",
+    "pnl": -345.2,
+    "pnl_pct": -0.5,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-07-12",
+    "exit_date": "2024-07-15",
+    "exit_reason": "stop-loss -37%",
+    "pnl": -235.2,
+    "pnl_pct": -0.373,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-08-08",
+    "exit_date": "2024-08-12",
+    "exit_reason": "stop-loss -46%",
+    "pnl": -229.2,
+    "pnl_pct": -0.4673,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2024-10-24",
+    "exit_date": "2024-10-25",
+    "exit_reason": "take-profit +56%",
+    "pnl": 364.8,
+    "pnl_pct": 0.5407,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-11-13",
+    "exit_date": "2024-11-14",
+    "exit_reason": "take-profit +67%",
+    "pnl": 784.8,
+    "pnl_pct": 0.6569,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-11-19",
+    "exit_date": "2024-11-22",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -610.2,
+    "pnl_pct": -0.5495,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2024-12-19",
+    "exit_date": "2024-12-23",
+    "exit_reason": "stop-loss -32%",
+    "pnl": -475.2,
+    "pnl_pct": -0.348,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-01-08",
+    "exit_date": "2025-01-15",
+    "exit_reason": "take-profit +144%",
+    "pnl": 1689.8,
+    "pnl_pct": 1.3967,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-02-13",
+    "exit_date": "2025-02-18",
+    "exit_reason": "stop-loss -54%",
+    "pnl": -420.2,
+    "pnl_pct": -0.5455,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-02-20",
+    "exit_date": "2025-02-21",
+    "exit_reason": "stop-loss -71%",
+    "pnl": -528.2,
+    "pnl_pct": -0.7087,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-03-14",
+    "exit_date": "2025-03-17",
+    "exit_reason": "stop-loss -66%",
+    "pnl": -582.2,
+    "pnl_pct": -0.6651,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-03-20",
+    "exit_date": "2025-03-21",
+    "exit_reason": "take-profit +82%",
+    "pnl": 614.8,
+    "pnl_pct": 0.7987,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-05-20",
+    "exit_date": "2025-05-27",
+    "exit_reason": "stop-loss -87%",
+    "pnl": -891.2,
+    "pnl_pct": -0.8735,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-08-22",
+    "exit_date": "2025-08-26",
+    "exit_reason": "take-profit +69%",
+    "pnl": 414.8,
+    "pnl_pct": 0.686,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-09-05",
+    "exit_date": "2025-09-08",
+    "exit_reason": "stop-loss -50%",
+    "pnl": -325.2,
+    "pnl_pct": -0.5039,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-11-20",
+    "exit_date": "2025-11-21",
+    "exit_reason": "stop-loss -39%",
+    "pnl": -470.2,
+    "pnl_pct": -0.3933,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2025-11-21",
+    "exit_date": "2025-11-24",
+    "exit_reason": "take-profit +170%",
+    "pnl": 1154.8,
+    "pnl_pct": 1.3669,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-12-09",
+    "exit_date": "2025-12-12",
+    "exit_reason": "stop-loss -62%",
+    "pnl": -575.2,
+    "pnl_pct": -0.6216,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2025-12-22",
+    "exit_date": "2025-12-24",
+    "exit_reason": "stop-loss -45%",
+    "pnl": -210.2,
+    "pnl_pct": -0.4615,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-09",
+    "exit_date": "2026-01-14",
+    "exit_reason": "stop-loss -81%",
+    "pnl": -469.2,
+    "pnl_pct": -0.8157,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-14",
+    "exit_date": "2026-01-16",
+    "exit_reason": "stop-loss -39%",
+    "pnl": -300.2,
+    "pnl_pct": -0.3947,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-01-16",
+    "exit_date": "2026-01-20",
+    "exit_reason": "stop-loss -86%",
+    "pnl": -407.2,
+    "pnl_pct": -0.866,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2026-05-12",
+    "exit_date": "2026-05-13",
+    "exit_reason": "stop-loss -61%",
+    "pnl": -495.2,
+    "pnl_pct": -0.6188,
+    "flagged": true
+   },
+   {
+    "symbol": "TSLA",
+    "type": "PUT",
+    "entry_date": "2026-05-14",
+    "exit_date": "2026-05-15",
+    "exit_reason": "take-profit +138%",
+    "pnl": 1029.8,
+    "pnl_pct": 1.3377,
+    "flagged": false
+   },
+   {
+    "symbol": "TSLA",
+    "type": "CALL",
+    "entry_date": "2026-05-27",
+    "exit_date": "2026-05-29",
+    "exit_reason": "stop-loss -59%",
+    "pnl": -470.2,
+    "pnl_pct": -0.5987,
+    "flagged": true
+   }
+  ]
+ }
+}
