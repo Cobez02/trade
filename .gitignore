@@ -15,3 +15,8 @@ config.env
 *.env
 bt_run.log
 backtest_result.json
+
+# backtest scratch: run logs are ephemeral; the committed artifacts are
+# backtest_result.json / sensitivity_result.json / BACKTEST_REPORT.md
+bt_run.log
+sens_run.log
