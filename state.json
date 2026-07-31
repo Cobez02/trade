@@ -965,6 +965,14 @@
         "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T20:26:25.032040+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1377,22 +1385,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "MA",
-        "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "KEX",
+        "underlying": "ARXS",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "WCC",
+        "underlying": "DXCM",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "TRP",
+        "underlying": "SWK",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "LYV",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
