@@ -2,7 +2,38 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "TSLA260803C00310000": {
+      "sleeve": "tech",
+      "underlying": "TSLA",
+      "direction": "bull",
+      "type": "call",
+      "strike": 310.0,
+      "expiration": "2026-08-03",
+      "qty": 2,
+      "entry_price": 2.94,
+      "entry_cost": 588.0,
+      "entry_date": "2026-07-31",
+      "thesis": "Technical: RSI 16 oversold + MACD turning up",
+      "spot_at_entry": 306.035,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "signal_score": 23.995,
+        "rsi": 16.0,
+        "macd_hist": -7.271,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 3,
+        "moneyness_pct": 0.013,
+        "spread_pct": 0.014,
+        "type": "call",
+        "ref_vol": 0.4543,
+        "iv_at_entry": 0.4161,
+        "vol_edge_pts": 3.82
+      }
+    }
+  },
   "closed": [
     {
       "symbol": "QQQ260804C00692000",
@@ -375,6 +406,12 @@
     {
       "date": "2026-07-30",
       "equity": 10814.6,
+      "benchmark_equity": 10048.37,
+      "spy": 741.63
+    },
+    {
+      "date": "2026-07-31",
+      "equity": 10814.52,
       "benchmark_equity": 10048.37,
       "spy": 741.63
     }
@@ -817,11 +854,24 @@
         "Learner: 14 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T14:45:54.705413+00:00",
+      "notes": [
+        "Learner: 14 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "AMZN: strike scan: 3 quoted, spreads [3.0%, 9.6%, 1.7%], tightest 1.7%",
+        "SCREENED OUT AMZN bull [news] \u2014 lottery: MAX 15.1% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "HOOD: strike scan: 3 quoted, spreads [3.2%, 10.9%, 10.2%], tightest 3.2%",
+        "NO EDGE HOOD bull [news] \u2014 implied 71.8% vs forecast 71.5%; buy: bsm 1.5410 vs mid 1.5550 -> -0.90% (quote is against you, wait)",
+        "TSLA: strike scan: 3 quoted, spreads [1.4%, 1.7%, 1.7%], tightest 1.4%",
+        "OPENED 2x TSLA260803C00310000 [tech] @ $2.94 ($588, sleeve \u00d71.0, learned \u00d71.0, vol edge +3.8pts, round trip 1.1%) \u2014 Technical: RSI 16 oversold + MACD turning up"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-07-30",
+    "updated": "2026-07-31",
     "n_trades": 14,
     "n_eff": 14.0,
     "n_days": 3,
@@ -1211,22 +1261,12 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "BFAM",
+        "underlying": "AMZN",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "CUZ",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ERIE",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "FHI",
+        "underlying": "HOOD",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1235,19 +1275,12 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 15 oversold + MACD turning up"
-      },
-      {
-        "underlying": "QQQ",
-        "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 16 oversold + MACD turning up"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "131 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "95 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MSFT": "95 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "90 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
@@ -1692,5 +1725,7 @@
       "equity": 10837.98,
       "spy": 737.06
     }
-  ]
+  ],
+  "spreads_open": {},
+  "spreads_closed": []
 }
