@@ -30,7 +30,7 @@ Run:  python3 backtest.py            (terminal must be running on :25503)
 """
 from __future__ import annotations
 import os, csv, io, json, math, hashlib, time, datetime as dt
-import urllib.request, urllib.parse
+import urllib.request, urllib.parse, urllib.error
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -89,6 +89,16 @@ def theta_csv(path: str, **params) -> list:
                     raise RuntimeError(f"deprecated params: {url}")
                 rows = list(csv.DictReader(io.StringIO(text)))
                 return rows
+            except urllib.error.HTTPError as he:
+                # 472 is ThetaData's NO_DATA status: a real, cacheable empty
+                # answer ("this symbol has no options"), not a transient fault.
+                # Without this branch every optionless ticker burned ~10s of
+                # retries and never cached — which froze the insider probe.
+                if he.code == 472:
+                    return []
+                if attempt == 3:
+                    raise
+                time.sleep(1.5 * (attempt + 1))
             except Exception:
                 if attempt == 3:
                     raise
