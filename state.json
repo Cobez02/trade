@@ -11,57 +11,20 @@
       "strike": 280.0,
       "expiration": "2026-08-07",
       "qty": 2,
-      "entry_price": 2.07,
-      "entry_cost": 414.0,
-      "entry_date": "2026-07-31",
-      "thesis": "News flow +3 across 2 articles (keyword sentiment)",
-      "spot_at_entry": 271.065,
+      "entry_price": 2.05,
+      "entry_cost": 410.0,
       "features": {
         "sleeve": "news",
         "direction": "bull",
-        "signal_score": 3,
-        "rsi": 63.9,
-        "macd_hist": 1.197,
-        "macd_rising": true,
-        "trend_up": false,
+        "type": "call",
+        "rsi": 63.0,
         "dte": 7,
-        "moneyness_pct": 0.033,
+        "trend_up": false,
+        "macd_rising": true,
         "spread_pct": 0.01,
-        "type": "call",
-        "ref_vol": 0.3836,
-        "iv_at_entry": 0.3541,
-        "vol_edge_pts": 2.94
-      }
-    },
-    "HOOD260807C00093000": {
-      "sleeve": "news",
-      "underlying": "HOOD",
-      "direction": "bull",
-      "type": "call",
-      "strike": 93.0,
-      "expiration": "2026-08-07",
-      "qty": 4,
-      "entry_price": 1.28,
-      "entry_cost": 512.0,
-      "entry_date": "2026-07-31",
-      "thesis": "News flow +2 across 1 articles (keyword sentiment)",
-      "spot_at_entry": 87.45,
-      "features": {
-        "sleeve": "news",
-        "direction": "bull",
-        "signal_score": 2,
-        "rsi": 28.1,
-        "macd_hist": -2.907,
-        "macd_rising": true,
-        "trend_up": false,
-        "dte": 7,
-        "moneyness_pct": 0.0635,
-        "spread_pct": 0.024,
-        "type": "call",
-        "ref_vol": 0.716,
-        "iv_at_entry": 0.6685,
-        "vol_edge_pts": 4.76
-      }
+        "signal_score": 3.0
+      },
+      "entry_date": "2026-07-31"
     }
   },
   "closed": [
@@ -465,9 +428,9 @@
     },
     {
       "date": "2026-07-31",
-      "equity": 10974.4,
-      "benchmark_equity": 10108.26,
-      "spy": 746.05
+      "equity": 11020.4,
+      "benchmark_equity": 10121.33,
+      "spy": 747.015
     }
   ],
   "run_log": [
@@ -985,6 +948,15 @@
         "NO EDGE TSLA bull [tech] \u2014 implied 45.7% vs forecast 45.5%; buy: bsm 4.9047 vs mid 4.9300 -> -0.51% (quote is against you, wait)",
         "STOP ARMED AMZN260807C00280000 x2 @ $0.82 (-60% from $2.05) \u2014 holds whether or not anything of ours is running"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "time": "2026-07-31T19:34:11.050054+00:00",
+      "notes": [
+        "Learner: 15 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "CANCELLED working order HOOD260807C00093000 qty=4 \u2014 spread widened to 6% (> 4%)",
+        "NO NEW ENTRIES \u2014 26 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1379,22 +1351,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "AMZN",
+        "underlying": "MA",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "KKR",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "HOOD",
+        "underlying": "NBIX",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "LNC",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "LTH",
+        "underlying": "SNA",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
