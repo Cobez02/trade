@@ -1,0 +1,87 @@
+{
+ "funnel": {
+  "events": 5258,
+  "in_window": 5023,
+  "has_option_chain": 4007,
+  "has_bars": 3985,
+  "quoted": 778,
+  "gates_passed": 4,
+  "probe_errors": 0
+ },
+ "headline": {
+  "label": "insider debit spreads",
+  "n": 4,
+  "total": -446.6,
+  "win_rate": 0.0,
+  "profit_factor": 0.0,
+  "avg": -111.65,
+  "skew": -1.99,
+  "sr_trade": -1.081,
+  "sr_ann": -1.79,
+  "trades_per_year": 2.7,
+  "max_dd": -446.6,
+  "psr": null,
+  "min_trl": null,
+  "flagged": 0
+ },
+ "trades": [
+  {
+   "ticker": "INTC",
+   "event": "2022-11-08",
+   "entry_date": "2022-11-09",
+   "exit_date": "2022-12-20",
+   "exit_reason": "stop -52%",
+   "kl": 27.5,
+   "ks": 30.0,
+   "debit": 1.09,
+   "pnl": -58.4,
+   "flagged": false,
+   "n_insiders": 2,
+   "value": 299619.26
+  },
+  {
+   "ticker": "SPG",
+   "event": "2023-04-03",
+   "entry_date": "2023-04-04",
+   "exit_date": "2023-05-09",
+   "exit_reason": "stop -59%",
+   "kl": 110.0,
+   "ks": 120.0,
+   "debit": 4.75,
+   "pnl": -290.4,
+   "flagged": false,
+   "n_insiders": 11,
+   "value": 398726.51
+  },
+  {
+   "ticker": "BMY",
+   "event": "2023-11-30",
+   "entry_date": "2023-12-01",
+   "exit_date": "2024-01-26",
+   "exit_reason": "time (21 DTE)",
+   "kl": 50.0,
+   "ks": 55.0,
+   "debit": 1.77,
+   "pnl": -48.4,
+   "flagged": false,
+   "n_insiders": 2,
+   "value": 573434.06
+  },
+  {
+   "ticker": "CLF",
+   "event": "2024-05-01",
+   "entry_date": "2024-05-02",
+   "exit_date": "2024-06-05",
+   "exit_reason": "stop -55%",
+   "kl": 17.0,
+   "ks": 19.0,
+   "debit": 0.82,
+   "pnl": -49.4,
+   "flagged": false,
+   "n_insiders": 2,
+   "value": 1430600.0
+  }
+ ],
+ "data_errors": 0,
+ "data_error_sample": []
+}

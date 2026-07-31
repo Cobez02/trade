@@ -53,7 +53,14 @@ def bars_for(sym):
     except Exception:
         return None
 
-def run():
+def run(cost_frac=COST_FRAC, debit_cap=DEBIT_CAP, mid_fills=False, quiet=False):
+    """Defaults reproduce the pre-registered run exactly. Non-default args are
+    the DISCLOSED post-hoc sensitivity (see INSIDER_REPORT.md): cost_frac=None
+    disables the cost gate; mid_fills=True books both sides at mid with no
+    fees — a pure-signal diagnostic, not a tradeable configuration."""
+    fn = {"events": len(EVENTS), "in_window": 0, "has_option_chain": 0,
+          "has_bars": 0, "quoted": 0, "gates_passed": 0, "probe_errors": 0}
+    costs = []          # RT cost fraction of every QUOTED candidate
     # 1) unique-ticker option-chain probe (cached; one request per ticker)
     tickers = sorted({e["ticker"] for e in EVENTS})
     has_chain = {}
@@ -70,17 +77,17 @@ def run():
                       f"{len(tickers)} ({t}). Restart terminal and relaunch; "
                       f"cache resumes from here.", flush=True)
                 sys.exit(3)
-            funnel["probe_errors"] += 1
+            fn["probe_errors"] += 1
         if (i + 1) % 250 == 0:
-            print(f"  chain probe {i+1}/{len(tickers)}", flush=True)
+            if not quiet: print(f"  chain probe {i+1}/{len(tickers)}", flush=True)
     n_chain = sum(1 for v in has_chain.values() if v)
-    print(f"  probe done: {n_chain}/{len(tickers)} tickers have option chains "
-          f"({funnel['probe_errors']} probe errors)", flush=True)
+    if not quiet: print(f"  probe done: {n_chain}/{len(tickers)} tickers have option chains "
+          f"({fn['probe_errors']} probe errors)", flush=True)
     trades = []
     empty_snaps = 0
     for n_ev, e in enumerate(EVENTS):
         if (n_ev + 1) % 250 == 0:
-            print(f"  events {n_ev+1}/{len(EVENTS)} funnel={funnel} "
+            if not quiet: print(f"  events {n_ev+1}/{len(EVENTS)} funnel={fn} "
                   f"trades={len(trades)}", flush=True)
             if not terminal_alive():
                 print("ABORT: theta terminal died mid-run; relaunch resumes "
@@ -89,11 +96,11 @@ def run():
         d = dt.date.fromisoformat(e["date"])
         if not (dt.date(2020, 10, 1) <= d <= dt.date(2026, 4, 15)):
             continue
-        funnel["in_window"] += 1
+        fn["in_window"] += 1
         t = e["ticker"]
         if not has_chain.get(t):
             continue
-        funnel["has_option_chain"] += 1
+        fn["has_option_chain"] += 1
         bars = bars_for(t)
         if bars is None or len(bars) < 30:
             continue
@@ -101,7 +108,7 @@ def run():
         if not len(idx):
             continue
         day = idx[0]; iso = day.date().isoformat()
-        funnel["has_bars"] += 1
+        fn["has_bars"] += 1
         spot = float(bars.loc[day, "close"])
         if spot < 5:
             continue
@@ -131,17 +138,19 @@ def run():
         rs = snap.get((ksh, "CALL"), {}).get(iso)
         if not rl or not rs:
             continue
-        funnel["quoted"] += 1
-        debit_fill = rl["ask"] - rs["bid"]              # pessimistic open
+        fn["quoted"] += 1
         debit_mid = rl["mid"] - rs["mid"]
         net_bid = rl["bid"] - rs["ask"]
-        if debit_mid <= 0 or debit_fill <= 0:
+        pess_fill = rl["ask"] - rs["bid"]               # pessimistic open
+        debit_fill = debit_mid if mid_fills else pess_fill
+        if debit_mid <= 0 or debit_fill <= 0 or pess_fill <= 0:
             continue
-        if (debit_fill - net_bid) / debit_mid > COST_FRAC:
+        costs.append((pess_fill - net_bid) / debit_mid)
+        if cost_frac is not None and (pess_fill - net_bid) / debit_mid > cost_frac:
             continue
-        if debit_fill * 100 > DEBIT_CAP:
+        if debit_fill * 100 > debit_cap:
             continue
-        funnel["gates_passed"] += 1
+        fn["gates_passed"] += 1
         ql = B.contract_series(t, exp, kl, "CALL", iso)
         qs = B.contract_series(t, exp, ksh, "CALL", iso)
         exit_pnl, exit_date, exit_reason, flagged = None, None, None, False
@@ -158,23 +167,27 @@ def run():
             elif dte_left <= TIME_DTE:
                 reason = f"time ({dte_left} DTE)"
             if reason:
-                close_fill = ql[dd]["bid"] - qs[dd]["ask"]   # pessimistic close
-                exit_pnl = (close_fill - debit_fill) * 100 - 4 * B.FEE_PER_CONTRACT_SIDE
+                close_fill = (ql[dd]["mid"] - qs[dd]["mid"]) if mid_fills \
+                    else (ql[dd]["bid"] - qs[dd]["ask"])         # pessimistic close
+                fees = 0.0 if mid_fills else 4 * B.FEE_PER_CONTRACT_SIDE
+                exit_pnl = (close_fill - debit_fill) * 100 - fees
                 exit_date, exit_reason = dd, reason
                 break
         if exit_pnl is None:
             last = max((x for x in ql if x in qs), default=None)
             if last is None:
                 continue
-            close_fill = ql[last]["bid"] - qs[last]["ask"]
-            exit_pnl = (close_fill - debit_fill) * 100 - 4 * B.FEE_PER_CONTRACT_SIDE
+            close_fill = (ql[last]["mid"] - qs[last]["mid"]) if mid_fills \
+                else (ql[last]["bid"] - qs[last]["ask"])
+            fees = 0.0 if mid_fills else 4 * B.FEE_PER_CONTRACT_SIDE
+            exit_pnl = (close_fill - debit_fill) * 100 - fees
             exit_date, exit_reason, flagged = last, "series-end", True
         trades.append({"ticker": t, "event": e["date"], "entry_date": iso,
                        "exit_date": exit_date, "exit_reason": exit_reason,
                        "kl": kl, "ks": ksh, "debit": round(debit_fill, 3),
                        "pnl": round(exit_pnl, 2), "flagged": flagged,
                        "n_insiders": e["n_insiders"], "value": e["value"]})
-    return trades
+    return trades, fn, costs
 
 if __name__ == "__main__":
     if "ALPACA_API_KEY" not in os.environ:
@@ -185,10 +198,12 @@ if __name__ == "__main__":
         sys.exit(2)
     print(f"insider study start: {len(EVENTS)} events, "
           f"{len({e['ticker'] for e in EVENTS})} unique tickers", flush=True)
-    tr = run()
+    tr, funnel, costs = run()
     out = {"funnel": funnel, "headline": B.score(tr, "insider debit spreads"),
            "trades": tr, "data_errors": len(B.DATA_ERRORS),
-           "data_error_sample": B.DATA_ERRORS[:10]}
+           "data_error_sample": B.DATA_ERRORS[:10],
+           "cost_frac_quartiles": ([round(q, 3) for q in
+            __import__("numpy").percentile(costs, [25, 50, 75])] if costs else None)}
     json.dump(out, open("insider_result.json", "w"), indent=1)
     print("funnel:", funnel)
     print("data_errors:", len(B.DATA_ERRORS), flush=True)

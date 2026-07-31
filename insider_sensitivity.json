@@ -1,0 +1,115 @@
+{
+ "C_cost_off_pess": {
+  "params": {
+   "cost_frac": null
+  },
+  "score": {
+   "label": "C_cost_off_pess",
+   "n": 705,
+   "total": -124602.0,
+   "win_rate": 0.118,
+   "profit_factor": 0.05,
+   "avg": -176.74,
+   "skew": -1.07,
+   "sr_trade": -0.901,
+   "sr_ann": -10.31,
+   "trades_per_year": 130.8,
+   "max_dd": -124602.0,
+   "psr": 0.0,
+   "min_trl": null,
+   "flagged": 29,
+   "exit_mix": {
+    "stop": 535,
+    "take": 74,
+    "time": 67,
+    "series-end": 29
+   },
+   "flagged_series_end": 29
+  }
+ },
+ "A_cost15_pess": {
+  "params": {
+   "cost_frac": 0.15
+  },
+  "score": {
+   "label": "A_cost15_pess",
+   "n": 23,
+   "total": -1842.2,
+   "win_rate": 0.217,
+   "profit_factor": 0.28,
+   "avg": -80.1,
+   "skew": 0.7,
+   "sr_trade": -0.54,
+   "sr_ann": -1.19,
+   "trades_per_year": 4.8,
+   "max_dd": -1881.4,
+   "psr": 0.021,
+   "min_trl": null,
+   "flagged": 1,
+   "exit_mix": {
+    "time": 4,
+    "stop": 14,
+    "take": 4,
+    "series-end": 1
+   },
+   "flagged_series_end": 1
+  }
+ },
+ "B_cost25_pess": {
+  "params": {
+   "cost_frac": 0.25
+  },
+  "score": {
+   "label": "B_cost25_pess",
+   "n": 78,
+   "total": -5194.2,
+   "win_rate": 0.218,
+   "profit_factor": 0.29,
+   "avg": -66.59,
+   "skew": 0.47,
+   "sr_trade": -0.49,
+   "sr_ann": -1.9,
+   "trades_per_year": 15.1,
+   "max_dd": -5645.0,
+   "psr": 0.0,
+   "min_trl": null,
+   "flagged": 3,
+   "exit_mix": {
+    "take": 18,
+    "time": 10,
+    "stop": 47,
+    "series-end": 3
+   },
+   "flagged_series_end": 3
+  }
+ },
+ "D_mid_no_fees": {
+  "params": {
+   "cost_frac": null,
+   "mid_fills": true
+  },
+  "score": {
+   "label": "D_mid_no_fees",
+   "n": 738,
+   "total": -557.5,
+   "win_rate": 0.425,
+   "profit_factor": 0.98,
+   "avg": -0.76,
+   "skew": 0.5,
+   "sr_trade": -0.006,
+   "sr_ann": -0.07,
+   "trades_per_year": 137.7,
+   "max_dd": -6754.5,
+   "psr": 0.434,
+   "min_trl": null,
+   "flagged": 50,
+   "exit_mix": {
+    "stop": 368,
+    "take": 262,
+    "time": 58,
+    "series-end": 50
+   },
+   "flagged_series_end": 50
+  }
+ }
+}
