@@ -39,6 +39,30 @@ from strategies import trend_up
 
 RICH_PRIMARY, FLOOR_PRIMARY = 0.02, 0.20      # decimals (vol pts /100, frac)
 GRID = [(0.02, 0.20), (0.01, 0.20), (0.02, 0.15), (0.01, 0.15)]
+# EXTENSION GRID — declared 2026-08-01 AFTER the original grid returned zero
+# trades in every cell (only gate counters existed; no P/L was ever produced,
+# so there was nothing to tune toward). The floor turned out to be DELTA-
+# mismatched, not tenor-mismatched: a 1.1-EM short (~10 delta) cannot collect
+# 15-20% of width at any tenor. These cells move the short strike to where the
+# literature's floor is native (closer to the money), floor fixed at 20%:
+#   (em_mult, rich): {0.75, 0.50} x {0.02, 0.01}
+EXT_GRID = [(0.75, 0.02), (0.75, 0.01), (0.50, 0.02), (0.50, 0.01)]
+
+def pick_exp45(exps, day):
+    """Nearest-38 FRIDAY expiry in [30,45]. Mon/Wed weeklies at this range
+    were often not yet listed on the pick date (the full historical expiry
+    list is retrospective — a look-ahead the original run hit as 689 empty
+    snapshots); Fridays are listed months ahead, so this pick is honest."""
+    import datetime as _dt
+    best = None
+    for e in exps:
+        ed = _dt.date.fromisoformat(e)
+        if ed.weekday() != 4:
+            continue
+        d = (ed - day).days
+        if DTE_LO <= d <= DTE_HI and (best is None or abs(d - DTE_PREF) < abs(best[1] - DTE_PREF)):
+            best = (e, d)
+    return best
 DTE_LO, DTE_HI, DTE_PREF = 30, 45, 38
 EM_MULT, MAX_LOSS, TAKE, STOP, TIME_DTE = 1.1, 400.0, 0.50, 2.00, 21
 COST_FRAC = 0.08
@@ -67,7 +91,7 @@ def pick_short_long(snap, spot, em_frac, iso):
     return None
 
 
-def sim_spreads45(symbol, bars, exps, rich, floor, log=print):
+def sim_spreads45(symbol, bars, exps, rich, floor, em_mult=EM_MULT, log=print):
     trades, open_pos = [], None
     days = [d for d in bars.index if B.START <= d.date() <= B.END]
     gates = {"days": 0, "no_ctx": 0, "trend": 0, "no_exp": 0, "no_snap": 0,
@@ -115,7 +139,7 @@ def sim_spreads45(symbol, bars, exps, rich, floor, log=print):
         if not trend_up(pd.Series(closes)):
             gates["trend"] += 1
             continue
-        pe = B.pick_expiration(exps, day.date(), DTE_LO, DTE_HI, prefer=DTE_PREF)
+        pe = pick_exp45(exps, day.date())
         if pe is None:
             gates["no_exp"] += 1
             continue
@@ -124,7 +148,7 @@ def sim_spreads45(symbol, bars, exps, rich, floor, log=print):
         if not snap:
             gates["no_snap"] += 1
             continue
-        em_frac = EM_MULT * fc * math.sqrt(dte_e / 365.0)
+        em_frac = em_mult * fc * math.sqrt(dte_e / 365.0)
         pick = pick_short_long(snap, spot, em_frac, iso)
         if pick is None:
             gates["no_strikes"] += 1
@@ -158,7 +182,7 @@ if __name__ == "__main__":
         # warm the cache for the 30-45 DTE picks (distinct from the 3-12 set)
         keys = []
         for day in days:
-            pe = B.pick_expiration(exps, day.date(), DTE_LO, DTE_HI, prefer=DTE_PREF)
+            pe = pick_exp45(exps, day.date())
             if pe:
                 keys.append((pe[0], day.date().isoformat()))
         print(f"{sym}: {len(keys)} snapshot days to warm", flush=True)
@@ -185,7 +209,31 @@ if __name__ == "__main__":
         cell["score"] = s
         cell["trades"] = allt if (rich, floor) == (RICH_PRIMARY, FLOOR_PRIMARY) else len(allt)
         out["grid"].append(cell)
-        print(f"cell rich={rich} floor={floor}: n={s['n']} total={s['total']} "
-              f"pf={s['profit_factor']} stress={s['stress_total']}", flush=True)
+        json.dump(out, open("spreads45_result.json", "w"), indent=1)   # progressive
+        print(f"cell rich={rich} floor={floor}: n={s['n']} "
+              f"total={s.get('total')} pf={s.get('profit_factor')} "
+              f"stress={s.get('stress_total')}", flush=True)
+        for sym in ("SPY", "QQQ"):
+            print(f"   {sym} gates: {cell['cells'][sym]['gates']}", flush=True)
+    for em, rich in EXT_GRID:
+        cell = {"em_mult": em, "rich": rich, "floor": FLOOR_PRIMARY, "cells": {}}
+        allt = []
+        for sym in ("SPY", "QQQ"):
+            tr, gates = sim_spreads45(sym, B.stock_bars(sym), B.expirations(sym),
+                                      rich, FLOOR_PRIMARY, em_mult=em,
+                                      log=lambda *a: None)
+            allt += tr
+            cell["cells"][sym] = {"gates": gates}
+        s = B.score(allt, f"45dte em{em} r{rich}")
+        st = B.stress_spreads(allt)
+        s["stress_total"] = round(sum(t["pnl"] for t in st), 2)
+        cell["score"] = s
+        cell["trades"] = len(allt)
+        out.setdefault("ext_grid", []).append(cell)
+        json.dump(out, open("spreads45_result.json", "w"), indent=1)
+        print(f"EXT em={em} rich={rich}: n={s['n']} total={s.get('total')} "
+              f"pf={s.get('profit_factor')} stress={s.get('stress_total')}", flush=True)
+        for sym in ("SPY", "QQQ"):
+            print(f"   {sym} gates: {cell['cells'][sym]['gates']}", flush=True)
     json.dump(out, open("spreads45_result.json", "w"), indent=1)
     print("spreads45 study done", flush=True)
