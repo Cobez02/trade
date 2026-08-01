@@ -74,6 +74,29 @@ learner's live evidence can adjudicate it). Keep everything else. The
 change is one line in `strategies.py`; on your word I'll make it, test it,
 and push it before Monday's open.
 
+## Addendum (same day): the trailing-exit challenge, tested
+
+Connor's objection — "don't drop our strongest earner" (NFLX, 3-for-3
+live) — had one strong technical version: this study graded names under
+the sim's simplified fixed exits, while the live watcher TRAILS (arms at
++25% peak, exits on a 20-point giveback), and NFLX's live wins were
+exactly the let-it-run kind. So the identical entries were replayed under
+the live exit rules (`liveexit_replay.py`, post-hoc diagnostic, labeled as
+such; EOD-conservative — closing bids only, which *understates* trailing).
+
+Result: **trailing does not rescue any flagged name.** NFLX under live
+exits: −$3,422, PF 0.04, 2 winners in 30. MSFT: PF 0.13. IWM: PF 0.30.
+The drop recommendation survives its strongest challenge under both exit
+models. (Two side-findings for the deprioritized exit study, hypothesis
+only: PLTR and AMZN graded materially BETTER under trailing — +$5,540/PF
+1.99 and +$1,602/PF 1.43 — despite the EOD handicap; and the live NFLX
+wins are consistent with drawing twice from the thin winning tail of a
+distribution that loses 27-of-31 times.)
+
+Owner decision as of this addendum: **no change made** — NFLX, MSFT, and
+IWM remain on the watchlist pending Connor's call, per the standing rule
+that watchlist membership is his.
+
 ## Limitations
 
 Same harness limitations as the parent study: EOD granularity (flagged
