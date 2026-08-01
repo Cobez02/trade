@@ -1,0 +1,378 @@
+{
+ "grid": [
+  {
+   "rich": 0.02,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 72,
+      "rich": 88,
+      "floor": 598,
+      "cost": 0,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 170,
+      "rich": 58,
+      "floor": 481,
+      "cost": 0,
+      "entered": 0
+     }
+    }
+   },
+   "score": {
+    "label": "45dte r0.02 f0.2",
+    "n": 0,
+    "stress_total": 0
+   },
+   "trades": []
+  },
+  {
+   "rich": 0.01,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 72,
+      "rich": 21,
+      "floor": 665,
+      "cost": 0,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 170,
+      "rich": 13,
+      "floor": 526,
+      "cost": 0,
+      "entered": 0
+     }
+    }
+   },
+   "score": {
+    "label": "45dte r0.01 f0.2",
+    "n": 0,
+    "stress_total": 0
+   },
+   "trades": 0
+  },
+  {
+   "rich": 0.02,
+   "floor": 0.15,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 72,
+      "rich": 88,
+      "floor": 592,
+      "cost": 6,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 170,
+      "rich": 58,
+      "floor": 477,
+      "cost": 4,
+      "entered": 0
+     }
+    }
+   },
+   "score": {
+    "label": "45dte r0.02 f0.15",
+    "n": 0,
+    "stress_total": 0
+   },
+   "trades": 0
+  },
+  {
+   "rich": 0.01,
+   "floor": 0.15,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 72,
+      "rich": 21,
+      "floor": 659,
+      "cost": 6,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 170,
+      "rich": 13,
+      "floor": 522,
+      "cost": 4,
+      "entered": 0
+     }
+    }
+   },
+   "score": {
+    "label": "45dte r0.01 f0.15",
+    "n": 0,
+    "stress_total": 0
+   },
+   "trades": 0
+  }
+ ],
+ "ext_grid": [
+  {
+   "em_mult": 0.75,
+   "rich": 0.02,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 30,
+      "rich": 245,
+      "floor": 480,
+      "cost": 3,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 70,
+      "rich": 191,
+      "floor": 431,
+      "cost": 0,
+      "entered": 2
+     }
+    }
+   },
+   "score": {
+    "label": "45dte em0.75 r0.02",
+    "n": 2,
+    "total": -64.8,
+    "win_rate": 0.5,
+    "profit_factor": 0.46,
+    "avg": -32.4,
+    "skew": 0.0,
+    "sr_trade": -0.372,
+    "sr_ann": -0.52,
+    "trades_per_year": 2.0,
+    "max_dd": -119.4,
+    "psr": null,
+    "min_trl": null,
+    "flagged": 1,
+    "stress_total": -98.8
+   },
+   "trades": 2
+  },
+  {
+   "em_mult": 0.75,
+   "rich": 0.01,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 680,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 30,
+      "rich": 130,
+      "floor": 595,
+      "cost": 3,
+      "entered": 0
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 732,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 70,
+      "rich": 107,
+      "floor": 515,
+      "cost": 0,
+      "entered": 2
+     }
+    }
+   },
+   "score": {
+    "label": "45dte em0.75 r0.01",
+    "n": 2,
+    "total": -64.8,
+    "win_rate": 0.5,
+    "profit_factor": 0.46,
+    "avg": -32.4,
+    "skew": 0.0,
+    "sr_trade": -0.372,
+    "sr_ann": -0.52,
+    "trades_per_year": 2.0,
+    "max_dd": -119.4,
+    "psr": null,
+    "min_trl": null,
+    "flagged": 1,
+    "stress_total": -98.8
+   },
+   "trades": 2
+  },
+  {
+   "em_mult": 0.5,
+   "rich": 0.02,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 678,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 11,
+      "rich": 377,
+      "floor": 264,
+      "cost": 84,
+      "entered": 2
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 730,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 23,
+      "rich": 335,
+      "floor": 263,
+      "cost": 57,
+      "entered": 4
+     }
+    }
+   },
+   "score": {
+    "label": "45dte em0.5 r0.02",
+    "n": 6,
+    "total": 95.6,
+    "win_rate": 0.833,
+    "profit_factor": 1.57,
+    "avg": 15.93,
+    "skew": -2.15,
+    "sr_trade": 0.189,
+    "sr_ann": 1.47,
+    "trades_per_year": 60.0,
+    "max_dd": -166.4,
+    "psr": 0.637,
+    "min_trl": 112,
+    "flagged": 2,
+    "stress_total": -119.9
+   },
+   "trades": 6
+  },
+  {
+   "em_mult": 0.5,
+   "rich": 0.01,
+   "floor": 0.2,
+   "cells": {
+    "SPY": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 677,
+      "no_exp": 3,
+      "no_snap": 6,
+      "no_strikes": 11,
+      "rich": 254,
+      "floor": 364,
+      "cost": 97,
+      "entered": 3
+     }
+    },
+    "QQQ": {
+     "gates": {
+      "days": 1459,
+      "no_ctx": 12,
+      "trend": 730,
+      "no_exp": 3,
+      "no_snap": 3,
+      "no_strikes": 23,
+      "rich": 221,
+      "floor": 362,
+      "cost": 72,
+      "entered": 4
+     }
+    }
+   },
+   "score": {
+    "label": "45dte em0.5 r0.01",
+    "n": 7,
+    "total": 99.2,
+    "win_rate": 0.857,
+    "profit_factor": 1.6,
+    "avg": 14.17,
+    "skew": -2.1,
+    "sr_trade": 0.182,
+    "sr_ann": 1.52,
+    "trades_per_year": 70.0,
+    "max_dd": -166.4,
+    "psr": 0.645,
+    "min_trl": 119,
+    "flagged": 3,
+    "stress_total": -270.3
+   },
+   "trades": 7
+  }
+ ]
+}
