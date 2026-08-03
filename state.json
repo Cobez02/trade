@@ -435,8 +435,8 @@
     {
       "date": "2026-08-03",
       "equity": 11016.21,
-      "benchmark_equity": 10258.45,
-      "spy": 757.135
+      "benchmark_equity": 10263.87,
+      "spy": 757.535
     }
   ],
   "run_log": [
@@ -1057,6 +1057,14 @@
         "META: strike scan: 3 quoted, spreads [6.7%, 2.3%, 11.0%], tightest 2.3%",
         "TOO RICH META bull [tech] \u2014 one contract $1,435 vs per-trade budget $600 (cap $600)"
       ]
+    },
+    {
+      "date": "2026-08-03",
+      "time": "2026-08-03T18:31:18.471856+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "NO NEW ENTRIES \u2014 89 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1469,22 +1477,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "AMZN",
+        "underlying": "APLD",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "FDN",
+        "underlying": "FDIG",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "FFOG",
+        "underlying": "GOOGL",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "KQQQ",
+        "underlying": "MSFT",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
@@ -1493,7 +1501,7 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 24 oversold + MACD turning up"
+        "thesis": "Technical: RSI 23 oversold + MACD turning up"
       },
       {
         "underlying": "SPY",
@@ -1503,7 +1511,7 @@
       {
         "underlying": "META",
         "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
