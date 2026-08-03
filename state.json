@@ -435,8 +435,8 @@
     {
       "date": "2026-08-03",
       "equity": 11016.21,
-      "benchmark_equity": 10249.23,
-      "spy": 756.455
+      "benchmark_equity": 10255.67,
+      "spy": 756.93
     }
   ],
   "run_log": [
@@ -1031,6 +1031,14 @@
         "SPY: resample 1: spread 4.7% -> 4.4%",
         "SCREENED OUT SPY bull [tech] \u2014 spread: spread 4.4% > 4% \u2014 modelled round trip 3.7% of premium vs a best-documented edge of 0.5%/month; premium: $0.23 contract < $0.50 \u2014 $0.60/contract PFOF alone is 5.3% round trip; skew: ex-ante skew 4.1 > 4.0 \u2014 Boyer-Vorkink top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)"
       ]
+    },
+    {
+      "date": "2026-08-03",
+      "time": "2026-08-03T17:24:12.826937+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1443,24 +1451,24 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "TWST",
+        "underlying": "AMZN",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "FBIZ",
+        "underlying": "FDN",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "CNA",
+        "underlying": "FFOG",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "L",
+        "underlying": "KQQQ",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
@@ -1473,6 +1481,11 @@
         "underlying": "SPY",
         "direction": "bull",
         "thesis": "Technical: MACD bull cross in uptrend (RSI 53)"
+      },
+      {
+        "underlying": "META",
+        "direction": "bull",
+        "thesis": "Technical: RSI 34 oversold + MACD turning up"
       }
     ],
     "flow": [],
