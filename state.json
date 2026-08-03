@@ -435,8 +435,8 @@
     {
       "date": "2026-08-03",
       "equity": 11016.21,
-      "benchmark_equity": 10274.44,
-      "spy": 758.315
+      "benchmark_equity": 10266.37,
+      "spy": 757.72
     }
   ],
   "run_log": [
@@ -1073,6 +1073,14 @@
         "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "NO NEW ENTRIES \u2014 31 min to close (cutoff 90); positions will be flattened at 15 min."
       ]
+    },
+    {
+      "date": "2026-08-03",
+      "time": "2026-08-03T20:17:48.725881+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1485,22 +1493,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "CURB",
+        "underlying": "CTOS",
+        "direction": "bull",
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "LIFE",
+        "direction": "bull",
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "CRNX",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "AKR",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "SAH",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "LAD",
+        "underlying": "PPLI",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1519,7 +1527,7 @@
       {
         "underlying": "META",
         "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
