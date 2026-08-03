@@ -435,8 +435,8 @@
     {
       "date": "2026-08-03",
       "equity": 11016.21,
-      "benchmark_equity": 10243.54,
-      "spy": 756.035
+      "benchmark_equity": 10249.23,
+      "spy": 756.455
     }
   ],
   "run_log": [
@@ -1014,6 +1014,23 @@
         "META: resample 1: spread 4.7% -> 4.3%",
         "SCREENED OUT META bull [tech] \u2014 spread: spread 4.3% > 4% \u2014 modelled round trip 3.2% of premium vs a best-documented edge of 0.5%/month"
       ]
+    },
+    {
+      "date": "2026-08-03",
+      "time": "2026-08-03T16:47:06.088504+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for TWST [news]",
+        "no liquid contract for FBIZ [news]",
+        "no liquid contract for CNA [news]",
+        "no liquid contract for L [news]",
+        "TSLA: strike scan: 3 quoted, spreads [4.6%, 2.8%, 2.8%], tightest 4.6%",
+        "TSLA: resample 1: spread 4.6% -> 1.3%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 54.2% vs forecast 44.8%; buy: bsm 4.1988 vs mid 5.4350 -> -22.74% (quote is against you, wait)",
+        "SPY: strike scan: 3 quoted, spreads [76.9%, 4.7%, 8.7%], tightest 4.7%",
+        "SPY: resample 1: spread 4.7% -> 4.4%",
+        "SCREENED OUT SPY bull [tech] \u2014 spread: spread 4.4% > 4% \u2014 modelled round trip 3.7% of premium vs a best-documented edge of 0.5%/month; premium: $0.23 contract < $0.50 \u2014 $0.60/contract PFOF alone is 5.3% round trip; skew: ex-ante skew 4.1 > 4.0 \u2014 Boyer-Vorkink top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1426,41 +1443,36 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "ETN",
-        "direction": "bull",
-        "thesis": "News flow +5 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "GTES",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "CNH",
+        "underlying": "TWST",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ARES",
+        "underlying": "FBIZ",
         "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "CNA",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "L",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 24 oversold + MACD turning up"
+        "thesis": "Technical: RSI 23 oversold + MACD turning up"
       },
       {
         "underlying": "SPY",
         "direction": "bull",
         "thesis": "Technical: MACD bull cross in uptrend (RSI 53)"
-      },
-      {
-        "underlying": "META",
-        "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
       }
     ],
     "flow": [],
