@@ -435,8 +435,8 @@
     {
       "date": "2026-08-03",
       "equity": 11016.21,
-      "benchmark_equity": 10255.67,
-      "spy": 756.93
+      "benchmark_equity": 10258.45,
+      "spy": 757.135
     }
   ],
   "run_log": [
@@ -1039,6 +1039,24 @@
         "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
+    },
+    {
+      "date": "2026-08-03",
+      "time": "2026-08-03T17:31:53.532734+00:00",
+      "notes": [
+        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "AMZN: strike scan: 3 quoted, spreads [4.0%, 5.5%, 4.9%], tightest 4.0%",
+        "SCREENED OUT AMZN bull [news] \u2014 lottery: MAX 15.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for FDN [news]",
+        "no liquid contract for FFOG [news]",
+        "no liquid contract for KQQQ [news]",
+        "TSLA: strike scan: 3 quoted, spreads [1.0%, 2.0%, 0.8%], tightest 1.0%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 54.6% vs forecast 44.5%; buy: bsm 3.6911 vs mid 4.9950 -> -26.10% (quote is against you, wait)",
+        "SPY: strike scan: 3 quoted, spreads [13.3%, 3.5%, 5.7%], tightest 3.5%",
+        "SCREENED OUT SPY bull [tech] \u2014 premium: $0.29 contract < $0.50 \u2014 $0.60/contract PFOF alone is 4.2% round trip",
+        "META: strike scan: 3 quoted, spreads [6.7%, 2.3%, 11.0%], tightest 2.3%",
+        "TOO RICH META bull [tech] \u2014 one contract $1,435 vs per-trade budget $600 (cap $600)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1475,12 +1493,12 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 23 oversold + MACD turning up"
+        "thesis": "Technical: RSI 24 oversold + MACD turning up"
       },
       {
         "underlying": "SPY",
         "direction": "bull",
-        "thesis": "Technical: MACD bull cross in uptrend (RSI 53)"
+        "thesis": "Technical: MACD bull cross in uptrend (RSI 54)"
       },
       {
         "underlying": "META",
