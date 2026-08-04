@@ -1,0 +1,555 @@
+{
+ "A_all_blocked": {
+  "label": "A_all_blocked",
+  "n": 626,
+  "total": 458.8,
+  "win_rate": 0.339,
+  "profit_factor": 1.01,
+  "avg": 0.73,
+  "skew": 3.53,
+  "sr_trade": 0.003,
+  "sr_ann": 0.03,
+  "trades_per_year": 109.6,
+  "max_dd": -6957.2,
+  "psr": 0.527,
+  "min_trl": 366581,
+  "flagged": 0,
+  "mean_pnl_pct": -0.0116
+ },
+ "B_run_1pct": {
+  "label": "B_run_1pct",
+  "n": 186,
+  "total": -877.2,
+  "win_rate": 0.344,
+  "profit_factor": 0.96,
+  "avg": -4.72,
+  "skew": 1.49,
+  "sr_trade": -0.017,
+  "sr_ann": -0.1,
+  "trades_per_year": 34.6,
+  "max_dd": -4191.2,
+  "psr": 0.41,
+  "min_trl": null,
+  "flagged": 0,
+  "mean_pnl_pct": -0.0115
+ },
+ "C_run_1p5pct": {
+  "label": "C_run_1p5pct",
+  "n": 139,
+  "total": -1684.8,
+  "win_rate": 0.331,
+  "profit_factor": 0.89,
+  "avg": -12.12,
+  "skew": 1.01,
+  "sr_trade": -0.046,
+  "sr_ann": -0.24,
+  "trades_per_year": 25.9,
+  "max_dd": -4108.8,
+  "psr": 0.297,
+  "min_trl": null,
+  "flagged": 0,
+  "mean_pnl_pct": -0.0408
+ },
+ "trades_sample": [
+  {
+   "symbol": "SPY",
+   "run": 0.0105,
+   "entry_date": "2020-11-02",
+   "exit_date": "2020-11-03",
+   "exit_reason": "take-profit +50%",
+   "pnl": 224.8,
+   "pnl_pct": 0.4934,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.02,
+   "entry_date": "2020-11-05",
+   "exit_date": "2020-11-06",
+   "exit_reason": "stop-loss -43%",
+   "pnl": -85.2,
+   "pnl_pct": -0.4337,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0045,
+   "entry_date": "2020-11-19",
+   "exit_date": "2020-11-23",
+   "exit_reason": "stop-loss -74%",
+   "pnl": -105.2,
+   "pnl_pct": -0.7447,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.006,
+   "entry_date": "2020-11-23",
+   "exit_date": "2020-11-24",
+   "exit_reason": "stop-loss -77%",
+   "pnl": -96.2,
+   "pnl_pct": -0.7742,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0018,
+   "entry_date": "2021-01-26",
+   "exit_date": "2021-01-27",
+   "exit_reason": "take-profit +690%",
+   "pnl": 763.8,
+   "pnl_pct": 6.6435,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0003,
+   "entry_date": "2021-02-17",
+   "exit_date": "2021-02-23",
+   "exit_reason": "time-stop (1 DTE)",
+   "pnl": -5.2,
+   "pnl_pct": -0.034,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0003,
+   "entry_date": "2021-04-12",
+   "exit_date": "2021-04-13",
+   "exit_reason": "stop-loss -42%",
+   "pnl": -31.2,
+   "pnl_pct": -0.4247,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0028,
+   "entry_date": "2021-04-13",
+   "exit_date": "2021-04-15",
+   "exit_reason": "stop-loss -71%",
+   "pnl": -46.2,
+   "pnl_pct": -0.7188,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0001,
+   "entry_date": "2021-06-08",
+   "exit_date": "2021-06-10",
+   "exit_reason": "stop-loss -75%",
+   "pnl": -52.2,
+   "pnl_pct": -0.7536,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0018,
+   "entry_date": "2021-06-15",
+   "exit_date": "2021-06-16",
+   "exit_reason": "take-profit +59%",
+   "pnl": 64.8,
+   "pnl_pct": 0.5702,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0033,
+   "entry_date": "2021-07-13",
+   "exit_date": "2021-07-14",
+   "exit_reason": "stop-loss -51%",
+   "pnl": -46.2,
+   "pnl_pct": -0.5169,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0015,
+   "entry_date": "2021-07-14",
+   "exit_date": "2021-07-16",
+   "exit_reason": "take-profit +123%",
+   "pnl": 114.8,
+   "pnl_pct": 1.2105,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0007,
+   "entry_date": "2021-08-09",
+   "exit_date": "2021-08-11",
+   "exit_reason": "stop-loss -60%",
+   "pnl": -41.2,
+   "pnl_pct": -0.6029,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0013,
+   "entry_date": "2021-09-08",
+   "exit_date": "2021-09-10",
+   "exit_reason": "take-profit +154%",
+   "pnl": 151.8,
+   "pnl_pct": 1.52,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.001,
+   "entry_date": "2021-10-22",
+   "exit_date": "2021-10-25",
+   "exit_reason": "stop-loss -63%",
+   "pnl": -46.2,
+   "pnl_pct": -0.6389,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.001,
+   "entry_date": "2021-10-26",
+   "exit_date": "2021-10-28",
+   "exit_reason": "stop-loss -71%",
+   "pnl": -48.2,
+   "pnl_pct": -0.7164,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0094,
+   "entry_date": "2021-10-28",
+   "exit_date": "2021-10-29",
+   "exit_reason": "stop-loss -51%",
+   "pnl": -43.2,
+   "pnl_pct": -0.5181,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0021,
+   "entry_date": "2021-10-29",
+   "exit_date": "2021-11-01",
+   "exit_reason": "stop-loss -35%",
+   "pnl": -37.2,
+   "pnl_pct": -0.3524,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.002,
+   "entry_date": "2021-11-01",
+   "exit_date": "2021-11-02",
+   "exit_reason": "stop-loss -34%",
+   "pnl": -37.2,
+   "pnl_pct": -0.3491,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0039,
+   "entry_date": "2021-11-02",
+   "exit_date": "2021-11-03",
+   "exit_reason": "stop-loss -70%",
+   "pnl": -68.2,
+   "pnl_pct": -0.7083,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0008,
+   "entry_date": "2021-11-08",
+   "exit_date": "2021-11-10",
+   "exit_reason": "take-profit +126%",
+   "pnl": 107.8,
+   "pnl_pct": 1.2414,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0003,
+   "entry_date": "2021-11-11",
+   "exit_date": "2021-11-12",
+   "exit_reason": "stop-loss -78%",
+   "pnl": -72.2,
+   "pnl_pct": -0.7826,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0075,
+   "entry_date": "2021-11-12",
+   "exit_date": "2021-11-15",
+   "exit_reason": "stop-loss -45%",
+   "pnl": -34.2,
+   "pnl_pct": -0.4595,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0002,
+   "entry_date": "2021-11-15",
+   "exit_date": "2021-11-16",
+   "exit_reason": "stop-loss -40%",
+   "pnl": -27.2,
+   "pnl_pct": -0.4091,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0039,
+   "entry_date": "2021-11-16",
+   "exit_date": "2021-11-18",
+   "exit_reason": "stop-loss -56%",
+   "pnl": -32.2,
+   "pnl_pct": -0.5714,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0033,
+   "entry_date": "2021-11-18",
+   "exit_date": "2021-11-23",
+   "exit_reason": "stop-loss -54%",
+   "pnl": -43.2,
+   "pnl_pct": -0.5443,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0032,
+   "entry_date": "2022-01-26",
+   "exit_date": "2022-01-31",
+   "exit_reason": "take-profit +125%",
+   "pnl": 514.8,
+   "pnl_pct": 1.2175,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0065,
+   "entry_date": "2022-05-02",
+   "exit_date": "2022-05-04",
+   "exit_reason": "take-profit +146%",
+   "pnl": 550.8,
+   "pnl_pct": 1.4165,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0011,
+   "entry_date": "2022-06-29",
+   "exit_date": "2022-06-30",
+   "exit_reason": "stop-loss -60%",
+   "pnl": -159.2,
+   "pnl_pct": -0.6069,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0064,
+   "entry_date": "2022-08-02",
+   "exit_date": "2022-08-03",
+   "exit_reason": "stop-loss -75%",
+   "pnl": -152.2,
+   "pnl_pct": -0.7562,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0005,
+   "entry_date": "2022-08-04",
+   "exit_date": "2022-08-08",
+   "exit_reason": "stop-loss -38%",
+   "pnl": -69.2,
+   "pnl_pct": -0.3876,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0027,
+   "entry_date": "2022-08-18",
+   "exit_date": "2022-08-19",
+   "exit_reason": "take-profit +123%",
+   "pnl": 130.8,
+   "pnl_pct": 1.2243,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0035,
+   "entry_date": "2022-09-06",
+   "exit_date": "2022-09-07",
+   "exit_reason": "take-profit +114%",
+   "pnl": 207.8,
+   "pnl_pct": 1.1366,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0179,
+   "entry_date": "2022-09-07",
+   "exit_date": "2022-09-09",
+   "exit_reason": "take-profit +130%",
+   "pnl": 286.8,
+   "pnl_pct": 1.287,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0196,
+   "entry_date": "2022-09-28",
+   "exit_date": "2022-09-29",
+   "exit_reason": "stop-loss -69%",
+   "pnl": -240.2,
+   "pnl_pct": -0.6897,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0209,
+   "entry_date": "2022-09-29",
+   "exit_date": "2022-09-30",
+   "exit_reason": "stop-loss -64%",
+   "pnl": -220.2,
+   "pnl_pct": -0.6433,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0,
+   "entry_date": "2022-11-25",
+   "exit_date": "2022-11-28",
+   "exit_reason": "take-profit +137%",
+   "pnl": 203.8,
+   "pnl_pct": 1.36,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0115,
+   "entry_date": "2023-01-05",
+   "exit_date": "2023-01-06",
+   "exit_reason": "take-profit +101%",
+   "pnl": 321.8,
+   "pnl_pct": 1.0,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0039,
+   "entry_date": "2023-03-01",
+   "exit_date": "2023-03-03",
+   "exit_reason": "take-profit +235%",
+   "pnl": 348.8,
+   "pnl_pct": 2.3267,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0015,
+   "entry_date": "2023-03-08",
+   "exit_date": "2023-03-09",
+   "exit_reason": "stop-loss -70%",
+   "pnl": -142.2,
+   "pnl_pct": -0.703,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0039,
+   "entry_date": "2023-04-06",
+   "exit_date": "2023-04-10",
+   "exit_reason": "stop-loss -51%",
+   "pnl": -66.2,
+   "pnl_pct": -0.5156,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.004,
+   "entry_date": "2023-04-12",
+   "exit_date": "2023-04-13",
+   "exit_reason": "stop-loss -77%",
+   "pnl": -94.2,
+   "pnl_pct": -0.7769,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0001,
+   "entry_date": "2023-04-19",
+   "exit_date": "2023-04-24",
+   "exit_reason": "stop-loss -68%",
+   "pnl": -68.2,
+   "pnl_pct": -0.68,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0061,
+   "entry_date": "2023-07-20",
+   "exit_date": "2023-07-21",
+   "exit_reason": "stop-loss -38%",
+   "pnl": -29.2,
+   "pnl_pct": -0.3816,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0026,
+   "entry_date": "2023-07-25",
+   "exit_date": "2023-07-26",
+   "exit_reason": "stop-loss -51%",
+   "pnl": -39.2,
+   "pnl_pct": -0.52,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0061,
+   "entry_date": "2023-09-28",
+   "exit_date": "2023-09-29",
+   "exit_reason": "stop-loss -41%",
+   "pnl": -51.2,
+   "pnl_pct": -0.418,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0009,
+   "entry_date": "2023-10-05",
+   "exit_date": "2023-10-06",
+   "exit_reason": "take-profit +117%",
+   "pnl": 153.8,
+   "pnl_pct": 1.1579,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": 0.0119,
+   "entry_date": "2023-10-30",
+   "exit_date": "2023-11-01",
+   "exit_reason": "take-profit +102%",
+   "pnl": 165.8,
+   "pnl_pct": 1.0122,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0006,
+   "entry_date": "2023-11-24",
+   "exit_date": "2023-11-28",
+   "exit_reason": "stop-loss -45%",
+   "pnl": -14.2,
+   "pnl_pct": -0.4667,
+   "flagged": false
+  },
+  {
+   "symbol": "SPY",
+   "run": -0.0008,
+   "entry_date": "2023-11-28",
+   "exit_date": "2023-11-30",
+   "exit_reason": "stop-loss -52%",
+   "pnl": -23.2,
+   "pnl_pct": -0.5349,
+   "flagged": false
+  }
+ ]
+}
