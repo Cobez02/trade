@@ -34,30 +34,47 @@
       "strike": 305.0,
       "expiration": "2026-08-07",
       "qty": 10,
-      "entry_price": 0.55,
-      "entry_cost": 550.0,
-      "entry_date": "2026-08-04",
-      "thesis": "Technical: MACD bull cross in uptrend (RSI 57)",
-      "spot_at_entry": 300.61,
+      "entry_price": 0.54,
+      "entry_cost": 540.0,
       "features": {
         "sleeve": "tech",
         "direction": "bull",
-        "signal_score": 8,
-        "rsi": 57.0,
-        "macd_hist": 0.245,
-        "macd_rising": true,
-        "trend_up": true,
-        "dte": 3,
-        "moneyness_pct": 0.0146,
-        "spread_pct": 0.037,
         "type": "call",
-        "ref_vol": 0.1972,
-        "iv_at_entry": 0.1844,
-        "vol_edge_pts": 1.27
-      }
+        "rsi": 57.0,
+        "dte": 3,
+        "trend_up": true,
+        "macd_rising": true,
+        "spread_pct": 0.04,
+        "signal_score": 8.0
+      },
+      "entry_date": "2026-08-04"
     }
   },
   "closed": [
+    {
+      "symbol": "IWM260807C00303000",
+      "sleeve": "tech",
+      "underlying": "IWM",
+      "type": "call",
+      "strike": 303.0,
+      "expiration": "2026-08-07",
+      "pnl": 369.0,
+      "pnl_pct": 0.6949,
+      "exit_reason": "closed",
+      "closed_on": "2026-08-04",
+      "thesis": "",
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 55.0,
+        "dte": 3,
+        "trend_up": true,
+        "macd_rising": true,
+        "spread_pct": 0.03,
+        "signal_score": 8.0
+      }
+    },
     {
       "symbol": "AMZN260807C00280000",
       "sleeve": "news",
@@ -494,26 +511,12 @@
     },
     {
       "date": "2026-08-04",
-      "equity": 11434.73,
-      "benchmark_equity": 10409.38,
-      "spy": 768.275
+      "equity": 11514.48,
+      "benchmark_equity": 10426.05,
+      "spy": 769.505
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T13:31:16.124091+00:00",
-      "notes": [
-        "CLOSED AI260731C00008500 [wsb] LOSS stop-loss -50%, P&L $-75 \u2014 entry was: RSI 20.0, counter_trend, DTE 7, score 0.3",
-        "CLOSED AMZN260727C00237500 [flow] LOSS stop-loss -54%, P&L $-47 \u2014 entry was: RSI 38.0, counter_trend, DTE 3, score 2.6",
-        "CLOSED NFLX260731C00069000 [tech] WIN take-profit +56%, P&L $+70 \u2014 entry was: RSI 22.0, counter_trend, DTE 7, score 17.91",
-        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "SKIP AI bull [wsb] \u2014 bid/ask spread 48% > 15% (illiquid)",
-        "SKIP SKHY bull [news] \u2014 bid/ask spread 18% > 15% (illiquid)",
-        "no liquid contract for IGPT [news]",
-        "OPENED 1x NFLX260731C00071000 [tech] @ $1.12 ($112, w1.0) \u2014 Technical: RSI 30 oversold + MACD turning up"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T13:48:49.261178+00:00",
@@ -1172,15 +1175,31 @@
         "IWM: strike scan: 3 quoted, spreads [3.7%, 8.1%, 9.0%], tightest 3.7%",
         "OPENED 10x IWM260807C00305000 [tech] @ $0.55 ($550, sleeve \u00d71.0, learned \u00d71.0, vol edge +1.3pts, round trip 2.9%) \u2014 Technical: MACD bull cross in uptrend (RSI 57)"
       ]
+    },
+    {
+      "date": "2026-08-04",
+      "time": "2026-08-04T16:35:09.412392+00:00",
+      "notes": [
+        "Learner: 17 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "PLTR: strike scan: 3 quoted, spreads [2.5%, 1.3%, 2.6%], tightest 1.3%",
+        "SCREENED OUT PLTR bull [news] \u2014 lottery: MAX 27.8% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for SIBN [news]",
+        "no liquid contract for JAZZ [news]",
+        "no liquid contract for VRTX [news]",
+        "META: strike scan: 3 quoted, spreads [4.1%, 6.1%, 9.0%], tightest 4.1%",
+        "SCREENED OUT META bull [tech] \u2014 spread: spread 4.1% > 4% \u2014 modelled round trip 3.1% of premium vs a best-documented edge of 0.5%/month",
+        "TSLA: strike scan: 3 quoted, spreads [3.6%, 1.1%, 1.4%], tightest 1.1%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 46.7% vs forecast 43.3%; buy: bsm 4.9042 vs mid 5.4500 -> -10.01% (quote is against you, wait)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
     "updated": "2026-08-04",
-    "n_trades": 16,
-    "n_eff": 16.0,
-    "n_days": 4,
-    "pooled_pnl_pct": 0.2543,
+    "n_trades": 17,
+    "n_eff": 17.0,
+    "n_days": 5,
+    "pooled_pnl_pct": 0.2803,
     "clustering": {
       "rho": 0.0,
       "deff": 1.0
@@ -1198,7 +1217,7 @@
         "deff": 1.063,
         "var": 0.477825,
         "weight": 1.0,
-        "shrunk_pnl_pct": -0.09436,
+        "shrunk_pnl_pct": -0.073969,
         "confidence": 0.0,
         "evidence": "n_eff 4.7 < activation 30 \u2014 no evidence yet, trading at full size",
         "min_track_record": 196,
@@ -1217,7 +1236,7 @@
         "deff": 1.332,
         "var": 2.410997,
         "weight": 1.0,
-        "shrunk_pnl_pct": -0.238901,
+        "shrunk_pnl_pct": -0.201523,
         "confidence": 0.0,
         "evidence": "n_eff 3.0 < activation 30 \u2014 no evidence yet, trading at full size",
         "min_track_record": 18,
@@ -1225,23 +1244,23 @@
         "sharpe_per_trade": 0.3281
       },
       "tech": {
-        "n": 6,
-        "wins": 4,
-        "win_rate": 0.667,
-        "avg_pnl_pct": 0.361,
-        "total_pnl": 281.0,
-        "n_eff": 6.0,
-        "n_days": 4,
+        "n": 7,
+        "wins": 5,
+        "win_rate": 0.714,
+        "avg_pnl_pct": 0.4087,
+        "total_pnl": 650.0,
+        "n_eff": 7.0,
+        "n_days": 5,
         "rho": 0.0,
         "deff": 1.0,
-        "var": 0.650152,
+        "var": 0.557719,
         "weight": 1.0,
-        "shrunk_pnl_pct": 0.082823,
+        "shrunk_pnl_pct": 0.202591,
         "confidence": 0.0,
-        "evidence": "n_eff 6.0 < activation 30 \u2014 no evidence yet, trading at full size",
-        "min_track_record": 10,
-        "psr": 0.8964,
-        "sharpe_per_trade": 0.4477
+        "evidence": "n_eff 7.0 < activation 30 \u2014 no evidence yet, trading at full size",
+        "min_track_record": 7,
+        "psr": 0.9503,
+        "sharpe_per_trade": 0.5473
       },
       "flow": {
         "n": 1,
@@ -1266,21 +1285,21 @@
     "features": {
       "direction": {
         "call": {
-          "n": 13,
-          "wins": 6,
-          "win_rate": 0.462,
-          "avg_pnl_pct": 0.1905,
-          "total_pnl": 607.0,
-          "n_eff": 12.98,
-          "n_days": 4,
-          "rho": 0.0006,
-          "deff": 1.001,
-          "var": 1.070487,
-          "shrunk_pnl_pct": 0.383741,
+          "n": 14,
+          "wins": 7,
+          "win_rate": 0.5,
+          "avg_pnl_pct": 0.2265,
+          "total_pnl": 976.0,
+          "n_eff": 14.0,
+          "n_days": 5,
+          "rho": 0.0,
+          "deff": 1.0,
+          "var": 1.006313,
+          "shrunk_pnl_pct": 0.389073,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
-          "evidence": "n_eff 13.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "evidence": "n_eff 14.0 < activation 30 \u2014 no evidence yet, trading at full size",
           "n_needed": 78
         },
         "put": {
@@ -1294,7 +1313,7 @@
           "rho": 0.8118,
           "deff": 1.406,
           "var": 0.188253,
-          "shrunk_pnl_pct": 0.383741,
+          "shrunk_pnl_pct": 0.389073,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
@@ -1304,21 +1323,21 @@
       },
       "entry_rsi": {
         "rsi55-70": {
-          "n": 1,
-          "wins": 1,
+          "n": 2,
+          "wins": 2,
           "win_rate": 1.0,
-          "avg_pnl_pct": 0.0878,
-          "total_pnl": 36.0,
-          "n_eff": 1.0,
-          "n_days": 1,
-          "rho": 1.0,
+          "avg_pnl_pct": 0.3913,
+          "total_pnl": 405.0,
+          "n_eff": 2.0,
+          "n_days": 2,
+          "rho": 0.0,
           "deff": 1.0,
-          "var": 0.0,
-          "shrunk_pnl_pct": 0.0878,
-          "shrink_weight": 1.0,
+          "var": 0.184285,
+          "shrunk_pnl_pct": 0.191429,
+          "shrink_weight": 0.5664,
           "mult": 1.0,
           "confidence": 0.0,
-          "evidence": "n_eff 1.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "evidence": "n_eff 2.0 < activation 30 \u2014 no evidence yet, trading at full size",
           "n_needed": 101
         },
         "rsi<30": {
@@ -1332,8 +1351,8 @@
           "rho": 0.4426,
           "deff": 1.148,
           "var": 0.941506,
-          "shrunk_pnl_pct": 0.154095,
-          "shrink_weight": 0.1447,
+          "shrunk_pnl_pct": 0.138622,
+          "shrink_weight": 0.3383,
           "mult": 1.0,
           "confidence": 0.0,
           "evidence": "n_eff 3.5 < activation 30 \u2014 no evidence yet, trading at full size",
@@ -1350,8 +1369,8 @@
           "rho": 0.0,
           "deff": 1.0,
           "var": 0.112545,
-          "shrunk_pnl_pct": -0.162397,
-          "shrink_weight": 0.6799,
+          "shrunk_pnl_pct": -0.251801,
+          "shrink_weight": 0.8651,
           "mult": 1.0,
           "confidence": 0.0,
           "evidence": "n_eff 6.0 < activation 30 \u2014 no evidence yet, trading at full size",
@@ -1368,8 +1387,8 @@
           "rho": 0.0,
           "deff": 1.0,
           "var": 5.495939,
-          "shrunk_pnl_pct": 0.102963,
-          "shrink_weight": 0.0143,
+          "shrunk_pnl_pct": -0.018438,
+          "shrink_weight": 0.042,
           "mult": 1.0,
           "confidence": 0.0,
           "evidence": "n_eff 2.0 < activation 30 \u2014 no evidence yet, trading at full size",
@@ -1386,8 +1405,8 @@
           "rho": 1.0,
           "deff": 3.0,
           "var": 0.438512,
-          "shrunk_pnl_pct": 0.153194,
-          "shrink_weight": 0.2142,
+          "shrunk_pnl_pct": 0.139369,
+          "shrink_weight": 0.4515,
           "mult": 1.0,
           "confidence": 0.0,
           "evidence": "n_eff 1.0 < activation 30 \u2014 no evidence yet, trading at full size",
@@ -1395,6 +1414,24 @@
         }
       },
       "dte": {
+        "dte<=4": {
+          "n": 13,
+          "wins": 7,
+          "win_rate": 0.538,
+          "avg_pnl_pct": 0.3417,
+          "total_pnl": 1300.0,
+          "n_eff": 13.0,
+          "n_days": 5,
+          "rho": 0.0,
+          "deff": 1.0,
+          "var": 1.074991,
+          "shrunk_pnl_pct": 0.176982,
+          "shrink_weight": 0.0,
+          "mult": 1.0,
+          "confidence": 0.0,
+          "evidence": "n_eff 13.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "n_needed": 78
+        },
         "dte5-8": {
           "n": 4,
           "wins": 3,
@@ -1406,49 +1443,31 @@
           "rho": 0.0,
           "deff": 1.0,
           "var": 0.193142,
-          "shrunk_pnl_pct": 0.157863,
+          "shrunk_pnl_pct": 0.176982,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
           "evidence": "n_eff 4.0 < activation 30 \u2014 no evidence yet, trading at full size",
           "n_needed": 78
-        },
-        "dte<=4": {
-          "n": 12,
-          "wins": 6,
-          "win_rate": 0.5,
-          "avg_pnl_pct": 0.3122,
-          "total_pnl": 931.0,
-          "n_eff": 12.0,
-          "n_days": 4,
-          "rho": 0.0,
-          "deff": 1.0,
-          "var": 1.160429,
-          "shrunk_pnl_pct": 0.157863,
-          "shrink_weight": 0.0,
-          "mult": 1.0,
-          "confidence": 0.0,
-          "evidence": "n_eff 12.0 < activation 30 \u2014 no evidence yet, trading at full size",
-          "n_needed": 78
         }
       },
       "spread": {
         "spread_tight": {
-          "n": 10,
-          "wins": 6,
-          "win_rate": 0.6,
-          "avg_pnl_pct": 0.059,
-          "total_pnl": 186.0,
-          "n_eff": 10.0,
-          "n_days": 4,
+          "n": 11,
+          "wins": 7,
+          "win_rate": 0.636,
+          "avg_pnl_pct": 0.1168,
+          "total_pnl": 555.0,
+          "n_eff": 11.0,
+          "n_days": 5,
           "rho": 0.0,
           "deff": 1.0,
-          "var": 0.213596,
-          "shrunk_pnl_pct": 0.065957,
+          "var": 0.229002,
+          "shrunk_pnl_pct": 0.12319,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
-          "evidence": "n_eff 10.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "evidence": "n_eff 11.0 < activation 30 \u2014 no evidence yet, trading at full size",
           "n_needed": 78
         },
         "spread_mid": {
@@ -1462,7 +1481,7 @@
           "rho": 1.0,
           "deff": 2.0,
           "var": 6.106464,
-          "shrunk_pnl_pct": 0.065957,
+          "shrunk_pnl_pct": 0.12319,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
@@ -1471,6 +1490,24 @@
         }
       },
       "trend_align": {
+        "with_trend": {
+          "n": 4,
+          "wins": 4,
+          "win_rate": 1.0,
+          "avg_pnl_pct": 0.5719,
+          "total_pnl": 781.0,
+          "n_eff": 3.27,
+          "n_days": 3,
+          "rho": 0.6739,
+          "deff": 1.225,
+          "var": 0.132221,
+          "shrunk_pnl_pct": 0.496804,
+          "shrink_weight": 0.3126,
+          "mult": 1.0,
+          "confidence": 0.0,
+          "evidence": "n_eff 3.3 < activation 30 \u2014 no evidence yet, trading at full size",
+          "n_needed": 78
+        },
         "counter_trend": {
           "n": 13,
           "wins": 6,
@@ -1482,49 +1519,31 @@
           "rho": 0.0006,
           "deff": 1.001,
           "var": 1.070487,
-          "shrunk_pnl_pct": 0.383741,
-          "shrink_weight": 0.0,
+          "shrunk_pnl_pct": 0.420638,
+          "shrink_weight": 0.1544,
           "mult": 1.0,
           "confidence": 0.0,
-          "evidence": "dimension deduplicated against 'direction' \u2014 reported, not acted on",
-          "n_needed": 61
-        },
-        "with_trend": {
-          "n": 3,
-          "wins": 3,
-          "win_rate": 1.0,
-          "avg_pnl_pct": 0.531,
-          "total_pnl": 412.0,
-          "n_eff": 2.13,
-          "n_days": 2,
-          "rho": 0.8118,
-          "deff": 1.406,
-          "var": 0.188253,
-          "shrunk_pnl_pct": 0.383741,
-          "shrink_weight": 0.0,
-          "mult": 1.0,
-          "confidence": 0.0,
-          "evidence": "dimension deduplicated against 'direction' \u2014 reported, not acted on",
-          "n_needed": 61
+          "evidence": "n_eff 13.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "n_needed": 78
         }
       },
       "macd_rising": {
         "macd_up": {
-          "n": 8,
-          "wins": 5,
-          "win_rate": 0.625,
-          "avg_pnl_pct": 0.3454,
-          "total_pnl": 878.0,
-          "n_eff": 8.0,
-          "n_days": 4,
+          "n": 9,
+          "wins": 6,
+          "win_rate": 0.667,
+          "avg_pnl_pct": 0.3842,
+          "total_pnl": 1247.0,
+          "n_eff": 9.0,
+          "n_days": 5,
           "rho": 0.0,
           "deff": 1.0,
-          "var": 1.130257,
-          "shrunk_pnl_pct": 0.151768,
+          "var": 1.002546,
+          "shrunk_pnl_pct": 0.193206,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
-          "evidence": "n_eff 8.0 < activation 30 \u2014 no evidence yet, trading at full size",
+          "evidence": "n_eff 9.0 < activation 30 \u2014 no evidence yet, trading at full size",
           "n_needed": 78
         },
         "macd_down": {
@@ -1538,7 +1557,7 @@
           "rho": 0.0,
           "deff": 1.0,
           "var": 0.481764,
-          "shrunk_pnl_pct": 0.151768,
+          "shrunk_pnl_pct": 0.193206,
           "shrink_weight": 0.0,
           "mult": 1.0,
           "confidence": 0.0,
@@ -1549,10 +1568,9 @@
     },
     "gates": [],
     "lessons": [
-      "NOT ENOUGH EVIDENCE TO ACT: 16 settled trades across 4 session(s) is n_eff = 16.0 after correcting for same-day clustering (deff 1.0). Sizing stays neutral until n_eff \u2265 30. Trades on the same day share the market's move, so they are not independent observations.",
-      "DEDUPLICATED 'trend_align' \u2014 Cram\u00e9r's V 1.0 against 'direction'. These are the same hypothesis; acting on both would count one piece of evidence twice.",
+      "NOT ENOUGH EVIDENCE TO ACT: 17 settled trades across 5 session(s) is n_eff = 17.0 after correcting for same-day clustering (deff 1.0). Sizing stays neutral until n_eff \u2265 30. Trades on the same day share the market's move, so they are not independent observations.",
       "'news': 50% win, avg +51% over 4 trades (n_eff 3.0) \u2014 size unchanged, evidence too thin to move it. Honest confidence needs ~18 trades; there are 4.",
-      "'tech': 67% win, avg +36% over 6 trades (n_eff 6.0) \u2014 size unchanged, evidence too thin to move it. Honest confidence needs ~10 trades; there are 6.",
+      "'tech': 71% win, avg +41% over 7 trades (n_eff 7.0) \u2014 size unchanged, evidence too thin to move it. Honest confidence needs ~7 trades; there are 7.",
       "'wsb': 60% win, avg +8% over 5 trades (n_eff 4.7) \u2014 size unchanged, evidence too thin to move it. Honest confidence needs ~196 trades; there are 5.",
       "'flow': 0% win, avg -54% over 1 trades (n_eff 1.0) \u2014 size unchanged, evidence too thin to move it.",
       "Testing 15 buckets at once: an uncorrected rule of this size fires on noise with probability 0.9979. One honest decision needs n \u2248 61 (128 corrected). No bucket has been blocked."
@@ -1562,14 +1580,10 @@
       "entry_rsi",
       "dte",
       "spread",
+      "trend_align",
       "macd_rising"
     ],
-    "dims_dropped": {
-      "trend_align": {
-        "duplicates": "direction",
-        "cramers_v": 1.0
-      }
-    },
+    "dims_dropped": {},
     "diagnostics": {
       "n_buckets_tested": 15,
       "fwer_if_uncorrected": 0.9979,
@@ -1584,50 +1598,81 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "LIFE",
+        "underlying": "PLTR",
+        "direction": "bull",
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SIBN",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "SKHY",
-        "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "BLZE",
+        "underlying": "JAZZ",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ALNY",
+        "underlying": "VRTX",
         "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
-      {
-        "underlying": "TSLA",
-        "direction": "bull",
-        "thesis": "Technical: RSI 25 oversold + MACD turning up"
-      },
       {
         "underlying": "META",
         "direction": "bull",
         "thesis": "Technical: RSI 25 oversold + MACD turning up"
       },
       {
+        "underlying": "TSLA",
+        "direction": "bull",
+        "thesis": "Technical: RSI 25 oversold + MACD turning up"
+      },
+      {
         "underlying": "IWM",
         "direction": "bull",
-        "thesis": "Technical: MACD bull cross in uptrend (RSI 57)"
+        "thesis": "Technical: MACD bull cross in uptrend (RSI 58)"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "84 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "59 WSB comments (Bearish) \u2014 attention-inflated premium"
+      "AI": "138 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "MU": "75 WSB comments (Bearish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
+    {
+      "symbol": "IWM260807C00303000",
+      "sleeve": "tech",
+      "underlying": "IWM",
+      "type": "call",
+      "strike": 303.0,
+      "expiration": "2026-08-07",
+      "pnl": 369.0,
+      "pnl_pct": 0.6949,
+      "exit_reason": "closed",
+      "closed_on": "2026-08-04",
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 55.0,
+        "dte": 3,
+        "trend_up": true,
+        "macd_rising": true,
+        "spread_pct": 0.03,
+        "signal_score": 8.0
+      },
+      "buckets": {
+        "direction": "call",
+        "entry_rsi": "rsi55-70",
+        "dte": "dte<=4",
+        "spread": "spread_tight",
+        "trend_align": "with_trend",
+        "macd_rising": "macd_up"
+      }
+    },
     {
       "symbol": "AMZN260807C00280000",
       "sleeve": "news",
