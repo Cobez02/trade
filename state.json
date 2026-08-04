@@ -512,25 +512,12 @@
     },
     {
       "date": "2026-08-04",
-      "equity": 11654.23,
-      "benchmark_equity": 10450.1,
-      "spy": 771.28
+      "equity": 11649.23,
+      "benchmark_equity": 10447.93,
+      "spy": 771.12
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T13:50:40.654694+00:00",
-      "notes": [
-        "Learner: 3 settled trades | wsb=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "OPENED 12x AI260731C00008500 [wsb] @ $0.29 ($348, w1.0) \u2014 WSB Bullish (76 comments, score +0.15)",
-        "OPENED 1x SPY260730P00733000 [wsb] @ $1.83 ($183, w1.0) \u2014 WSB Bearish (15 comments, score -0.18)",
-        "OPENED 1x NVDA260731C00205000 [news] @ $3.38 ($338, w1.0) \u2014 News flow +4 across 3 articles (keyword sentiment)",
-        "SKIP LW bull [news] \u2014 bid/ask spread 66% > 15% (illiquid)",
-        "no liquid contract for IGPT [news]",
-        "OPENED 1x GOOGL260731C00332500 [tech] @ $3.50 ($350, w1.0) \u2014 Technical: RSI 32 oversold + MACD turning up"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T13:52:29.684209+00:00",
@@ -1190,6 +1177,23 @@
         "Learner: 18 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
+    },
+    {
+      "date": "2026-08-04",
+      "time": "2026-08-04T17:31:12.754731+00:00",
+      "notes": [
+        "Learner: 18 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for TSEM [news]",
+        "no liquid contract for VOYG [news]",
+        "no liquid contract for XSPC [news]",
+        "no liquid contract for BLZE [news]",
+        "META: strike scan: 3 quoted, spreads [6.6%, 9.7%, 0.9%], tightest 0.9%",
+        "NO EDGE META bull [tech] \u2014 implied 49.3% vs forecast 47.4%; buy: bsm 5.4232 vs mid 5.7950 -> -6.42% (quote is against you, wait)",
+        "TSLA: strike scan: 3 quoted, spreads [3.5%, 1.2%, 4.2%], tightest 1.2%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 55.5% vs forecast 43.3%; buy: bsm 3.7701 vs mid 5.1800 -> -27.22% (quote is against you, wait)",
+        "IWM: strike scan: 3 quoted, spreads [3.7%, 4.9%, 2.7%], tightest 2.7%",
+        "SCREENED OUT IWM bull [tech] \u2014 premium: $0.38 contract < $0.50 \u2014 $0.60/contract PFOF alone is 3.2% round trip; skew: ex-ante skew 4.0 > 4.0 \u2014 Boyer-Vorkink top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1597,6 +1601,11 @@
     "wsb": [],
     "news": [
       {
+        "underlying": "TSEM",
+        "direction": "bull",
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
+      },
+      {
         "underlying": "VOYG",
         "direction": "bull",
         "thesis": "News flow +4 across 1 articles (keyword sentiment)"
@@ -1610,11 +1619,6 @@
         "underlying": "BLZE",
         "direction": "bull",
         "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "PLTR",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       }
     ],
     "tech": [
