@@ -544,18 +544,6 @@
   "run_log": [
     {
       "date": "2026-07-27",
-      "time": "2026-07-27T15:27:58.253276+00:00",
-      "notes": [
-        "CLOSED NVDA260731P00200000 [wsb] WIN take-profit +92%, P&L $+290 \u2014 entry was: RSI 54.0, with_trend, DTE 4, score 0.08",
-        "Learner: 5 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "SKIP AI bull [wsb] \u2014 bid/ask spread 30% > 15% (illiquid)",
-        "no liquid contract for EBC [news]",
-        "no liquid contract for JMSB [news]",
-        "no liquid contract for FMBH [news]"
-      ]
-    },
-    {
-      "date": "2026-07-27",
       "time": "2026-07-27T16:25:06.154242+00:00",
       "notes": [
         "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
@@ -1214,6 +1202,14 @@
     {
       "date": "2026-08-04",
       "time": "2026-08-04T20:14:12.205390+00:00",
+      "notes": [
+        "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
+    },
+    {
+      "date": "2026-08-04",
+      "time": "2026-08-04T20:16:11.017639+00:00",
       "notes": [
         "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
