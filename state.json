@@ -3,6 +3,29 @@
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
   "positions": {
+    "META260810C00600000": {
+      "sleeve": "tech",
+      "underlying": "META",
+      "direction": "bull",
+      "type": "call",
+      "strike": 600.0,
+      "expiration": "2026-08-10",
+      "qty": 1,
+      "entry_price": 4.4,
+      "entry_cost": 440.0,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 28.0,
+        "dte": 5,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.03,
+        "signal_score": 11.82
+      },
+      "entry_date": "2026-08-05"
+    },
     "TSLA260810C00327500": {
       "sleeve": "tech",
       "underlying": "TSLA",
@@ -25,36 +48,6 @@
         "signal_score": 13.55
       },
       "entry_date": "2026-08-05"
-    },
-    "META260810C00600000": {
-      "sleeve": "tech",
-      "underlying": "META",
-      "direction": "bull",
-      "type": "call",
-      "strike": 600.0,
-      "expiration": "2026-08-10",
-      "qty": 1,
-      "entry_price": 4.5,
-      "entry_cost": 450.0,
-      "entry_date": "2026-08-05",
-      "thesis": "Technical: RSI 28 oversold + MACD turning up",
-      "spot_at_entry": 584.48,
-      "features": {
-        "sleeve": "tech",
-        "direction": "bull",
-        "signal_score": 11.819,
-        "rsi": 28.3,
-        "macd_hist": -5.35,
-        "macd_rising": true,
-        "trend_up": false,
-        "dte": 5,
-        "moneyness_pct": 0.0266,
-        "spread_pct": 0.032,
-        "type": "call",
-        "ref_vol": 0.4729,
-        "iv_at_entry": 0.3744,
-        "vol_edge_pts": 9.85
-      }
     }
   },
   "closed": [
@@ -596,19 +589,12 @@
     },
     {
       "date": "2026-08-05",
-      "equity": 11684.22,
-      "benchmark_equity": 10456.47,
-      "spy": 771.75
+      "equity": 11504.19,
+      "benchmark_equity": 10457.01,
+      "spy": 771.79
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T19:13:36.947538+00:00",
-      "notes": [
-        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T19:54:17.116380+00:00",
@@ -1288,6 +1274,14 @@
         "META: resample 2: spread 6.0% -> 3.2%",
         "OPENED 1x META260810C00600000 [tech] @ $4.50 ($450, sleeve \u00d71.0, learned \u00d71.0, vol edge +9.8pts, round trip 2.4%) \u2014 Technical: RSI 28 oversold + MACD turning up"
       ]
+    },
+    {
+      "date": "2026-08-05",
+      "time": "2026-08-05T19:08:52.128392+00:00",
+      "notes": [
+        "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "NO NEW ENTRIES \u2014 51 min to close (cutoff 90); positions will be flattened at 15 min."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1713,22 +1707,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "TPG",
-        "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ELAN",
+        "underlying": "SHOP",
         "direction": "bull",
         "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ENTG",
+        "underlying": "SHPU",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "PSX",
+        "underlying": "BKNG",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SGHC",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1737,7 +1731,7 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 27 oversold + MACD turning up"
+        "thesis": "Technical: RSI 26 oversold + MACD turning up"
       },
       {
         "underlying": "META",
