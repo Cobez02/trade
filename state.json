@@ -598,14 +598,6 @@
   "run_log": [
     {
       "date": "2026-07-28",
-      "time": "2026-07-28T00:35:05.868528+00:00",
-      "notes": [
-        "Learner: 7 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "Market closed \u2014 signals recorded, no orders placed this run."
-      ]
-    },
-    {
-      "date": "2026-07-28",
       "time": "2026-07-28T00:35:13.090521+00:00",
       "notes": [
         "Learner: 7 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
@@ -1279,6 +1271,14 @@
         "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-05",
+      "time": "2026-08-05T20:53:23.777850+00:00",
+      "notes": [
+        "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1704,22 +1704,22 @@
     "wsb": [],
     "news": [
       {
+        "underlying": "MKSI",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "DD",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
         "underlying": "SD",
         "direction": "bear",
         "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       },
       {
         "underlying": "XNCR",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ENTG",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "GNK",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
