@@ -11,27 +11,20 @@
       "strike": 327.5,
       "expiration": "2026-08-10",
       "qty": 1,
-      "entry_price": 4.3,
-      "entry_cost": 430.0,
-      "entry_date": "2026-08-05",
-      "thesis": "Technical: RSI 26 oversold + MACD turning up",
-      "spot_at_entry": 322.695,
+      "entry_price": 4.25,
+      "entry_cost": 425.0,
       "features": {
         "sleeve": "tech",
         "direction": "bull",
-        "signal_score": 13.549,
-        "rsi": 26.5,
-        "macd_hist": -1.22,
-        "macd_rising": true,
-        "trend_up": false,
-        "dte": 5,
-        "moneyness_pct": 0.0149,
-        "spread_pct": 0.036,
         "type": "call",
-        "ref_vol": 0.4372,
-        "iv_at_entry": 0.4177,
-        "vol_edge_pts": 1.95
-      }
+        "rsi": 26.0,
+        "dte": 5,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.04,
+        "signal_score": 13.55
+      },
+      "entry_date": "2026-08-05"
     }
   },
   "closed": [
@@ -573,20 +566,12 @@
     },
     {
       "date": "2026-08-05",
-      "equity": 11674.22,
-      "benchmark_equity": 10450.64,
-      "spy": 771.32
+      "equity": 11679.22,
+      "benchmark_equity": 10456.06,
+      "spy": 771.72
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T17:21:50.392945+00:00",
-      "notes": [
-        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "OPENED 5x SLB260731C00053000 [news] @ $0.63 ($315, w1.0) \u2014 News flow +3 across 2 articles (keyword sentiment)"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T18:18:13.532466+00:00",
@@ -1258,6 +1243,14 @@
         "SCREENED OUT META bull [tech] \u2014 spread: spread 11.5% > 4% \u2014 modelled round trip 8.4% of premium vs a best-documented edge of 0.5%/month",
         "STOP ARMED TSLA260810C00327500 x1 @ $1.70 (-60% from $4.25) \u2014 holds whether or not anything of ours is running"
       ]
+    },
+    {
+      "date": "2026-08-05",
+      "time": "2026-08-05T17:13:27.681384+00:00",
+      "notes": [
+        "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Flatten-only run \u2014 exits managed, entry scan skipped."
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1683,22 +1676,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "AMGN",
+        "underlying": "ELAN",
         "direction": "bull",
-        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "TOST",
+        "underlying": "QLYS",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "BIO",
+        "underlying": "COR",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ALAB",
+        "underlying": "PSX",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1707,12 +1700,7 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 26 oversold + MACD turning up"
-      },
-      {
-        "underlying": "MSFT",
-        "direction": "bear",
-        "thesis": "Technical: RSI 78 overbought + MACD turning down"
+        "thesis": "Technical: RSI 27 oversold + MACD turning up"
       },
       {
         "underlying": "META",
