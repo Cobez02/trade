@@ -25,6 +25,36 @@
         "signal_score": 13.55
       },
       "entry_date": "2026-08-05"
+    },
+    "META260810C00600000": {
+      "sleeve": "tech",
+      "underlying": "META",
+      "direction": "bull",
+      "type": "call",
+      "strike": 600.0,
+      "expiration": "2026-08-10",
+      "qty": 1,
+      "entry_price": 4.5,
+      "entry_cost": 450.0,
+      "entry_date": "2026-08-05",
+      "thesis": "Technical: RSI 28 oversold + MACD turning up",
+      "spot_at_entry": 584.48,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "signal_score": 11.819,
+        "rsi": 28.3,
+        "macd_hist": -5.35,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 5,
+        "moneyness_pct": 0.0266,
+        "spread_pct": 0.032,
+        "type": "call",
+        "ref_vol": 0.4729,
+        "iv_at_entry": 0.3744,
+        "vol_edge_pts": 9.85
+      }
     }
   },
   "closed": [
@@ -566,19 +596,12 @@
     },
     {
       "date": "2026-08-05",
-      "equity": 11679.22,
-      "benchmark_equity": 10456.06,
-      "spy": 771.72
+      "equity": 11684.22,
+      "benchmark_equity": 10456.47,
+      "spy": 771.75
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T18:18:13.532466+00:00",
-      "notes": [
-        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T19:13:36.947538+00:00",
@@ -1251,6 +1274,20 @@
         "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
+    },
+    {
+      "date": "2026-08-05",
+      "time": "2026-08-05T17:16:17.143232+00:00",
+      "notes": [
+        "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for TPG [news]",
+        "no liquid contract for ELAN [news]",
+        "no liquid contract for ENTG [news]",
+        "no liquid contract for PSX [news]",
+        "META: strike scan: 3 quoted, spreads [7.0%, 6.0%, 6.9%], tightest 6.0%",
+        "META: resample 2: spread 6.0% -> 3.2%",
+        "OPENED 1x META260810C00600000 [tech] @ $4.50 ($450, sleeve \u00d71.0, learned \u00d71.0, vol edge +9.8pts, round trip 2.4%) \u2014 Technical: RSI 28 oversold + MACD turning up"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1676,19 +1713,19 @@
     "wsb": [],
     "news": [
       {
+        "underlying": "TPG",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
         "underlying": "ELAN",
         "direction": "bull",
         "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "QLYS",
+        "underlying": "ENTG",
         "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "COR",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
         "underlying": "PSX",
@@ -1710,8 +1747,8 @@
     ],
     "flow": [],
     "_crowd_veto": {
-      "SPY": "59 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "AI": "51 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "SPY": "96 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "AI": "74 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
