@@ -2,7 +2,38 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "TSLA260810C00327500": {
+      "sleeve": "tech",
+      "underlying": "TSLA",
+      "direction": "bull",
+      "type": "call",
+      "strike": 327.5,
+      "expiration": "2026-08-10",
+      "qty": 1,
+      "entry_price": 4.3,
+      "entry_cost": 430.0,
+      "entry_date": "2026-08-05",
+      "thesis": "Technical: RSI 26 oversold + MACD turning up",
+      "spot_at_entry": 322.695,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "signal_score": 13.549,
+        "rsi": 26.5,
+        "macd_hist": -1.22,
+        "macd_rising": true,
+        "trend_up": false,
+        "dte": 5,
+        "moneyness_pct": 0.0149,
+        "spread_pct": 0.036,
+        "type": "call",
+        "ref_vol": 0.4372,
+        "iv_at_entry": 0.4177,
+        "vol_edge_pts": 1.95
+      }
+    }
+  },
   "closed": [
     {
       "symbol": "IWM260814C00307000",
@@ -539,21 +570,15 @@
       "equity": 11685.06,
       "benchmark_equity": 10447.8,
       "spy": 771.11
+    },
+    {
+      "date": "2026-08-05",
+      "equity": 11674.22,
+      "benchmark_equity": 10450.64,
+      "spy": 771.32
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-27",
-      "time": "2026-07-27T16:25:06.154242+00:00",
-      "notes": [
-        "Learner: 6 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "SKIP AI bull [wsb] \u2014 bid/ask spread 17% > 15% (illiquid)",
-        "OPENED 1x DRAM260731C00052000 [wsb] @ $2.65 ($265, w1.0) \u2014 WSB Bullish (11 comments, score +0.07)",
-        "no liquid contract for WSFS [news]",
-        "no liquid contract for TMP [news]",
-        "no liquid contract for MPB [news]"
-      ]
-    },
     {
       "date": "2026-07-27",
       "time": "2026-07-27T17:21:50.392945+00:00",
@@ -1214,11 +1239,30 @@
         "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-05",
+      "time": "2026-08-05T15:52:45.345704+00:00",
+      "notes": [
+        "Learner: 20 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for AMGN [news]",
+        "TOST: strike scan: 2 quoted, spreads [12.0%, 22.6%], tightest 12.0%",
+        "SCREENED OUT TOST bull [news] \u2014 spread: spread 12.0% > 4% \u2014 modelled round trip 8.8% of premium vs a best-documented edge of 0.5%/month",
+        "no liquid contract for BIO [news]",
+        "no liquid contract for ALAB [news]",
+        "TSLA: strike scan: 3 quoted, spreads [3.6%, 1.9%, 5.4%], tightest 3.6%",
+        "OPENED 1x TSLA260810C00327500 [tech] @ $4.30 ($430, sleeve \u00d71.0, learned \u00d71.0, vol edge +1.9pts, round trip 2.7%) \u2014 Technical: RSI 26 oversold + MACD turning up",
+        "MSFT: strike scan: 3 quoted, spreads [8.5%, 2.7%, 9.0%], tightest 8.5%",
+        "SCREENED OUT MSFT bear [tech] \u2014 spread: spread 8.5% > 4% \u2014 modelled round trip 6.2% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "META: strike scan: 3 quoted, spreads [3.2%, 11.5%, 6.8%], tightest 11.5%",
+        "SCREENED OUT META bull [tech] \u2014 spread: spread 11.5% > 4% \u2014 modelled round trip 8.4% of premium vs a best-documented edge of 0.5%/month",
+        "STOP ARMED TSLA260810C00327500 x1 @ $1.70 (-60% from $4.25) \u2014 holds whether or not anything of ours is running"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-08-04",
+    "updated": "2026-08-05",
     "n_trades": 20,
     "n_eff": 20.0,
     "n_days": 5,
@@ -1639,47 +1683,47 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "FTK",
+        "underlying": "AMGN",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "TOST",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "BL",
+        "underlying": "BIO",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ACAD",
+        "underlying": "ALAB",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "HNGE",
-        "direction": "bull",
-        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
-        "underlying": "META",
+        "underlying": "TSLA",
         "direction": "bull",
         "thesis": "Technical: RSI 26 oversold + MACD turning up"
       },
       {
-        "underlying": "TSLA",
-        "direction": "bull",
-        "thesis": "Technical: RSI 27 oversold + MACD turning up"
+        "underlying": "MSFT",
+        "direction": "bear",
+        "thesis": "Technical: RSI 78 overbought + MACD turning down"
       },
       {
-        "underlying": "IWM",
+        "underlying": "META",
         "direction": "bull",
-        "thesis": "Technical: MACD bull cross in uptrend (RSI 58)"
+        "thesis": "Technical: RSI 28 oversold + MACD turning up"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "138 WSB comments (Bullish) \u2014 attention-inflated premium",
-      "MU": "75 WSB comments (Bearish) \u2014 attention-inflated premium"
+      "SPY": "59 WSB comments (Bullish) \u2014 attention-inflated premium",
+      "AI": "51 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
