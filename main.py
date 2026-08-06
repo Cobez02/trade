@@ -603,6 +603,40 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
             notes.append(f"SPREAD ENTRY ERROR {und}: {str(e)[:90]}")
 
 
+def sweep_entry_buys(broker: Broker, notes: list):
+    """Cancel every resting entry BUY once the flatten window opens.
+
+    Orders are TIF=DAY, so an unfilled buy dies at the bell anyway — but a fill
+    in the 19:55-20:00 gap (after the last flatten pass, before expiry) would
+    carry a position overnight, which the flat rule exists to forbid. During
+    normal hours a resting buy is legitimate (waiting at the gated price); in
+    the flatten window it can only produce a position nothing will manage.
+    Cancelling a buy adds no exposure. mleg parents are untouched on principle
+    (spread management owns them), though none should exist while the spreads
+    sleeve is disabled.
+    """
+    try:
+        for o in broker.open_orders():
+            if str(getattr(o, "order_class", "") or "").lower() == "mleg":
+                continue
+            if "BUY" not in str(getattr(o, "side", "")).upper():
+                continue
+            try:
+                broker.cancel(o.id)
+                notes.append(f"FLATTEN SWEEP cancelled resting buy {o.symbol} "
+                             f"x{o.qty} — no new positions inside the flatten window")
+            except Exception as e:
+                notes.append(f"flatten sweep failed {o.symbol}: {str(e)[:60]}")
+    except Exception:
+        pass
+
+
+def broker_paper() -> bool:
+    """Paper unless SPXBOT_LIVE=1. The live switch is an env flip + new keys in
+    the repo secrets — never a code edit on go-live day."""
+    return os.environ.get("SPXBOT_LIVE") != "1"
+
+
 def ensure_broker_stops(broker: Broker, state: dict, notes: list):
     """Make sure every open position has a resting stop underneath it.
 
@@ -949,7 +983,7 @@ def run():
         print("ERROR: set ALPACA_API_KEY and ALPACA_SECRET_KEY", file=sys.stderr)
         sys.exit(2)
 
-    broker = Broker(api_key, secret, paper=True)
+    broker = Broker(api_key, secret, paper=broker_paper())
     state = load_state()
     notes = []
 
@@ -997,6 +1031,10 @@ def run():
         }
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
     manage_exits(broker, state, notes, sleeve_map, pos_feat)
+    _mins = minutes_to_close(broker)
+    if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1" or (
+            _mins is not None and _mins <= EOD_FLATTEN_MIN):
+        sweep_entry_buys(broker, notes)
     reconcile_assignments(broker, notes)
     manage_spreads(broker, state, notes)
     ensure_broker_stops(broker, state, notes)

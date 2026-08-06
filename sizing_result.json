@@ -1,0 +1,62 @@
+{
+ "BASE_flat600": {
+  "score": {
+   "label": "BASE_flat600",
+   "n": 807,
+   "total": -2961.2,
+   "win_rate": 0.344,
+   "profit_factor": 0.98,
+   "avg": -3.67,
+   "skew": 1.48,
+   "sr_trade": -0.008,
+   "sr_ann": -0.09,
+   "trades_per_year": 142.3,
+   "max_dd": -16683.9,
+   "psr": 0.413,
+   "min_trl": null,
+   "flagged": 3,
+   "total_deployed": 410240.0,
+   "ret_on_deployed": -0.0072
+  }
+ },
+ "TIER_600_900_1200": {
+  "score": {
+   "label": "TIER_600_900_1200",
+   "n": 865,
+   "total": -45721.0,
+   "win_rate": 0.325,
+   "profit_factor": 0.83,
+   "avg": -52.86,
+   "skew": 1.7,
+   "sr_trade": -0.072,
+   "sr_ann": -0.89,
+   "trades_per_year": 152.5,
+   "max_dd": -62468.6,
+   "psr": 0.023,
+   "min_trl": null,
+   "flagged": 39,
+   "total_deployed": 654897.0,
+   "ret_on_deployed": -0.0698
+  }
+ },
+ "PROP_x_edge": {
+  "score": {
+   "label": "PROP_x_edge",
+   "n": 881,
+   "total": -68181.5,
+   "win_rate": 0.321,
+   "profit_factor": 0.81,
+   "avg": -77.39,
+   "skew": 1.81,
+   "sr_trade": -0.083,
+   "sr_ann": -1.04,
+   "trades_per_year": 155.3,
+   "max_dd": -90021.9,
+   "psr": 0.011,
+   "min_trl": null,
+   "flagged": 48,
+   "total_deployed": 827239.0,
+   "ret_on_deployed": -0.0824
+  }
+ }
+}
