@@ -593,17 +593,15 @@
       "equity": 11704.15,
       "benchmark_equity": 10429.91,
       "spy": 769.79
+    },
+    {
+      "date": "2026-08-06",
+      "equity": 11704.03,
+      "benchmark_equity": 10414.33,
+      "spy": 768.64
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-28",
-      "time": "2026-07-28T00:35:13.090521+00:00",
-      "notes": [
-        "Learner: 7 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "Market closed \u2014 signals recorded, no orders placed this run."
-      ]
-    },
     {
       "date": "2026-07-28",
       "time": "2026-07-28T14:47:11.838810+00:00",
@@ -1279,11 +1277,19 @@
         "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-06",
+      "time": "2026-08-06T23:46:28.584228+00:00",
+      "notes": [
+        "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-08-05",
+    "updated": "2026-08-06",
     "n_trades": 22,
     "n_eff": 22.0,
     "n_days": 6,
@@ -1704,22 +1710,22 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "MKSI",
+        "underlying": "SHOP",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "GRMN",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "TVTX",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "DD",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "SD",
-        "direction": "bear",
-        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "XNCR",
+        "underlying": "SN",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
@@ -1728,17 +1734,12 @@
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 26 oversold + MACD turning up"
-      },
-      {
-        "underlying": "MSFT",
-        "direction": "bear",
-        "thesis": "Technical: RSI 77 overbought + MACD turning down"
+        "thesis": "Technical: RSI 28 oversold + MACD turning up"
       },
       {
         "underlying": "META",
         "direction": "bull",
-        "thesis": "Technical: RSI 29 oversold + MACD turning up"
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
