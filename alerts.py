@@ -31,10 +31,13 @@ MAX_LEN = 280
 TIMEOUT = 10
 
 
-def send_alert(msg: str) -> bool:
-    """Best-effort phone alert. Returns True only if some channel accepted it."""
+def send_alert(msg: str, prefix: str = "SPXBOT: ") -> bool:
+    """Best-effort phone alert. Returns True only if some channel accepted it.
+
+    prefix distinguishes alarms ("SPXBOT: ") from routine trade receipts
+    (callers pass prefix="") so a glance at the phone reads correctly."""
     ok = False
-    text = ("SPXBOT: " + str(msg))[:MAX_LEN]
+    text = (prefix + str(msg))[:MAX_LEN]
     phone = os.environ.get("SPXBOT_WA_PHONE", "").strip()
     key = os.environ.get("SPXBOT_WA_APIKEY", "").strip()
     if phone and key:

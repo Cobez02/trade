@@ -957,6 +957,87 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 notes.append(f"order-failed {und} [{sleeve}]: {e}")
 
 
+
+def notify_settled_trades(state: dict, journal: list) -> int:
+    """Send one Discord/phone receipt per NEWLY settled round trip.
+
+    The journal (rebuilt from Alpaca's fills every run) is the authoritative
+    settled-trade record, so this catches every exit no matter who executed
+    it — the hourly run, the tick watcher, or a flatten pass. Watcher exits
+    therefore notify at the NEXT hourly run (up to ~60 min later); the trade
+    itself was protected in real time, only the receipt waits.
+
+    First run with this code: seed the seen-set from the existing journal
+    WITHOUT sending — otherwise deploy day would replay every historical
+    trade as 22 phone messages.
+
+    Dedup key includes pnl so a same-day re-entry of one contract (which the
+    newest-only journal rebuild would overwrite) still reads as new.
+    """
+    key = lambda j: f"{j.get('symbol')}|{j.get('closed_on')}|{j.get('pnl')}"
+    seen = state.get("notified_trades")
+    if seen is None:                       # first deploy: seed silently
+        state["notified_trades"] = [key(j) for j in journal]
+        return 0
+    seen_set = set(seen)
+    sent = 0
+    for j in journal:
+        k = key(j)
+        if k in seen_set:
+            continue
+        try:
+            pnl = float(j.get("pnl") or 0)
+            pct = j.get("pnl_pct")
+            pct_s = f" ({pct:+.0%})" if isinstance(pct, (int, float)) else ""
+            emoji = "\U0001F7E2" if pnl >= 0 else "\U0001F534"
+            alerts.send_alert(
+                f"{emoji} CLOSED {j.get('symbol')} [{j.get('sleeve', '?')}] "
+                f"{'+' if pnl >= 0 else ''}${pnl:,.0f}{pct_s} — "
+                f"{j.get('exit_reason', 'closed')}", prefix="")
+            sent += 1
+        except Exception:
+            pass
+        seen_set.add(k)
+    # keep the list bounded; order is irrelevant to membership
+    state["notified_trades"] = list(seen_set)[-500:]
+    return sent
+
+
+def send_eod_summary(broker: Broker, state: dict) -> None:
+    """One end-of-day wrap after the close: trades taken today + total P/L.
+
+    Fires at most once per date, from whichever run first observes the market
+    closed on a day the bot actually saw a session (equity_history got
+    today's row). A 0-trade day still reports — silence and discipline look
+    identical on a phone unless the wrap says which one happened.
+    """
+    try:
+        if state.get("eod_summary_sent") == today():
+            return
+        if broker.clock().is_open:
+            return
+        eq_rows = state.get("equity_history", [])
+        if not eq_rows or eq_rows[-1].get("date") != today():
+            return                          # no session today (weekend/holiday)
+        todays = [c for c in state.get("closed", [])
+                  if c.get("closed_on") == today()]
+        pnl = sum(float(c.get("pnl") or 0) for c in todays)
+        wins = sum(1 for c in todays if float(c.get("pnl") or 0) > 0)
+        eq = eq_rows[-1].get("equity")
+        start = float(state.get("start_equity") or START_EQUITY)
+        total_pct = (float(eq) / start - 1) if eq else 0
+        alerts.send_alert(
+            f"\U0001F4CA Day wrap: {len(todays)} trade"
+            f"{'' if len(todays) == 1 else 's'}"
+            + (f" ({wins}W/{len(todays)-wins}L)" if todays else "")
+            + f", P/L {'+' if pnl >= 0 else ''}${pnl:,.0f}. "
+            f"Equity ${eq:,.2f} ({total_pct:+.1%} on the experiment).",
+            prefix="")
+        state["eod_summary_sent"] = today()
+    except Exception:
+        pass
+
+
 def update_benchmark(broker: Broker, state: dict):
     spy = broker.stock_price(BENCHMARK_SYMBOL)
     if spy is None:
@@ -1037,6 +1118,7 @@ def run():
             "features": f, "entry_date": today(),
         }
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
+    notify_settled_trades(state, journal)
     manage_exits(broker, state, notes, sleeve_map, pos_feat)
     _mins = minutes_to_close(broker)
     if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1" or (
@@ -1098,6 +1180,7 @@ def run():
     # call skips symbols already covered, so a second pass costs one API read.
     ensure_broker_stops(broker, state, notes)
     update_benchmark(broker, state)
+    send_eod_summary(broker, state)
 
     state["run_log"].append({"date": today(),
                              "time": dt.datetime.now(dt.timezone.utc).isoformat(),

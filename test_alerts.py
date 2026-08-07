@@ -99,6 +99,57 @@ check("stop-arm failure alerts", "STOP-ARM FAILED" in src)
 
 print()
 print("=" * 70)
+print("5. trade receipts + EOD summary logic")
+print("=" * 70)
+import types
+import main as M
+
+sent = []
+_orig_send = alerts.send_alert
+alerts.send_alert = lambda msg, prefix="SPXBOT: ": (sent.append((prefix, msg)), True)[1]
+try:
+    J = [{"symbol": "A260814C1", "closed_on": "2026-08-06", "pnl": 100.0,
+          "pnl_pct": 0.25, "sleeve": "tech", "exit_reason": "take-profit"},
+         {"symbol": "B260814C1", "closed_on": "2026-08-06", "pnl": -50.0,
+          "pnl_pct": -0.30, "sleeve": "news", "exit_reason": "stop-loss"}]
+    st = {}
+    n = M.notify_settled_trades(st, J)
+    check("first deploy seeds silently (no spam of history)",
+          n == 0 and sent == [] and len(st["notified_trades"]) == 2)
+    J2 = J + [{"symbol": "C260814P1", "closed_on": "2026-08-07", "pnl": 80.0,
+               "pnl_pct": 0.2, "sleeve": "tech", "exit_reason": "trail"}]
+    n = M.notify_settled_trades(st, J2)
+    check("new settled trade sends exactly one receipt", n == 1 and len(sent) == 1)
+    check("receipt has no alarm prefix and carries P/L",
+          sent[0][0] == "" and "+$80" in sent[0][1] and "C260814P1" in sent[0][1])
+    n = M.notify_settled_trades(st, J2)
+    check("already-notified trades never re-send", n == 0 and len(sent) == 1)
+
+    sent.clear()
+    class ClosedClock:
+        is_open = False
+    class FakeBroker:
+        def clock(self): return ClosedClock()
+    tdy = M.today()
+    st2 = {"equity_history": [{"date": tdy, "equity": 101704.03}],
+           "closed": [{"closed_on": tdy, "pnl": 369.0},
+                      {"closed_on": tdy, "pnl": -45.0},
+                      {"closed_on": "2026-01-01", "pnl": 999.0}],
+           "start_equity": 10000.0}
+    M.send_eod_summary(FakeBroker(), st2)
+    check("EOD summary sends once with today's trades only",
+          len(sent) == 1 and "2 trades" in sent[0][1] and "$324" in sent[0][1])
+    check("EOD summary marks the date", st2.get("eod_summary_sent") == tdy)
+    M.send_eod_summary(FakeBroker(), st2)
+    check("EOD summary never sends twice per day", len(sent) == 1)
+    st3 = {"equity_history": [{"date": "2020-01-01", "equity": 1}], "closed": []}
+    M.send_eod_summary(FakeBroker(), st3)
+    check("no session today -> no summary (weekend/holiday)", len(sent) == 1)
+finally:
+    alerts.send_alert = _orig_send
+
+print()
+print("=" * 70)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")
 print("=" * 70)
 for f in FAIL:
