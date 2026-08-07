@@ -27,6 +27,7 @@ from strategies import all_signals, crowd_veto
 import learn
 import exitrules
 import screens
+import alerts
 import execution
 import vol as volmod
 
@@ -339,8 +340,12 @@ def reconcile_assignments(broker: Broker, notes: list):
                 notes.append(f"ASSIGNMENT REPAIR — {'sold' if q > 0 else 'covered'} "
                              f"{abs(q)} shares of {sym} at market (stock in an "
                              f"options-only book = a short leg was assigned)")
+                alerts.send_alert(f"ASSIGNMENT detected and repaired on {sym} — "
+                                  "stock was in the book; verify the account.")
             except Exception as e:
                 notes.append(f"ASSIGNMENT REPAIR FAILED {sym}: {str(e)[:80]}")
+                alerts.send_alert(f"ASSIGNMENT REPAIR FAILED on {sym} — stock "
+                                  "is sitting in the account; manual check needed.")
     except Exception:
         pass
 
@@ -680,6 +685,8 @@ def ensure_broker_stops(broker: Broker, state: dict, notes: list):
                          f"holds whether or not anything of ours is running")
         except Exception as e:
             notes.append(f"stop-arm failed {p.symbol}: {str(e)[:70]}")
+            alerts.send_alert(f"STOP-ARM FAILED on {p.symbol} — position may "
+                              "be unprotected; check the account now.")
 
 
 def sleeve_open_count(state: dict, sleeve: str) -> int:
@@ -1104,4 +1111,15 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    alerts.ping_deadman()
+    try:
+        run()
+    except SystemExit:
+        raise
+    except Exception as e:
+        # The alert goes out BEFORE the re-raise: a run that dies after this
+        # line still told the phone. Alert failure cannot mask the crash —
+        # send_alert never raises.
+        alerts.send_alert(f"RUN CRASHED: {type(e).__name__}: {str(e)[:150]} — "
+                          "check the account; resting stops are the floor.")
+        raise
