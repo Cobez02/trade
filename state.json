@@ -599,21 +599,15 @@
       "equity": 11704.03,
       "benchmark_equity": 10414.33,
       "spy": 768.64
+    },
+    {
+      "date": "2026-08-07",
+      "equity": 11704.03,
+      "benchmark_equity": 10414.33,
+      "spy": 768.64
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-28",
-      "time": "2026-07-28T14:47:11.838810+00:00",
-      "notes": [
-        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "no liquid contract for PHG [news]",
-        "SCREENED OUT KO bull [news] \u2014 spread: spread 17.3% > 4% \u2014 modelled round trip 12.6% of premium vs a best-documented edge of 0.5%/month",
-        "no liquid contract for BKR [news]",
-        "no liquid contract for UDR [news]",
-        "SCREENED OUT GOOGL bull [tech] \u2014 spread: spread 9.9% > 4% \u2014 modelled round trip 7.3% of premium vs a best-documented edge of 0.5%/month"
-      ]
-    },
     {
       "date": "2026-07-28",
       "time": "2026-07-28T15:44:00.364403+00:00",
@@ -1285,11 +1279,19 @@
         "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-07",
+      "time": "2026-08-07T00:49:11.559094+00:00",
+      "notes": [
+        "Learner: 22 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "Market closed \u2014 signals recorded, no orders placed this run."
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-08-06",
+    "updated": "2026-08-07",
     "n_trades": 22,
     "n_eff": 22.0,
     "n_days": 6,
