@@ -54,6 +54,13 @@ jobs:
           # Spreads entries DISABLED by the 2026-07-31 backtest verdict
           # (BACKTEST_REPORT.md). Flip to "1" to re-enable — owner decision.
           SPXBOT_SPREADS: "0"
+          # Alerting (owner-added secrets; unset = alerts are silently off)
+          SPXBOT_WA_PHONE: ${{ secrets.SPXBOT_WA_PHONE }}
+          SPXBOT_WA_APIKEY: ${{ secrets.SPXBOT_WA_APIKEY }}
+          SPXBOT_HEALTHCHECK_URL: ${{ secrets.SPXBOT_HEALTHCHECK_URL }}
+          SPXBOT_ALERT_WEBHOOK: ${{ secrets.SPXBOT_ALERT_WEBHOOK }}
+          SPXBOT_TG_TOKEN: ${{ secrets.SPXBOT_TG_TOKEN }}
+          SPXBOT_TG_CHAT: ${{ secrets.SPXBOT_TG_CHAT }}
           SPXBOT_FLATTEN_ONLY: ${{ (github.event.schedule == '45,50,55 19 * * 1-5' || github.event.schedule == '45,50,55 16 * * 1-5') && '1' || '0' }}
         run: |
           python main.py | tee run.log
@@ -77,3 +84,7 @@ jobs:
 # cron went quiet again after 16:30 and the 19:45/50/55 flatten trio missed.
 # New-repo scheduling is notoriously erratic in week one; each edit of this
 # file re-registers. The reliable stabiliser remains one manual dispatch.
+
+# schedule re-poke 2026-08-07: scheduler went silent Thu; editing this file forces GitHub to re-register the crons
+
+# schedule re-poke 2026-08-07: scheduler went silent Thursday; editing this file re-registers the crons
