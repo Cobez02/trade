@@ -31,7 +31,7 @@ Design, in order of how much each part matters when things go wrong:
 Run:  python3 watcher.py            (runs until the closing bell, then exits)
 """
 from __future__ import annotations
-import os, re, sys, time, json, math, threading, datetime as dt
+import os, re, sys, time, json, math, threading, subprocess, datetime as dt
 from collections import defaultdict
 
 from alpaca.trading.client import TradingClient
@@ -58,6 +58,11 @@ POSITION_REFRESH  = 30.0    # how often to pick up newly-opened positions
 FLATTEN_REFRESH   = 5.0     # ...tightened once we are closing the book
 EOD_FLATTEN_MIN   = int(os.environ.get("SPXBOT_EOD_FLATTEN_MIN", "15"))
 LOG_PATH          = os.environ.get("SPXBOT_WATCH_LOG", "watcher.log")
+# Continuous entry scanning: this always-on process fires the production entry
+# pipeline (main.py, ENTRIES-ONLY) every ENTRY_SCAN_SECONDS, replacing the
+# flaky hourly cron as the thing that decides what to BUY. Default 5 min, on.
+ENTRY_SCAN_SECONDS = int(os.environ.get("SPXBOT_ENTRY_SCAN_SECONDS", "300"))
+ENTRY_SCAN_ENABLED = os.environ.get("SPXBOT_WATCHER_ENTRIES", "1") == "1"
 USE_STREAM        = os.environ.get("SPXBOT_WATCH_STREAM", "1") == "1"
 DRY_RUN           = os.environ.get("SPXBOT_WATCH_DRY", "0") == "1"
 
@@ -771,6 +776,8 @@ class Watcher:
         last_refresh = time.time()
         last_rest = 0.0
         last_beat = 0.0
+        last_scan = 0.0            # continuous entry-scan cadence
+        scan_proc = None           # the in-flight entry-scan subprocess, if any
         # Dead reckoning for clock outages: (minutes at last good read, when).
         # If the clock API goes dark we advance the last known reading by
         # wall-clock time instead of exiting — so the 19:45 flatten fires on
@@ -791,6 +798,31 @@ class Watcher:
                 known = (mins, time.monotonic())
             flatten = mins <= EOD_FLATTEN_MIN
             now = time.time()
+
+            # --- continuous entry scanning --------------------------------
+            # Fire main.py in ENTRIES-ONLY mode every ENTRY_SCAN_SECONDS as a
+            # NON-BLOCKING subprocess, so the 0.25s exit loop never waits on a
+            # scan. This runs REGARDLESS of whether the book has positions —
+            # that is the whole point (an empty book is exactly when we need to
+            # be looking for something to buy). Never inside the flatten window
+            # (no new positions may open that late), and only on a confirmed
+            # 'open' clock (never place entries when the clock is unreadable).
+            if ENTRY_SCAN_ENABLED:
+                if scan_proc is not None and scan_proc.poll() is not None:
+                    if scan_proc.returncode not in (0, None):
+                        log(f"  entry scan exited rc={scan_proc.returncode}")
+                    scan_proc = None
+                if (scan_proc is None and status == "open" and not flatten
+                        and now - last_scan > ENTRY_SCAN_SECONDS):
+                    try:
+                        scan_proc = subprocess.Popen(
+                            [sys.executable, "main.py"],
+                            env=dict(os.environ, SPXBOT_ENTRIES_ONLY="1"),
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        last_scan = now
+                        log(f"  entry scan fired ({ENTRY_SCAN_SECONDS}s cadence)")
+                    except Exception as e:
+                        log(f"  entry scan launch failed: {str(e)[:80]}")
 
             gap = FLATTEN_REFRESH if flatten else POSITION_REFRESH
             if now - last_refresh > gap:
@@ -839,6 +871,11 @@ class Watcher:
 
             time.sleep(EVAL_SECONDS)
 
+        if scan_proc is not None and scan_proc.poll() is None:
+            try:
+                scan_proc.terminate()               # let a straggler scan go
+            except Exception:
+                pass
         log(f"watcher done — {len(self.exits_done)} exits, {self.tick_count} ticks")
         try:
             if self.stream:

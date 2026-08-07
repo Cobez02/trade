@@ -1118,14 +1118,24 @@ def run():
             "features": f, "entry_date": today(),
         }
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
-    notify_settled_trades(state, journal)
-    manage_exits(broker, state, notes, sleeve_map, pos_feat)
-    _mins = minutes_to_close(broker)
-    if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1" or (
-            _mins is not None and _mins <= EOD_FLATTEN_MIN):
-        sweep_entry_buys(broker, notes)
-    reconcile_assignments(broker, notes)
-    manage_spreads(broker, state, notes)
+    # Two run modes for the continuous-watcher architecture (default = neither,
+    # i.e. a full run, exactly as the hourly cron has always behaved):
+    #   ENTRIES_ONLY — the watcher fires this every 5 min. It owns ENTRIES; the
+    #     watcher's own 0.25s loop owns exits/stops, so this skips exit
+    #     management to avoid two processes reaching for the same sell.
+    #   NO_ENTRIES  — lets a run do exits/housekeeping WITHOUT placing entries,
+    #     the flip that makes the watcher the sole entry-placer for live.
+    entries_only = os.environ.get("SPXBOT_ENTRIES_ONLY") == "1"
+    no_entries   = os.environ.get("SPXBOT_NO_ENTRIES") == "1"
+    if not entries_only:
+        notify_settled_trades(state, journal)
+        manage_exits(broker, state, notes, sleeve_map, pos_feat)
+        _mins = minutes_to_close(broker)
+        if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1" or (
+                _mins is not None and _mins <= EOD_FLATTEN_MIN):
+            sweep_entry_buys(broker, notes)
+        reconcile_assignments(broker, notes)
+        manage_spreads(broker, state, notes)
     ensure_broker_stops(broker, state, notes)
     if journal:                                    # Alpaca is authoritative for settled trades
         state["journal"] = journal
@@ -1174,13 +1184,15 @@ def run():
         if coid.startswith("SPXB-") and info.get("underlying"):
             pending.add((coid.split("-")[1], info["underlying"]))
     signals = all_signals(broker, api_key, secret)
-    open_new_trades(broker, state, signals, api_key, secret, notes, pending)
-    try_spread_entries(broker, state, notes)
-    # Again, because anything that just filled has no floor under it yet. The
-    # call skips symbols already covered, so a second pass costs one API read.
-    ensure_broker_stops(broker, state, notes)
-    update_benchmark(broker, state)
-    send_eod_summary(broker, state)
+    if not no_entries:
+        open_new_trades(broker, state, signals, api_key, secret, notes, pending)
+        try_spread_entries(broker, state, notes)
+        # Again, because anything that just filled has no floor under it yet. The
+        # call skips symbols already covered, so a second pass costs one API read.
+        ensure_broker_stops(broker, state, notes)
+    if not entries_only:
+        update_benchmark(broker, state)
+        send_eod_summary(broker, state)
 
     state["run_log"].append({"date": today(),
                              "time": dt.datetime.now(dt.timezone.utc).isoformat(),
