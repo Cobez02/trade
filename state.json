@@ -2,7 +2,54 @@
   "started": "2026-07-24",
   "start_equity": 10000.0,
   "benchmark_start_price": 738.06,
-  "positions": {},
+  "positions": {
+    "COIN260821C00152500": {
+      "sleeve": "tech",
+      "underlying": "COIN",
+      "direction": "bull",
+      "type": "call",
+      "strike": 152.5,
+      "expiration": "2026-08-21",
+      "qty": 1,
+      "entry_price": 5.85,
+      "entry_cost": 585.0,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 33.0,
+        "dte": 11,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.04,
+        "signal_score": 6.58
+      },
+      "entry_date": "2026-08-10"
+    },
+    "GOOGL260821C00360000": {
+      "sleeve": "news",
+      "underlying": "GOOGL",
+      "direction": "bull",
+      "type": "call",
+      "strike": 360.0,
+      "expiration": "2026-08-21",
+      "qty": 1,
+      "entry_price": 5.35,
+      "entry_cost": 535.0,
+      "features": {
+        "sleeve": "news",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 53.0,
+        "dte": 11,
+        "trend_up": false,
+        "macd_rising": false,
+        "spread_pct": 0.03,
+        "signal_score": 2.0
+      },
+      "entry_date": "2026-08-10"
+    }
+  },
   "closed": [
     {
       "symbol": "TSLA260814C00332500",
@@ -653,21 +700,15 @@
       "equity": 11554.52,
       "benchmark_equity": 10475.57,
       "spy": 773.16
+    },
+    {
+      "date": "2026-08-10",
+      "equity": 11489.07,
+      "benchmark_equity": 10480.86,
+      "spy": 773.55
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-29",
-      "time": "2026-07-29T15:37:54.098270+00:00",
-      "notes": [
-        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "no liquid contract for GEHC [news]",
-        "no liquid contract for ASH [news]",
-        "SCREENED OUT VRT bull [news] \u2014 spread: spread 11.2% > 4% \u2014 modelled round trip 8.2% of premium vs a best-documented edge of 0.5%/month",
-        "SCREENED OUT V bull [news] \u2014 spread: spread 15.9% > 4% \u2014 modelled round trip 11.5% of premium vs a best-documented edge of 0.5%/month",
-        "SCREENED OUT AAPL bear [tech] \u2014 spread: spread 6.1% > 4% \u2014 modelled round trip 4.5% of premium vs a best-documented edge of 0.5%/month"
-      ]
-    },
     {
       "date": "2026-07-29",
       "time": "2026-07-29T16:27:58.025187+00:00",
@@ -1356,11 +1397,28 @@
         "Learner: 24 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-10",
+      "time": "2026-08-10T15:13:51.137957+00:00",
+      "notes": [
+        "Learner: 24 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for CTEV [news]",
+        "no liquid contract for ROIV [news]",
+        "SCREENED OUT CART bull [news] \u2014 spread: spread 25.8% > 4% \u2014 modelled round trip 18.3% of premium vs a best-documented edge of 0.5%/month",
+        "TSM: strike scan: 3 quoted, spreads [5.4%, 10.1%, 10.4%], tightest 5.4%",
+        "TSM: resample 1: spread 5.4% -> 4.0%",
+        "SCREENED OUT TSM bull [news] \u2014 spread: spread 4.0% > 4% \u2014 modelled round trip 3.0% of premium vs a best-documented edge of 0.5%/month",
+        "MSFT: strike scan: 3 quoted, spreads [7.1%, 13.0%, 2.8%], tightest 7.1%",
+        "SCREENED OUT MSFT bear [tech] \u2014 spread: spread 7.1% > 4% \u2014 modelled round trip 5.2% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "TSLA: strike scan: 3 quoted, spreads [1.3%, 1.9%, 4.0%], tightest 1.3%",
+        "NO EDGE TSLA bull [tech] \u2014 implied 45.3% vs forecast 43.0%; buy: bsm 3.6410 vs mid 3.9450 -> -7.71% (quote is against you, wait)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-08-07",
+    "updated": "2026-08-10",
     "n_trades": 24,
     "n_eff": 24.0,
     "n_days": 7,
@@ -1781,46 +1839,41 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "NTRA",
+        "underlying": "CTEV",
+        "direction": "bull",
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "ROIV",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "TXRH",
+        "underlying": "CART",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "TWFG",
+        "underlying": "TSM",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "OC",
-        "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +2 across 2 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "MSFT",
         "direction": "bear",
-        "thesis": "Technical: RSI 81 overbought + MACD turning down"
-      },
-      {
-        "underlying": "NFLX",
-        "direction": "bear",
-        "thesis": "Technical: RSI 78 overbought + MACD turning down"
-      },
-      {
-        "underlying": "META",
-        "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 85 overbought + MACD turning down"
       },
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 35 oversold + MACD turning up"
+        "thesis": "Technical: RSI 31 oversold + MACD turning up"
+      },
+      {
+        "underlying": "COIN",
+        "direction": "bull",
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
@@ -2585,31 +2638,31 @@
   "spreads_open": {},
   "spreads_closed": [],
   "notified_trades": [
-    "META260810C00600000|2026-08-05|65.0",
-    "TSLA260814C00332500|2026-08-07|-20.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
-    "IWM260814C00307000|2026-08-04|21.0",
-    "SPY260730P00729000|2026-07-28|13.0",
     "IWM260807C00305000|2026-08-04|200.0",
-    "SPY260730P00733000|2026-07-27|109.0",
-    "INTC260814C00100000|2026-08-04|80.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
-    "NFLX260731C00071000|2026-07-28|189.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "VZ260731C00048000|2026-07-28|876.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "AMZN260727C00237500|2026-07-27|-47.0",
-    "SLB260731C00053000|2026-07-27|-165.0",
-    "AI260731C00008500|2026-07-27|-75.0",
-    "DRAM260731C00052000|2026-07-28|-180.0",
     "NVDA260731P00200000|2026-07-27|290.0",
+    "NFLX260731C00071000|2026-07-28|189.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "SPY260730P00733000|2026-07-27|109.0",
+    "TSLA260810C00327500|2026-08-05|-45.0",
     "NFLX260814P00073000|2026-08-07|-24.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
+    "META260810C00600000|2026-08-05|65.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
+    "AI260731C00008500|2026-07-27|-75.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "SLB260731C00053000|2026-07-27|-165.0",
+    "NFLX260731C00069000|2026-07-27|70.0",
+    "AMZN260727C00237500|2026-07-27|-47.0",
+    "IWM260807C00303000|2026-08-04|369.0",
+    "SPY260730P00729000|2026-07-28|13.0",
+    "DRAM260731C00052000|2026-07-28|-180.0",
+    "INTC260814C00100000|2026-08-04|80.0",
     "QQQ260803C00693000|2026-07-30|-80.0",
     "META260810C00600000|2026-08-07|-105.0",
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "TSLA260810C00327500|2026-08-05|-45.0",
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "IWM260807C00303000|2026-08-04|369.0"
+    "QQQ260804C00692000|2026-07-30|57.0",
+    "IWM260814C00307000|2026-08-04|21.0",
+    "TSLA260814C00332500|2026-08-07|-20.0",
+    "VZ260731C00048000|2026-07-28|876.0"
   ],
   "eod_summary_sent": "2026-08-07"
 }
