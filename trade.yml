@@ -1,0 +1,98 @@
+name: SPX-Beater options bot
+
+# Runs hourly during US market hours (10:07–16:07 ET), Mon–Fri.
+# Cron is in UTC; 14:07–20:07 UTC = 10:07–16:07 ET (EDT). GitHub may delay
+# scheduled runs a few minutes under load — fine for an hourly bot.
+on:
+  schedule:
+    # Hourly trading runs at :07 past the hour, 10:07–16:07 ET. :07 and not
+    # :00 because the top of the hour is GitHub's most congested cron slot —
+    # the :00 schedule spent last week landing 40–45 minutes late (Fri 8/7)
+    # or not at all (Thu 8/6). Off-hour minutes schedule far more reliably.
+    - cron: "7 14-20 * * 1-5"
+    # Close-the-book runs. Nothing is carried overnight, so a run MUST land in
+    # the final 15 minutes or the flatten never fires. GitHub routinely delays
+    # scheduled runs under load, so three attempts are scheduled rather than one
+    # — a single 19:45 job delayed past the bell would strand the whole book.
+    - cron: "45,50,55 19 * * 1-5"
+    # Same, for early-close sessions (13:00 ET bell: July 3rd, Black Friday,
+    # Christmas Eve). On a normal day these land ~3 hours before the close and
+    # do nothing; SPXBOT_FLATTEN_ONLY stops them churning entries.
+    - cron: "45,50,55 16 * * 1-5"
+  workflow_dispatch: {}          # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write                # so the run can commit state.json + dashboard.html back
+
+concurrency:
+  group: spxbot
+  cancel-in-progress: false
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run the bot
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          SPXBOT_STARTED: "2026-07-24"
+          SPXBOT_BENCH_START: "738.06"
+          SPXBOT_BASELINE: "100000"
+          SPXBOT_MAX_PREM: "600"
+          SPXBOT_MAX_OPEN: "2"
+          SPXBOT_EOD_FLATTEN_MIN: "15"
+          SPXBOT_NO_NEW_ENTRY_MIN: "90"
+          # The close-the-book crons manage exits only. Any other trigger
+          # (hourly schedule, or a manual Actions run) does a full cycle.
+          # Spreads entries DISABLED by the 2026-07-31 backtest verdict
+          # (BACKTEST_REPORT.md). Flip to "1" to re-enable — owner decision.
+          SPXBOT_SPREADS: "0"
+          # Alerting (owner-added secrets; unset = alerts are silently off)
+          SPXBOT_WA_PHONE: ${{ secrets.SPXBOT_WA_PHONE }}
+          SPXBOT_WA_APIKEY: ${{ secrets.SPXBOT_WA_APIKEY }}
+          SPXBOT_HEALTHCHECK_URL: ${{ secrets.SPXBOT_HEALTHCHECK_URL }}
+          SPXBOT_ALERT_WEBHOOK: ${{ secrets.SPXBOT_ALERT_WEBHOOK }}
+          SPXBOT_TG_TOKEN: ${{ secrets.SPXBOT_TG_TOKEN }}
+          SPXBOT_TG_CHAT: ${{ secrets.SPXBOT_TG_CHAT }}
+          SPXBOT_FLATTEN_ONLY: ${{ (github.event.schedule == '45,50,55 19 * * 1-5' || github.event.schedule == '45,50,55 16 * * 1-5') && '1' || '0' }}
+        run: |
+          python main.py | tee run.log
+          python reporting.py state.json > digest.txt
+          {
+            echo '## SPX-Beater — latest run'
+            echo '```'
+            cat digest.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Persist state + dashboard
+        run: |
+          git config user.name  "spx-beater-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -A state.json dashboard.html
+          git commit -m "run $(date -u +%Y-%m-%dT%H:%MZ)" || echo "nothing to commit"
+          git push || echo "push skipped"
+
+# schedule-poke 2026-07-28 (2nd): first poke got 4 firings, then the hourly
+# cron went quiet again after 16:30 and the 19:45/50/55 flatten trio missed.
+# New-repo scheduling is notoriously erratic in week one; each edit of this
+# file re-registers. The reliable stabiliser remains one manual dispatch.
+
+# schedule re-poke 2026-08-07: scheduler went silent Thu; editing this file forces GitHub to re-register the crons
+
+# schedule re-poke 2026-08-07: scheduler went silent Thursday; editing this file re-registers the crons
+
+# schedule re-poke 2026-08-10: hourly cron moved :00 → :07 (top-of-hour
+# congestion delayed or dropped every :00 run last week; flatten trios are
+# already off-peak and unchanged). The edit itself also re-registers the
+# crons ahead of the first continuous-watcher production session.
