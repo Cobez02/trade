@@ -7,8 +7,11 @@ name: SPX-Beater continuous watcher
 # whole loss happened in the 41 minutes when nothing was watching.
 #
 # Two jobs, not one, because a GitHub Actions job is capped at 6 hours and the
-# US session is 6.5. The first covers the open, the second hands over at 17:00
-# UTC and runs through the closing flatten.
+# US session is 6.5. The first covers the open, the second hands over at ~17:07
+# UTC and runs through the closing flatten. (:07, not :00 — top-of-hour is
+# GitHub's most congested cron slot; the concurrency group queues the second
+# job until the first one's 215-minute timeout releases it, so the handover
+# stays contiguous either way.)
 #
 # ---------------------------------------------------------------------------
 # BEFORE ENABLING THIS, CHECK WHETHER THE REPO IS PUBLIC.
@@ -22,8 +25,8 @@ name: SPX-Beater continuous watcher
 
 on:
   schedule:
-    - cron: "31 13 * * 1-5"       # from the open, hands over at 17:00
-    - cron: "0 17 * * 1-5"        # through to the closing flatten
+    - cron: "31 13 * * 1-5"       # from the open, hands over at ~17:07
+    - cron: "7 17 * * 1-5"        # through to the closing flatten
   workflow_dispatch: {}
 
 concurrency:
@@ -57,6 +60,25 @@ jobs:
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
           SPXBOT_EOD_FLATTEN_MIN: "15"
           SPXBOT_WATCH_STREAM: "1"
+          # Entry scans: the watcher fires main.py in entries-only mode every
+          # ~5 minutes (ENTRY_SCAN_SECONDS in watcher.py) and the child
+          # process inherits THIS env, not trade.yml's. These pins are the
+          # code defaults today, but if trade.yml ever changes a cap, change
+          # it here too or the two entry paths will silently diverge.
+          SPXBOT_MAX_PREM: "600"
+          SPXBOT_MAX_OPEN: "2"
+          SPXBOT_NO_NEW_ENTRY_MIN: "90"
+          SPXBOT_SPREADS: "0"
+          # Alerting (same owner-added secrets as trade.yml; unset = silently
+          # off). Without these the whole 6.5-hour watcher session — and every
+          # entry scan it spawns — would run with alerts and the dead-man's
+          # switch disabled.
+          SPXBOT_WA_PHONE: ${{ secrets.SPXBOT_WA_PHONE }}
+          SPXBOT_WA_APIKEY: ${{ secrets.SPXBOT_WA_APIKEY }}
+          SPXBOT_HEALTHCHECK_URL: ${{ secrets.SPXBOT_HEALTHCHECK_URL }}
+          SPXBOT_ALERT_WEBHOOK: ${{ secrets.SPXBOT_ALERT_WEBHOOK }}
+          SPXBOT_TG_TOKEN: ${{ secrets.SPXBOT_TG_TOKEN }}
+          SPXBOT_TG_CHAT: ${{ secrets.SPXBOT_TG_CHAT }}
         run: python watcher.py
 
       - name: Report what it did
@@ -73,3 +95,8 @@ jobs:
 # cron went quiet again after 16:30 and the 19:45/50/55 flatten trio missed.
 # New-repo scheduling is notoriously erratic in week one; each edit of this
 # file re-registers. The reliable stabiliser remains one manual dispatch.
+
+# schedule re-poke 2026-08-10: first production session of continuous entry
+# scanning. Handover cron moved 17:00 → 17:07 (top-of-hour congestion), env
+# parity added so watcher-spawned entry scans run with the same caps and
+# alert channels as the hourly workflow.

@@ -1,12 +1,15 @@
 name: SPX-Beater options bot
 
-# Runs hourly during US market hours (10:00–16:00 ET), Mon–Fri.
-# Cron is in UTC; 14:00–20:00 UTC = 10:00–16:00 ET (EDT). GitHub may delay
+# Runs hourly during US market hours (10:07–16:07 ET), Mon–Fri.
+# Cron is in UTC; 14:07–20:07 UTC = 10:07–16:07 ET (EDT). GitHub may delay
 # scheduled runs a few minutes under load — fine for an hourly bot.
 on:
   schedule:
-    # Hourly trading runs, 10:00–16:00 ET.
-    - cron: "0 14-20 * * 1-5"
+    # Hourly trading runs at :07 past the hour, 10:07–16:07 ET. :07 and not
+    # :00 because the top of the hour is GitHub's most congested cron slot —
+    # the :00 schedule spent last week landing 40–45 minutes late (Fri 8/7)
+    # or not at all (Thu 8/6). Off-hour minutes schedule far more reliably.
+    - cron: "7 14-20 * * 1-5"
     # Close-the-book runs. Nothing is carried overnight, so a run MUST land in
     # the final 15 minutes or the flatten never fires. GitHub routinely delays
     # scheduled runs under load, so three attempts are scheduled rather than one
@@ -88,3 +91,8 @@ jobs:
 # schedule re-poke 2026-08-07: scheduler went silent Thu; editing this file forces GitHub to re-register the crons
 
 # schedule re-poke 2026-08-07: scheduler went silent Thursday; editing this file re-registers the crons
+
+# schedule re-poke 2026-08-10: hourly cron moved :00 → :07 (top-of-hour
+# congestion delayed or dropped every :00 run last week; flatten trios are
+# already off-peak and unchanged). The edit itself also re-registers the
+# crons ahead of the first continuous-watcher production session.
