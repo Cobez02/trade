@@ -25,6 +25,29 @@
         "signal_score": 12.2
       },
       "entry_date": "2026-08-11"
+    },
+    "TSLA260817C00335000": {
+      "sleeve": "tech",
+      "underlying": "TSLA",
+      "direction": "bull",
+      "type": "call",
+      "strike": 335.0,
+      "expiration": "2026-08-17",
+      "qty": 1,
+      "entry_price": 4.6,
+      "entry_cost": 460.0,
+      "features": {
+        "sleeve": "tech",
+        "direction": "bull",
+        "type": "call",
+        "rsi": 32.0,
+        "dte": 6,
+        "trend_up": false,
+        "macd_rising": true,
+        "spread_pct": 0.01,
+        "signal_score": 7.07
+      },
+      "entry_date": "2026-08-11"
     }
   },
   "closed": [
@@ -806,20 +829,12 @@
     },
     {
       "date": "2026-08-11",
-      "equity": 11365.39,
-      "benchmark_equity": 10463.11,
-      "spy": 772.24
+      "equity": 11434.36,
+      "benchmark_equity": 10446.98,
+      "spy": 771.05
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-30",
-      "time": "2026-07-30T17:11:15.626956+00:00",
-      "notes": [
-        "Learner: 13 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "Flatten-only run \u2014 exits managed, entry scan skipped."
-      ]
-    },
     {
       "date": "2026-07-30",
       "time": "2026-07-30T17:28:56.067720+00:00",
@@ -1522,6 +1537,17 @@
         "TSLA: strike scan: 3 quoted, spreads [3.8%, 0.8%, 4.4%], tightest 0.8%",
         "NO EDGE TSLA bull [tech] \u2014 implied 43.9% vs forecast 42.9%; buy: bsm 2.4522 vs mid 2.5600 -> -4.21% (quote is against you, wait)"
       ]
+    },
+    {
+      "date": "2026-08-11",
+      "time": "2026-08-11T17:07:34.595029+00:00",
+      "notes": [
+        "Learner: 29 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for ARMK [news]",
+        "no liquid contract for BRNY [news]",
+        "no liquid contract for IJT [news]",
+        "no liquid contract for RSMC [news]"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -1947,46 +1973,41 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "HIMS",
+        "underlying": "ARMK",
         "direction": "bull",
-        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "NOK",
+        "underlying": "BRNY",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "NVO",
+        "underlying": "IJT",
         "direction": "bull",
         "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "CODI",
+        "underlying": "RSMC",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "MSFT",
         "direction": "bear",
-        "thesis": "Technical: RSI 86 overbought + MACD turning down"
-      },
-      {
-        "underlying": "PLTR",
-        "direction": "bear",
-        "thesis": "Technical: RSI 79 overbought + MACD turning down"
+        "thesis": "Technical: RSI 87 overbought + MACD turning down"
       },
       {
         "underlying": "NFLX",
         "direction": "bear",
-        "thesis": "Technical: RSI 74 overbought + MACD turning down"
+        "thesis": "Technical: RSI 73 overbought + MACD turning down"
       },
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 34 oversold + MACD turning up"
+        "thesis": "Technical: RSI 33 oversold + MACD turning up"
       }
     ],
     "flow": [],
@@ -2905,36 +2926,36 @@
   "spreads_open": {},
   "spreads_closed": [],
   "notified_trades": [
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "AMZN260727C00237500|2026-07-27|-47.0",
-    "NFLX260814P00073000|2026-08-07|-24.0",
-    "SPY260730P00733000|2026-07-27|109.0",
-    "NFLX260731C00071000|2026-07-28|189.0",
-    "VZ260731C00048000|2026-07-28|876.0",
+    "META260810C00600000|2026-08-07|-105.0",
+    "AI260731C00008500|2026-07-27|-75.0",
+    "SLB260731C00053000|2026-07-27|-165.0",
+    "GOOGL260821C00360000|2026-08-10|30.0",
     "INTC260814C00100000|2026-08-04|80.0",
     "DIA260821C00546000|2026-08-10|-57.0",
-    "SLB260731C00053000|2026-07-27|-165.0",
-    "TSLA260817C00340000|2026-08-11|-145.0",
-    "META260810C00600000|2026-08-07|-105.0",
+    "QQQ260804C00692000|2026-07-30|57.0",
+    "IWM260807C00303000|2026-08-04|369.0",
     "SPY260730P00729000|2026-07-28|13.0",
-    "META260810C00600000|2026-08-05|65.0",
-    "IWM260807C00305000|2026-08-04|200.0",
-    "TSLA260810C00327500|2026-08-05|-45.0",
+    "SPY260730P00733000|2026-07-27|109.0",
     "DRAM260731C00052000|2026-07-28|-180.0",
     "TSLA260814C00335000|2026-08-10|-15.0",
-    "IWM260807C00303000|2026-08-04|369.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
-    "GOOGL260821C00360000|2026-08-10|30.0",
-    "TSLA260814C00332500|2026-08-07|-20.0",
+    "QQQ260803C00693000|2026-07-30|-80.0",
+    "TSLA260810C00327500|2026-08-05|-45.0",
+    "TSLA260817C00340000|2026-08-11|-145.0",
+    "VZ260731C00048000|2026-07-28|876.0",
     "IWM260814C00307000|2026-08-04|21.0",
+    "NFLX260814P00073000|2026-08-07|-24.0",
+    "AMZN260727C00237500|2026-07-27|-47.0",
+    "NFLX260731C00071000|2026-07-28|189.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
+    "IWM260807C00305000|2026-08-04|200.0",
+    "TSLA260814C00332500|2026-08-07|-20.0",
     "NVDA260731P00200000|2026-07-27|290.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "AI260731C00008500|2026-07-27|-75.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
     "COIN260821C00152500|2026-08-10|-65.0",
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "QQQ260803C00693000|2026-07-30|-80.0"
+    "META260810C00600000|2026-08-05|65.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "NFLX260731C00069000|2026-07-27|70.0"
   ],
   "eod_summary_sent": "2026-08-10"
 }
