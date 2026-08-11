@@ -755,17 +755,15 @@
       "equity": 11446.83,
       "benchmark_equity": 10473.67,
       "spy": 773.02
+    },
+    {
+      "date": "2026-08-11",
+      "equity": 11431.51,
+      "benchmark_equity": 10484.92,
+      "spy": 773.85
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-29",
-      "time": "2026-07-29T20:19:16.000058+00:00",
-      "notes": [
-        "Learner: 12 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "Market closed \u2014 signals recorded, no orders placed this run."
-      ]
-    },
     {
       "date": "2026-07-30",
       "time": "2026-07-30T14:44:07.027783+00:00",
@@ -1451,11 +1449,28 @@
         "Learner: 28 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Market closed \u2014 signals recorded, no orders placed this run."
       ]
+    },
+    {
+      "date": "2026-08-11",
+      "time": "2026-08-11T14:07:38.932545+00:00",
+      "notes": [
+        "Learner: 28 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for RPD [news]",
+        "no liquid contract for HYDR [news]",
+        "no liquid contract for ICLN [news]",
+        "no liquid contract for AAON [news]",
+        "MSFT: strike scan: 3 quoted, spreads [14.6%, 11.9%, 7.1%], tightest 11.9%",
+        "SCREENED OUT MSFT bear [tech] \u2014 spread: spread 11.9% > 4% \u2014 modelled round trip 8.7% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "META: strike scan: 3 quoted, spreads [4.6%, 0.9%, 4.6%], tightest 0.9%",
+        "NO EDGE META bull [tech] \u2014 implied 43.9% vs forecast 37.8%; buy: bsm 5.4315 vs mid 6.7100 -> -19.05% (quote is against you, wait)",
+        "TSLA: strike scan: 3 quoted, spreads [2.9%, 2.5%, 2.0%], tightest 2.5%",
+        "order-failed TSLA [tech]: {\"code\":40310000,\"existing_order_id\":\"5803ecce-a133-4b8b-83c4-9da7dd3e3630\",\"message\":\"potential wash trade detected. use complex orders\",\"reject_reason\":\"opposite side market/stop order exists\"}"
+      ]
     }
   ],
   "account_baseline": 100000.0,
   "learning": {
-    "updated": "2026-08-10",
+    "updated": "2026-08-11",
     "n_trades": 28,
     "n_eff": 28.0,
     "n_days": 8,
@@ -1876,47 +1891,46 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "UPWK",
+        "underlying": "RPD",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "BW",
+        "underlying": "HYDR",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ESOA",
+        "underlying": "ICLN",
         "direction": "bull",
-        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +4 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "EROK",
-        "direction": "bear",
-        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
+        "underlying": "AAON",
+        "direction": "bull",
+        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "MSFT",
         "direction": "bear",
-        "thesis": "Technical: RSI 85 overbought + MACD turning down"
+        "thesis": "Technical: RSI 86 overbought + MACD turning down"
+      },
+      {
+        "underlying": "META",
+        "direction": "bull",
+        "thesis": "Technical: MACD bull cross in uptrend (RSI 44)"
       },
       {
         "underlying": "TSLA",
         "direction": "bull",
-        "thesis": "Technical: RSI 31 oversold + MACD turning up"
-      },
-      {
-        "underlying": "COIN",
-        "direction": "bull",
-        "thesis": "Technical: RSI 33 oversold + MACD turning up"
+        "thesis": "Technical: RSI 35 oversold + MACD turning up"
       }
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "136 WSB comments (Bearish) \u2014 attention-inflated premium",
-      "SPY": "52 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "AI": "87 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
@@ -2800,34 +2814,34 @@
   "spreads_closed": [],
   "notified_trades": [
     "NFLX260731C00071000|2026-07-28|189.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "INTC260814C00100000|2026-08-04|80.0",
-    "IWM260807C00305000|2026-08-04|200.0",
-    "AI260731C00008500|2026-07-27|-75.0",
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
-    "VZ260731C00048000|2026-07-28|876.0",
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "META260810C00600000|2026-08-05|65.0",
-    "TSLA260814C00332500|2026-08-07|-20.0",
-    "NVDA260731P00200000|2026-07-27|290.0",
     "AMZN260727C00237500|2026-07-27|-47.0",
-    "DRAM260731C00052000|2026-07-28|-180.0",
-    "DIA260821C00546000|2026-08-10|-57.0",
-    "SPY260730P00729000|2026-07-28|13.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
     "SLB260731C00053000|2026-07-27|-165.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
     "SPY260730P00733000|2026-07-27|109.0",
-    "IWM260814C00307000|2026-08-04|21.0",
-    "TSLA260814C00335000|2026-08-10|-15.0",
-    "QQQ260803C00693000|2026-07-30|-80.0",
-    "COIN260821C00152500|2026-08-10|-65.0",
-    "META260810C00600000|2026-08-07|-105.0",
-    "TSLA260810C00327500|2026-08-05|-45.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "AI260731C00008500|2026-07-27|-75.0",
+    "IWM260807C00305000|2026-08-04|200.0",
+    "INTC260814C00100000|2026-08-04|80.0",
+    "SPY260730P00729000|2026-07-28|13.0",
     "GOOGL260821C00360000|2026-08-10|30.0",
+    "META260810C00600000|2026-08-07|-105.0",
+    "IWM260807C00303000|2026-08-04|369.0",
+    "TSLA260814C00332500|2026-08-07|-20.0",
+    "DRAM260731C00052000|2026-07-28|-180.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "TSLA260810C00327500|2026-08-05|-45.0",
+    "QQQ260804C00692000|2026-07-30|57.0",
+    "NVDA260731P00200000|2026-07-27|290.0",
+    "VZ260731C00048000|2026-07-28|876.0",
+    "NFLX260731C00069000|2026-07-27|70.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
+    "QQQ260803C00693000|2026-07-30|-80.0",
     "NFLX260814P00073000|2026-08-07|-24.0",
-    "IWM260807C00303000|2026-08-04|369.0"
+    "COIN260821C00152500|2026-08-10|-65.0",
+    "DIA260821C00546000|2026-08-10|-57.0",
+    "IWM260814C00307000|2026-08-04|21.0",
+    "META260810C00600000|2026-08-05|65.0",
+    "TSLA260814C00335000|2026-08-10|-15.0"
   ],
   "eod_summary_sent": "2026-08-10"
 }
