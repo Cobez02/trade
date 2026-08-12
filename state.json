@@ -906,20 +906,12 @@
     },
     {
       "date": "2026-08-12",
-      "equity": 11392.77,
-      "benchmark_equity": 10458.5,
-      "spy": 771.9
+      "equity": 11301.77,
+      "benchmark_equity": 10461.75,
+      "spy": 772.14
     }
   ],
   "run_log": [
-    {
-      "date": "2026-07-31",
-      "time": "2026-07-31T20:13:08.730842+00:00",
-      "notes": [
-        "Learner: 16 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "Market closed \u2014 signals recorded, no orders placed this run."
-      ]
-    },
     {
       "date": "2026-07-31",
       "time": "2026-07-31T20:26:25.032040+00:00",
@@ -1612,6 +1604,17 @@
         "PLTR: strike scan: 3 quoted, spreads [2.4%, 5.1%, 0.4%], tightest 0.4%",
         "SCREENED OUT PLTR bear [tech] \u2014 lottery: MAX 29.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
       ]
+    },
+    {
+      "date": "2026-08-12",
+      "time": "2026-08-12T16:07:39.223175+00:00",
+      "notes": [
+        "Learner: 31 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "MSFT: strike scan: 3 quoted, spreads [8.7%, 17.2%, 3.5%], tightest 3.5%",
+        "SCREENED OUT MSFT bear [tech] \u2014 lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "PLTR: strike scan: 3 quoted, spreads [4.1%, 0.2%, 1.1%], tightest 0.2%",
+        "SCREENED OUT PLTR bear [tech] \u2014 lottery: MAX 29.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -2036,36 +2039,36 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "LITE",
+        "underlying": "CRWV",
+        "direction": "bull",
+        "thesis": "News flow +8 across 5 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "SMCI",
+        "direction": "bull",
+        "thesis": "News flow +5 across 3 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "CAH",
         "direction": "bull",
         "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "ARKQ",
+        "underlying": "BCAX",
         "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ARKX",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "IRDM",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
+        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "MSFT",
         "direction": "bear",
-        "thesis": "Technical: RSI 87 overbought + MACD turning down"
+        "thesis": "Technical: RSI 86 overbought + MACD turning down"
       },
       {
         "underlying": "PLTR",
         "direction": "bear",
-        "thesis": "Technical: RSI 75 overbought + MACD turning down"
+        "thesis": "Technical: RSI 76 overbought + MACD turning down"
       },
       {
         "underlying": "SPY",
@@ -2075,7 +2078,7 @@
     ],
     "flow": [],
     "_crowd_veto": {
-      "AI": "108 WSB comments (Bullish) \u2014 attention-inflated premium"
+      "NBIS": "59 WSB comments (Bullish) \u2014 attention-inflated premium"
     }
   },
   "journal": [
@@ -3051,38 +3054,38 @@
   "spreads_open": {},
   "spreads_closed": [],
   "notified_trades": [
-    "AMZN260727C00237500|2026-07-27|-47.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "NFLX260814P00073000|2026-08-07|-24.0",
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "SLB260731C00053000|2026-07-27|-165.0",
     "VZ260731C00048000|2026-07-28|876.0",
-    "IWM260807C00305000|2026-08-04|200.0",
-    "TSLA260810C00327500|2026-08-05|-45.0",
-    "GOOGL260821C00360000|2026-08-10|30.0",
-    "NFLX260821P00075000|2026-08-11|164.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "COIN260821C00152500|2026-08-10|-65.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
+    "DRAM260731C00052000|2026-07-28|-180.0",
     "DIA260821C00546000|2026-08-10|-57.0",
+    "QQQ260804C00692000|2026-07-30|57.0",
     "TSLA260814C00332500|2026-08-07|-20.0",
-    "QQQ260803C00693000|2026-07-30|-80.0",
-    "NFLX260731C00071000|2026-07-28|189.0",
-    "IWM260814C00307000|2026-08-04|21.0",
-    "AI260731C00008500|2026-07-27|-75.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
+    "TSLA260814C00335000|2026-08-10|-15.0",
+    "NFLX260731C00069000|2026-07-27|70.0",
+    "COIN260821C00152500|2026-08-10|-65.0",
     "IWM260807C00303000|2026-08-04|369.0",
     "SPY260730P00729000|2026-07-28|13.0",
-    "TSLA260817C00340000|2026-08-11|-145.0",
-    "TSLA260817C00335000|2026-08-11|5.0",
-    "META260810C00600000|2026-08-07|-105.0",
+    "AMZN260727C00237500|2026-07-27|-47.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "SLB260731C00053000|2026-07-27|-165.0",
     "SPY260730P00733000|2026-07-27|109.0",
-    "META260810C00600000|2026-08-05|65.0",
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "DRAM260731C00052000|2026-07-28|-180.0",
     "INTC260814C00100000|2026-08-04|80.0",
+    "GOOGL260821C00360000|2026-08-10|30.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
+    "TSLA260817C00340000|2026-08-11|-145.0",
     "NVDA260731P00200000|2026-07-27|290.0",
-    "TSLA260814C00335000|2026-08-10|-15.0"
+    "TSLA260810C00327500|2026-08-05|-45.0",
+    "QQQ260803C00693000|2026-07-30|-80.0",
+    "IWM260807C00305000|2026-08-04|200.0",
+    "TSLA260817C00335000|2026-08-11|5.0",
+    "NFLX260814P00073000|2026-08-07|-24.0",
+    "IWM260814C00307000|2026-08-04|21.0",
+    "NFLX260821P00075000|2026-08-11|164.0",
+    "META260810C00600000|2026-08-05|65.0",
+    "META260810C00600000|2026-08-07|-105.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "NFLX260731C00071000|2026-07-28|189.0",
+    "AI260731C00008500|2026-07-27|-75.0"
   ],
   "eod_summary_sent": "2026-08-11"
 }
