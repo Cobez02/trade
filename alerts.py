@@ -62,9 +62,14 @@ def send_alert(msg: str, prefix: str = "SPXBOT: ") -> bool:
     hook = os.environ.get("SPXBOT_ALERT_WEBHOOK", "").strip()
     if hook:
         try:
+            # Discord sits behind Cloudflare, which rejects python-urllib's
+            # default User-Agent with 403 (error 1010). Found 2026-08-12:
+            # every runner-side send had been silently dropped since deploy —
+            # the never-raise design hid it. A real UA fixes delivery.
             req = urllib.request.Request(
                 hook, data=json.dumps({"content": text, "text": text}).encode(),
-                headers={"Content-Type": "application/json"})
+                headers={"Content-Type": "application/json",
+                         "User-Agent": "SPXBOT-alerts/1.0 (+https://github.com/Cobez02/trade)"})
             with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
                 ok = ok or 200 <= r.status < 300
         except Exception:
