@@ -1202,33 +1202,12 @@
     },
     {
       "date": "2026-08-17",
-      "equity": 11287.8,
-      "benchmark_equity": 10501.72,
-      "spy": 775.09
+      "equity": 11323.8,
+      "benchmark_equity": 10500.98,
+      "spy": 775.035
     }
   ],
   "run_log": [
-    {
-      "date": "2026-08-11",
-      "time": "2026-08-11T16:08:31.783436+00:00",
-      "notes": [
-        "Learner: 29 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "HIMS: strike scan: 3 quoted, spreads [2.3%, 5.7%, 9.0%], tightest 2.3%",
-        "NO EDGE HIMS bull [news] \u2014 implied 101.2% vs forecast 98.7%; buy: bsm 0.8515 vs mid 0.8800 -> -3.24% (quote is against you, wait)",
-        "NOK: strike scan: 3 quoted, spreads [8.0%, 5.0%, 18.2%], tightest 5.0%",
-        "SCREENED OUT NOK bull [news] \u2014 spread: spread 5.0% > 4% \u2014 modelled round trip 3.9% of premium vs a best-documented edge of 0.5%/month; premium: $0.40 contract < $0.50 \u2014 $0.60/contract PFOF alone is 3.0% round trip",
-        "NVO: strike scan: 3 quoted, spreads [15.4%, 9.0%, 23.2%], tightest 9.0%",
-        "SCREENED OUT NVO bull [news] \u2014 spread: spread 9.0% > 4% \u2014 modelled round trip 6.8% of premium vs a best-documented edge of 0.5%/month",
-        "no liquid contract for CODI [news]",
-        "MSFT: strike scan: 3 quoted, spreads [5.6%, 13.6%, 6.8%], tightest 5.6%",
-        "MSFT: resample 1: spread 5.6% -> 4.0%",
-        "SCREENED OUT MSFT bear [tech] \u2014 spread: spread 4.0% > 4% \u2014 modelled round trip 3.0% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
-        "PLTR: strike scan: 3 quoted, spreads [2.7%, 1.8%, 6.7%], tightest 1.8%",
-        "SCREENED OUT PLTR bear [tech] \u2014 lottery: MAX 29.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
-        "TSLA: strike scan: 3 quoted, spreads [3.8%, 0.8%, 4.4%], tightest 0.8%",
-        "NO EDGE TSLA bull [tech] \u2014 implied 43.9% vs forecast 42.9%; buy: bsm 2.4522 vs mid 2.5600 -> -4.21% (quote is against you, wait)"
-      ]
-    },
     {
       "date": "2026-08-11",
       "time": "2026-08-11T17:07:34.595029+00:00",
@@ -1889,6 +1868,26 @@
         "MSFT: resample 1: spread 5.9% -> 2.3%",
         "SCREENED OUT MSFT bear [tech] \u2014 lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
       ]
+    },
+    {
+      "date": "2026-08-17",
+      "time": "2026-08-17T16:42:58.666391+00:00",
+      "notes": [
+        "Learner: 44 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "CBRS: strike scan: 3 quoted, spreads [16.4%, 12.1%, 6.3%], tightest 6.3%",
+        "SCREENED OUT CBRS bull [news] \u2014 spread: spread 6.3% > 4% \u2014 modelled round trip 4.7% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 20.0% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for ACOG [news]",
+        "SCREENED OUT WYFI bull [news] \u2014 spread: spread 24.4% > 4% \u2014 modelled round trip 17.3% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 27.6% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "no liquid contract for ANRO [news]",
+        "AAPL: strike scan: 3 quoted, spreads [0.6%, 6.2%, 1.0%], tightest 0.6%",
+        "NO EDGE AAPL bull [tech] \u2014 implied 24.9% vs forecast 23.3%; buy: bsm 1.4987 vs mid 1.6850 -> -11.06% (quote is against you, wait)",
+        "PLTR: strike scan: 3 quoted, spreads [1.8%, 5.0%, 3.5%], tightest 1.8%",
+        "SCREENED OUT PLTR bear [tech] \u2014 lottery: MAX 29.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "MSFT: strike scan: 3 quoted, spreads [7.2%, 5.4%, 6.4%], tightest 6.4%",
+        "MSFT: resample 1: spread 6.4% -> 5.9%",
+        "MSFT: resample 2: spread 5.9% -> 1.8%",
+        "SCREENED OUT MSFT bear [tech] \u2014 lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -2326,31 +2325,31 @@
     "wsb": [],
     "news": [
       {
-        "underlying": "ALAB",
-        "direction": "bull",
-        "thesis": "News flow +3 across 1 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "ZS",
+        "underlying": "CBRS",
         "direction": "bull",
         "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "NKE",
-        "direction": "bear",
-        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
+        "underlying": "ACOG",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       },
       {
-        "underlying": "ONON",
-        "direction": "bear",
-        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
+        "underlying": "WYFI",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "ANRO",
+        "direction": "bull",
+        "thesis": "News flow +2 across 1 articles (keyword sentiment)"
       }
     ],
     "tech": [
       {
         "underlying": "AAPL",
         "direction": "bull",
-        "thesis": "Technical: RSI 21 oversold + MACD turning up"
+        "thesis": "Technical: RSI 22 oversold + MACD turning up"
       },
       {
         "underlying": "PLTR",
@@ -2360,7 +2359,7 @@
       {
         "underlying": "MSFT",
         "direction": "bear",
-        "thesis": "Technical: RSI 78 overbought + MACD turning down"
+        "thesis": "Technical: RSI 77 overbought + MACD turning down"
       },
       {
         "underlying": "NVDA",
@@ -3751,52 +3750,52 @@
   "spreads_open": {},
   "spreads_closed": [],
   "notified_trades": [
-    "GOOG260821C00345000|2026-08-12|25.0",
-    "QQQ260803C00693000|2026-07-30|-80.0",
-    "AMZN260727C00237500|2026-07-27|-47.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "NVDA260821P00222500|2026-08-14|32.0",
-    "TSLA260814C00332500|2026-08-07|-20.0",
-    "META260810C00600000|2026-08-05|65.0",
-    "IWM260814C00307000|2026-08-04|21.0",
-    "CSCO260821C00114000|2026-08-13|-108.0",
-    "IWM260807C00303000|2026-08-04|369.0",
-    "GOOGL260821C00360000|2026-08-10|30.0",
-    "AAPL260821C00310000|2026-08-14|-30.0",
-    "NFLX260814P00073000|2026-08-07|-24.0",
-    "SPY260818P00766000|2026-08-13|150.0",
-    "NVDA260821C00230000|2026-08-14|-42.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
-    "NFLX260821P00075000|2026-08-11|164.0",
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "GOOGL260821C00350000|2026-08-12|45.0",
-    "NVDA260731P00200000|2026-07-27|290.0",
     "META260810C00600000|2026-08-07|-105.0",
+    "TSLA260817C00335000|2026-08-11|5.0",
+    "AAPL260821C00307500|2026-08-13|50.0",
     "TSLA260810C00327500|2026-08-05|-45.0",
-    "TSLA260817C00340000|2026-08-11|-145.0",
+    "SPY260818P00765000|2026-08-13|-88.0",
+    "SPY260818P00766000|2026-08-13|150.0",
+    "GOOGL260821C00350000|2026-08-12|45.0",
+    "AAPL260821C00310000|2026-08-14|-30.0",
     "AAPL260821C00310000|2026-08-13|-134.0",
-    "SLB260731C00053000|2026-07-27|-165.0",
-    "COIN260821C00152500|2026-08-10|-65.0",
+    "DIA260821C00546000|2026-08-10|-57.0",
+    "NFLX260814P00073000|2026-08-07|-24.0",
+    "NVDA260819P00222500|2026-08-14|6.0",
+    "IWM260814C00307000|2026-08-04|21.0",
+    "NVDA260821C00230000|2026-08-14|-42.0",
+    "TSLA260817C00340000|2026-08-11|-145.0",
+    "NFLX260731C00071000|2026-07-28|189.0",
+    "CSCO260821C00114000|2026-08-13|-108.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "META260810C00600000|2026-08-05|65.0",
+    "IWM260807C00303000|2026-08-04|369.0",
+    "AAPL260817C00307500|2026-08-13|128.0",
+    "QQQ260804C00692000|2026-07-30|57.0",
+    "AMZN260727C00237500|2026-07-27|-47.0",
+    "NVDA260731P00200000|2026-07-27|290.0",
     "IWM260807C00305000|2026-08-04|200.0",
+    "VZ260731C00048000|2026-07-28|876.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
+    "SPY260817P00763000|2026-08-12|-138.0",
+    "SLB260731C00053000|2026-07-27|-165.0",
+    "INTC260814C00100000|2026-08-04|80.0",
+    "DRAM260731C00052000|2026-07-28|-180.0",
+    "NFLX260821P00075000|2026-08-11|164.0",
+    "SPY260730P00733000|2026-07-27|109.0",
+    "IWM260824C00308000|2026-08-13|-40.0",
+    "NFLX260731C00069000|2026-07-27|70.0",
+    "GOOG260821C00345000|2026-08-12|25.0",
     "SPY260730P00729000|2026-07-28|13.0",
     "AI260731C00008500|2026-07-27|-75.0",
-    "NFLX260731C00071000|2026-07-28|189.0",
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "VZ260731C00048000|2026-07-28|876.0",
-    "SPY260818P00765000|2026-08-13|-88.0",
-    "AAPL260817C00307500|2026-08-13|128.0",
-    "SPY260730P00733000|2026-07-27|109.0",
-    "DIA260821C00546000|2026-08-10|-57.0",
-    "AAPL260821C00307500|2026-08-13|50.0",
-    "NVDA260819P00222500|2026-08-14|6.0",
+    "COIN260821C00152500|2026-08-10|-65.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "TSLA260814C00332500|2026-08-07|-20.0",
+    "GOOGL260821C00360000|2026-08-10|30.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
+    "NVDA260821P00222500|2026-08-14|32.0",
     "TSLA260814C00335000|2026-08-10|-15.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "INTC260814C00100000|2026-08-04|80.0",
-    "SPY260817P00763000|2026-08-12|-138.0",
-    "DRAM260731C00052000|2026-07-28|-180.0",
-    "IWM260824C00308000|2026-08-13|-40.0",
-    "TSLA260817C00335000|2026-08-11|5.0"
+    "QQQ260803C00693000|2026-07-30|-80.0"
   ],
   "eod_summary_sent": "2026-08-16"
 }
