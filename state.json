@@ -1349,23 +1349,12 @@
     },
     {
       "date": "2026-08-18",
-      "equity": 11518.96,
-      "benchmark_equity": 10411.01,
-      "spy": 768.395
+      "equity": 11524.96,
+      "benchmark_equity": 10412.03,
+      "spy": 768.47
     }
   ],
   "run_log": [
-    {
-      "date": "2026-08-12",
-      "time": "2026-08-12T18:07:35.013703+00:00",
-      "notes": [
-        "Learner: 31 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
-        "MSFT: strike scan: 3 quoted, spreads [5.2%, 8.0%, 0.4%], tightest 0.4%",
-        "SCREENED OUT MSFT bear [tech] \u2014 lottery: MAX 15.5% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
-        "PLTR: strike scan: 3 quoted, spreads [1.3%, 3.5%, 2.0%], tightest 1.3%",
-        "SCREENED OUT PLTR bear [tech] \u2014 lottery: MAX 29.2% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"
-      ]
-    },
     {
       "date": "2026-08-12",
       "time": "2026-08-12T19:07:36.261610+00:00",
@@ -2071,6 +2060,19 @@
         "Learner: 47 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
         "Flatten-only run \u2014 exits managed, entry scan skipped."
       ]
+    },
+    {
+      "date": "2026-08-18",
+      "time": "2026-08-18T17:08:11.417082+00:00",
+      "notes": [
+        "Learner: 47 settled trades | wsb=w1.0 \u00b7 news=w1.0 \u00b7 tech=w1.0 \u00b7 flow=w1.0",
+        "no liquid contract for PBW [news]",
+        "AAOI: strike scan: 3 quoted, spreads [6.8%, 17.3%, 21.3%], tightest 6.8%",
+        "SCREENED OUT AAOI bear [news] \u2014 spread: spread 6.8% > 4% \u2014 modelled round trip 5.1% of premium vs a best-documented edge of 0.5%/month; lottery: MAX 19.3% > 15% in the last month \u2014 top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)",
+        "ADBE: strike scan: 3 quoted, spreads [8.5%, 7.9%, 14.9%], tightest 7.9%",
+        "SCREENED OUT ADBE bear [news] \u2014 spread: spread 7.9% > 4% \u2014 modelled round trip 5.8% of premium vs a best-documented edge of 0.5%/month",
+        "SCREENED OUT BBWI bear [news] \u2014 spread: spread 18.9% > 4% \u2014 modelled round trip 13.7% of premium vs a best-documented edge of 0.5%/month"
+      ]
     }
   ],
   "account_baseline": 100000.0,
@@ -2500,17 +2502,17 @@
         "thesis": "News flow -3 across 2 articles (keyword sentiment)"
       },
       {
-        "underlying": "AMZN",
-        "direction": "bull",
-        "thesis": "News flow +3 across 2 articles (keyword sentiment)"
-      },
-      {
-        "underlying": "NVDA",
-        "direction": "bull",
-        "thesis": "News flow +2 across 3 articles (keyword sentiment)"
-      },
-      {
         "underlying": "AAOI",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "ADBE",
+        "direction": "bear",
+        "thesis": "News flow -2 across 1 articles (keyword sentiment)"
+      },
+      {
+        "underlying": "BBWI",
         "direction": "bear",
         "thesis": "News flow -2 across 1 articles (keyword sentiment)"
       }
@@ -4011,56 +4013,56 @@
   "spreads_open": {},
   "spreads_closed": [],
   "notified_trades": [
-    "NFLX260731C00069000|2026-07-27|70.0",
-    "SLB260731C00053000|2026-07-27|-165.0",
-    "AMZN260727C00237500|2026-07-27|-47.0",
-    "NFLX260821P00075000|2026-08-11|164.0",
-    "AAPL260817C00307500|2026-08-13|128.0",
-    "GOOGL260731C00332500|2026-07-28|-121.0",
-    "AMZN260807C00280000|2026-07-31|36.0",
-    "TSLA260817C00335000|2026-08-11|5.0",
-    "DIA260821C00546000|2026-08-10|-57.0",
-    "AAPL260828C00315000|2026-08-18|100.0",
-    "IWM260807C00305000|2026-08-04|200.0",
-    "NVDA260731C00205000|2026-07-27|-119.0",
-    "DRAM260731C00052000|2026-07-28|-180.0",
-    "META260810C00600000|2026-08-05|65.0",
-    "QQQ260804C00692000|2026-07-30|57.0",
-    "TSLA260803C00310000|2026-07-31|166.0",
-    "VZ260731C00048000|2026-07-28|876.0",
-    "SPY260730P00733000|2026-07-27|109.0",
-    "AAPL260821C00310000|2026-08-13|-134.0",
-    "SPY260817P00763000|2026-08-12|-138.0",
-    "NFLX260731C00071000|2026-07-28|189.0",
-    "AAPL260821C00307500|2026-08-13|50.0",
-    "AI260731C00008500|2026-07-27|-75.0",
-    "IWM260814C00307000|2026-08-04|21.0",
-    "SPY260818P00766000|2026-08-13|150.0",
-    "TSLA260817C00340000|2026-08-11|-145.0",
-    "NVDA260824P00217500|2026-08-18|108.0",
-    "SPY260730P00729000|2026-07-28|13.0",
-    "META260810C00600000|2026-08-07|-105.0",
-    "TSLA260814C00332500|2026-08-07|-20.0",
-    "CSCO260821C00114000|2026-08-13|-108.0",
-    "GOOG260821C00345000|2026-08-12|25.0",
-    "QQQ260803C00693000|2026-07-30|-80.0",
-    "META260821P00555000|2026-08-17|-75.0",
-    "NVDA260824P00222500|2026-08-17|4.0",
-    "GOOGL260821C00350000|2026-08-12|45.0",
-    "COIN260821C00152500|2026-08-10|-65.0",
-    "SPY260818P00765000|2026-08-13|-88.0",
-    "AAPL260821C00310000|2026-08-14|-30.0",
-    "NVDA260819P00222500|2026-08-14|6.0",
-    "NVDA260821C00230000|2026-08-14|-42.0",
-    "GOOGL260821C00360000|2026-08-10|30.0",
-    "IWM260807C00303000|2026-08-04|369.0",
-    "NVDA260731P00200000|2026-07-27|290.0",
-    "TSLA260814C00335000|2026-08-10|-15.0",
-    "NVDA260821P00222500|2026-08-14|32.0",
-    "INTC260814C00100000|2026-08-04|80.0",
     "IWM260824C00308000|2026-08-13|-40.0",
+    "AAPL260828C00315000|2026-08-18|100.0",
+    "TSLA260817C00340000|2026-08-11|-145.0",
+    "GOOG260821C00345000|2026-08-12|25.0",
+    "AMZN260807C00280000|2026-07-31|36.0",
+    "NFLX260731C00071000|2026-07-28|189.0",
+    "SPY260817P00763000|2026-08-12|-138.0",
+    "META260810C00600000|2026-08-05|65.0",
+    "TSLA260817C00335000|2026-08-11|5.0",
+    "META260821P00555000|2026-08-17|-75.0",
+    "AAPL260821C00310000|2026-08-14|-30.0",
+    "INTC260814C00100000|2026-08-04|80.0",
+    "TSLA260803C00310000|2026-07-31|166.0",
+    "SPY260818P00766000|2026-08-13|150.0",
+    "NVDA260824P00217500|2026-08-18|108.0",
+    "NVDA260824P00222500|2026-08-17|4.0",
+    "IWM260814C00307000|2026-08-04|21.0",
+    "NVDA260821C00230000|2026-08-14|-42.0",
+    "NVDA260821P00222500|2026-08-14|32.0",
+    "COIN260821C00152500|2026-08-10|-65.0",
+    "NFLX260821P00075000|2026-08-11|164.0",
+    "DIA260821C00546000|2026-08-10|-57.0",
+    "SPY260730P00729000|2026-07-28|13.0",
+    "AMZN260727C00237500|2026-07-27|-47.0",
+    "TSLA260814C00332500|2026-08-07|-20.0",
+    "QQQ260803C00693000|2026-07-30|-80.0",
+    "GOOGL260731C00332500|2026-07-28|-121.0",
+    "SPY260818P00765000|2026-08-13|-88.0",
+    "META260810C00600000|2026-08-07|-105.0",
+    "NVDA260819P00222500|2026-08-14|6.0",
+    "GOOGL260821C00360000|2026-08-10|30.0",
+    "NFLX260731C00069000|2026-07-27|70.0",
+    "DRAM260731C00052000|2026-07-28|-180.0",
+    "QQQ260804C00692000|2026-07-30|57.0",
+    "SPY260730P00733000|2026-07-27|109.0",
+    "TSLA260810C00327500|2026-08-05|-45.0",
+    "IWM260807C00305000|2026-08-04|200.0",
+    "IWM260807C00303000|2026-08-04|369.0",
+    "CSCO260821C00114000|2026-08-13|-108.0",
+    "AAPL260817C00307500|2026-08-13|128.0",
+    "GOOGL260821C00350000|2026-08-12|45.0",
+    "NVDA260731P00200000|2026-07-27|290.0",
     "NFLX260814P00073000|2026-08-07|-24.0",
-    "TSLA260810C00327500|2026-08-05|-45.0"
+    "AAPL260821C00307500|2026-08-13|50.0",
+    "VZ260731C00048000|2026-07-28|876.0",
+    "SLB260731C00053000|2026-07-27|-165.0",
+    "NVDA260731C00205000|2026-07-27|-119.0",
+    "TSLA260814C00335000|2026-08-10|-15.0",
+    "AAPL260821C00310000|2026-08-13|-134.0",
+    "AI260731C00008500|2026-07-27|-75.0"
   ],
   "eod_summary_sent": "2026-08-17"
 }
