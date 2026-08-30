@@ -42,10 +42,19 @@ import exitrules
 import stats
 from strategies import rsi, macd_signal, trend_up
 
+# ---------------------------------------------------------------------------
+# DATA LAYER: Alpaca, via btdata.py (ThetaData is retired -- see btdata's
+# module docstring). Set SPXBOT_BT_THETA=1 to fall back to the old Theta
+# path if a terminal is ever running again.
+# ---------------------------------------------------------------------------
+USE_THETA = os.environ.get("SPXBOT_BT_THETA", "") == "1"
+if not USE_THETA:
+    import btdata
+
 THETA = "http://127.0.0.1:25503/v3"
 CACHE = os.environ.get("SPXBOT_BT_CACHE", "/home/claude/theta/cache")
-START = dt.date(2020, 10, 1)          # sim start (60 bars of warm-up before it)
-END   = dt.date(2026, 7, 24)
+START = dt.date(2024, 3, 1)           # Alpaca option history begins 2024-02
+END   = dt.date(2026, 8, 28)
 FEE_PER_CONTRACT_SIDE = 0.10
 
 # Mirrors of the live config (import engine would drag in alpaca SDK config
@@ -106,14 +115,53 @@ def theta_csv(path: str, **params) -> list:
     return _cached(url, fetch)
 
 
-def expirations(symbol: str) -> list:
+def _theta_expirations(symbol: str) -> list:
     rows = theta_csv("/option/list/expirations", symbol=symbol)
     return sorted({r["expiration"] for r in rows})
 
 
-def strikes(symbol: str, expiration: str) -> list:
+def _theta_strikes(symbol: str, expiration: str) -> list:
     rows = theta_csv("/option/list/strikes", symbol=symbol, expiration=expiration)
     return sorted(float(r["strike"]) for r in rows)
+
+
+# ---------------------------------------------------------------------------
+# ASSUMED ROUND-TRIP COST — this is load-bearing, read it.
+#
+# The old ThetaData path had real NBBO: it bought at the ASK and sold at the
+# BID, so every simulated trade paid the spread twice. Alpaca serves no
+# historical option quotes at all, so btdata sets bid == ask == VWAP. Left
+# alone that turns the sim into mid-to-mid execution, which pays NOTHING to
+# cross, and quietly makes every result better than any achievable strategy.
+#
+# So the spread is reintroduced as an explicit, declared assumption rather
+# than silently dropped. SPXBOT_BT_RT_COST is the round trip as a fraction of
+# premium; half is charged on entry and half on exit.
+#
+#   0.00  no cost. Upper bound. Useful only as a reference point.
+#   0.02  roughly a well-quoted SPY/QQQ contract
+#   0.04  the live bot's own MAX_SPREAD_PCT ceiling
+#
+# Report every conclusion at all three. One that only survives 0.00 is an
+# artifact of the missing quotes, not a finding.
+# ---------------------------------------------------------------------------
+ASSUMED_RT_COST = float(os.environ.get("SPXBOT_BT_RT_COST", "0.0"))
+# Mirrors engine.MIN_OPEN_INTEREST. Not imported from engine, because engine
+# builds Alpaca clients at import time and the backtest must stay runnable
+# without trading credentials.
+MIN_OPEN_INTEREST = int(os.environ.get("SPXBOT_MIN_OI", "250"))
+_HALF = ASSUMED_RT_COST / 2.0
+SPREADS_MEASURABLE = USE_THETA          # only the Theta path had real quotes
+
+
+def entry_price(row: dict) -> float:
+    """What you pay. Theta: the ask. Alpaca: VWAP plus half the assumed cost."""
+    return row["ask"] if SPREADS_MEASURABLE else row["mid"] * (1.0 + _HALF)
+
+
+def exit_price(row: dict) -> float:
+    """What you receive. Theta: the bid. Alpaca: VWAP minus half the assumed cost."""
+    return row["bid"] if SPREADS_MEASURABLE else row["mid"] * (1.0 - _HALF)
 
 
 DATA_ERRORS = []          # (what, error) — a bad combo logs, never kills the run
@@ -137,7 +185,7 @@ def _parse_rows(rows) -> dict:
     return out
 
 
-def day_snapshot(symbol: str, expiration: str, iso_day: str) -> dict:
+def _theta_day_snapshot(symbol: str, expiration: str, iso_day: str) -> dict:
     """ONE request: every contract of `expiration`, quotes on ONE day.
     ~3.7s live, free from the disk cache afterwards. This is what entry
     evaluation runs on — 1 request per (sim day, symbol)."""
@@ -151,8 +199,8 @@ def day_snapshot(symbol: str, expiration: str, iso_day: str) -> dict:
     return _parse_rows(rows)
 
 
-def contract_series(symbol: str, expiration: str, strike: float, right: str,
-                    start: str) -> dict:
+def _theta_contract_series(symbol: str, expiration: str, strike: float, right: str,
+                           start: str) -> dict:
     """Full remaining life of ONE contract — pulled only for ENTERED trades,
     so this cost scales with trade count, not day count."""
     rword = {"C": "CALL", "P": "PUT"}.get(right, right)
@@ -165,6 +213,35 @@ def contract_series(symbol: str, expiration: str, strike: float, right: str,
         return {}
     parsed = _parse_rows(rows)
     return parsed.get((strike, rword), {})
+
+
+# --- data-layer shim: Alpaca by default, Theta only if explicitly asked ---
+if USE_THETA:
+    expirations = _theta_expirations
+    strikes = _theta_strikes
+    day_snapshot = _theta_day_snapshot
+    contract_series = _theta_contract_series
+else:
+    expirations = btdata.expirations
+    strikes = btdata.strikes
+    contract_series = btdata.contract_series
+
+    def day_snapshot(symbol, expiration, iso_day, spot=None):
+        """Alpaca has no chain-history endpoint, so a full-chain snapshot costs
+        one request per contract. Restricting to a moneyness band around spot
+        turns 318 contracts into ~80 and is the difference between a 15-minute
+        run and a 12-hour one. `spot=None` falls back to the whole chain."""
+        if spot is None:
+            return btdata.day_snapshot(symbol, expiration, iso_day)
+        return btdata.day_snapshot_near(symbol, expiration, iso_day, spot, band=0.12)
+
+
+def open_interest(symbol, expiration):
+    """Live-parity OI floor. Theta never exposed this, so the old sim silently
+    skipped a screen the live bot enforces; Alpaca carries it on the contract."""
+    if USE_THETA:
+        return {}
+    return btdata.open_interest(symbol, expiration)
 
 
 def snap_strikes(snap: dict, right: str) -> list:
@@ -197,7 +274,7 @@ def prefetch_days(symbol: str, exps: list, days: list, workers: int = 4, log=pri
 
 
 def stock_bars(symbol: str) -> pd.DataFrame:
-    """Daily OHLC from Alpaca IEX (free feed; begins mid-2020)."""
+    """Daily OHLC from Alpaca. SIP by default (see feed note below)."""
     p = os.path.join(CACHE, f"bars_{symbol}.csv")
     os.makedirs(CACHE, exist_ok=True)
     if os.path.exists(p):
@@ -211,10 +288,16 @@ def stock_bars(symbol: str) -> pd.DataFrame:
     # Full fixed range regardless of the sim window: the cache is shared
     # across runs, and an END-scoped pull once truncated it for every later
     # run in the session (cache poisoning by monkeypatch — real incident).
+    # SIP, not IEX. IEX is one venue carrying a low single-digit share of
+    # consolidated volume, and these bars drive RSI/MACD/trend -- so the feed
+    # choice changes which SIGNALS fire, not just their prices. Algo Trader
+    # Plus includes SIP; SPXBOT_STOCK_FEED=iex reverts for a free-tier run.
+    _feed = (DataFeed.IEX if os.environ.get("SPXBOT_STOCK_FEED", "sip").lower() == "iex"
+             else DataFeed.SIP)
     r = c.get_stock_bars(StockBarsRequest(
         symbol_or_symbols=symbol, timeframe=TimeFrame.Day,
-        start=dt.datetime(2020, 6, 1), end=dt.datetime(2026, 7, 30),
-        feed=DataFeed.IEX))
+        start=dt.datetime(2020, 6, 1), end=dt.datetime(2026, 8, 30),
+        feed=_feed))
     df = r.df.reset_index().set_index("timestamp")[["open", "high", "low", "close"]]
     df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
     df.to_csv(p)
@@ -394,7 +477,7 @@ def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
                 elif dte_left <= TIME_STOP_DTE:
                     reason = f"time-stop ({dte_left} DTE)"
                 if reason:
-                    exit_fill = q["bid"]                       # pessimistic
+                    exit_fill = exit_price(q)
                     pnl = (exit_fill - open_pos["entry_fill"]) * 100 - 2 * FEE_PER_CONTRACT_SIDE
                     lo_p = (q.get("low") or q["mid"])
                     flagged = ((lo_p - open_pos["entry_fill"]) / open_pos["entry_fill"]
@@ -402,6 +485,8 @@ def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
                     trades.append({"symbol": symbol, "type": open_pos["right"],
                                    "entry_date": open_pos["entry_date"], "exit_date": iso,
                                    "exit_reason": reason, "pnl": round(pnl, 2),
+                                   "entry_mid": open_pos.get("entry_mid"),
+                                   "exit_mid": q["mid"],
                                    "pnl_pct": round((exit_fill - open_pos["entry_fill"])
                                                     / open_pos["entry_fill"], 4),
                                    "flagged": flagged})
@@ -437,7 +522,8 @@ def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
         if pe is None:
             continue
         exp, dte_e = pe
-        snap = day_snapshot(symbol, exp, iso)
+        snap = day_snapshot(symbol, exp, iso, spot)
+        oi_map = open_interest(symbol, exp)
         right = "CALL" if direction == "bull" else "PUT"
         ks_all = snap_strikes(snap, right)
         k_target = spot * (1 + TARGET_OTM_PCT) if right == "CALL" else spot * (1 - TARGET_OTM_PCT)
@@ -447,10 +533,24 @@ def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
         row = snap.get((k, right), {}).get(iso)
         if not row:
             continue
-        spread_pct = (row["ask"] - row["bid"]) / row["mid"] if row["mid"] else 9
-        if spread_pct > MAX_SPREAD_PCT:
+        # Live-parity liquidity floor. Only enforceable on the Alpaca path;
+        # Theta never exposed open interest, which is why the original sim
+        # was silently more permissive here than the live bot.
+        if oi_map and oi_map.get((k, right), 0) < MIN_OPEN_INTEREST:
+            _count("oi")
             continue
-        if row["ask"] * 100 > MAX_PREMIUM_PER_TRADE:
+        if SPREADS_MEASURABLE:
+            spread_pct = (row["ask"] - row["bid"]) / row["mid"] if row["mid"] else 9
+            if spread_pct > MAX_SPREAD_PCT:
+                _count("spread")
+                continue
+        else:
+            # No historical quotes exist, so the 4% screen CANNOT run. The cost
+            # it exists to avoid is charged through ASSUMED_RT_COST instead.
+            # This is a declared gap, not a passed check.
+            _count("spread-unmeasurable")
+        fill = entry_price(row)
+        if fill * 100 > MAX_PREMIUM_PER_TRADE:
             continue
         iv = execution.implied_vol(row["mid"], spot, k, dte_e / 365.0,
                                    is_call=(right == "CALL"))
@@ -459,9 +559,38 @@ def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
         if not te.get("favorable"):
             continue
         open_pos = {"symbol": symbol, "exp": exp, "k": k, "right": right,
-                    "entry_date": iso, "entry_fill": row["ask"],
+                    "entry_date": iso, "entry_fill": fill,
+                    "entry_mid": row["mid"],
                     "q": contract_series(symbol, exp, k, right, iso)}
     return trades
+
+
+def reprice(trades: list, rt_cost: float) -> dict:
+    """Re-price a FIXED trade sequence at a different assumed round-trip cost.
+
+    Re-running sim_singles at a new cost does not isolate the cost: the entry
+    price feeds the +45%/-30% bands, so a cost change moves an exit by a day,
+    which frees the single position slot earlier, which admits a different
+    trade entirely. Observed on QQQ: 0% and 4% produced the same trade COUNT
+    but a +$1,763 outlier appeared in one and not the other, making the 4% run
+    look MORE profitable than the 0% run. That is path dependence, not a cost
+    effect, and it is also a warning about how much weight this sim can carry
+    at 30-odd trades per name.
+
+    This holds entry and exit dates fixed and only changes what was paid."""
+    h = rt_cost / 2.0
+    out, skipped = [], 0
+    for t in trades:
+        em, xm = t.get("entry_mid"), t.get("exit_mid")
+        if not em or not xm:
+            skipped += 1
+            continue
+        ef, xf = em * (1 + h), xm * (1 - h)
+        out.append((xf - ef) * 100 - 2 * FEE_PER_CONTRACT_SIDE)
+    return {"rt_cost": rt_cost, "n": len(out), "skipped": skipped,
+            "total": round(sum(out), 2),
+            "mean": round(sum(out) / len(out), 2) if out else 0.0,
+            "wins": sum(1 for p in out if p > 0)}
 
 
 # ---------------------------------------------------------------------------
