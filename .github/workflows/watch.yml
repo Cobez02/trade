@@ -66,7 +66,7 @@ jobs:
           # code defaults today, but if trade.yml ever changes a cap, change
           # it here too or the two entry paths will silently diverge.
           SPXBOT_MAX_PREM: "600"
-          SPXBOT_MAX_OPEN: "2"
+          SPXBOT_MAX_OPEN: "3"
           SPXBOT_NO_NEW_ENTRY_MIN: "90"
           SPXBOT_SPREADS: "0"
           # Alerting (same owner-added secrets as trade.yml; unset = silently
