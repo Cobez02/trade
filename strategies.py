@@ -28,6 +28,56 @@ from engine import (
 WATCHLIST = ["SPY", "QQQ", "AAPL", "MSFT", "NVDA", "AMD", "TSLA",
              "META", "AMZN", "GOOGL", "NFLX", "IWM", "COIN", "PLTR"]
 
+# ---------------------------------------------------------------------------
+# Tradeable-options universe for the NEWS sleeve.
+#
+# WHY THIS EXISTS. `sleeve_news` reads whatever tickers appear in the Alpaca
+# news feed and filtered them on exactly two things: alphabetic, and <=5 chars.
+# It then handed the top `max_signals` to the entry path, where most of them
+# died at engine.find_contracts() on MIN_OPEN_INTEREST. Week of 2026-08-24:
+# 62 "no liquid contract" rejections across 38 distinct names -- the largest
+# single rejection bucket, 3x the next one. The sleeve has 4 signal slots per
+# run and was routinely burning 3 of them on names that could never trade,
+# which is why the bot averaged 3.4 trades/session against caps allowing 8.
+#
+# WHAT THIS IS NOT. It is not a loosening of anything. Every gate downstream
+# is untouched: the >=250 open-interest floor, the 4% spread cap, the vol-edge
+# gate, the lottery/MAX screen, the expiration screen. This only stops the
+# sleeve spending its slots on candidates that provably cannot clear them.
+#
+# HOW THE LIST WAS CHOSEN -- read this before editing it. Membership is by
+# OPTIONS LIQUIDITY, never by realised P/L. Selecting names on 85 trades of
+# realised P/L would be curve-fitting to noise: NVDA has 16 trades and -$26,
+# VZ has ONE trade and +$876. A P/L-ranked universe would drop NVDA and keep
+# Verizon, which is obviously backwards. Liquidity is a stable property of a
+# name; five weeks of P/L is not.
+#
+# Tier 1 -- the 24 underlyings that actually cleared every gate and traded at
+#           least once (empirical proof the chain supports 3-12 DTE at ~1.5%
+#           OTM with OI >= 250).
+# Tier 2 -- additional names with deep weekly chains, untested here. The OI
+#           floor remains the arbiter; if one of these cannot quote, it is
+#           rejected exactly as before, just without having cost a slot.
+# EXCLUDED -- the 38 names observed failing find_contracts (OKTA, VEEV, CRM,
+#           ESTC, NTNX, BOX, JAZZ, ACAD, DKS, ARGX, BBY, GAP, RBRK and the
+#           rest). Note CRM: intuition says Salesforce is liquid, but it
+#           failed 3 of 3 attempts in this DTE/moneyness window. The data
+#           wins over the prior.
+OPTIONABLE_UNIVERSE = {
+    # Tier 1 -- proven tradeable by this bot
+    "SPY", "QQQ", "IWM", "DIA", "GLD", "IBIT",
+    "NVDA", "TSLA", "AAPL", "GOOGL", "GOOG", "META", "AMZN", "NFLX",
+    "COIN", "MSTR", "INTC", "CSCO", "MRVL", "SLB", "VZ", "RKLB", "AI", "DRAM",
+    # Tier 2 -- deep weekly chains, untested here
+    "MSFT", "AMD", "PLTR", "AVGO", "MU", "SMCI", "ARM", "QCOM", "TSM",
+    "TXN", "LRCX", "AMAT", "KLAC", "ON", "DELL", "SMH",
+    "SLV", "TLT", "XLF", "XLE", "XLK", "EEM", "HYG", "USO", "ARKK",
+    "JPM", "BAC", "WFC", "XOM", "CVX", "WMT", "DIS", "BA", "PFE",
+    "T", "KO", "MCD", "HD", "UNH", "V", "MA", "COST",
+    "MARA", "RIOT", "SOFI", "HOOD", "NIO", "RIVN", "LCID",
+    "SNAP", "U", "DKNG", "ROKU", "F",
+}
+
 # Names we will NOT trade from noisy crowd feeds (too illiquid / weird tickers get
 # validated at execution anyway, but this trims obvious junk)
 MIN_UNDERLYING_PRICE = 8.0
@@ -111,6 +161,11 @@ def sleeve_news(broker: Broker, api_key: str, secret_key: str, max_signals: int 
             agg.setdefault(sym, {"score": 0, "n": 0})
             agg[sym]["score"] += s
             agg[sym]["n"] += 1
+    # Rank only among names whose option chains can actually support an entry.
+    # Filtering BEFORE the ranking (not after) is the whole point: the sleeve
+    # has `max_signals` slots, and a candidate that cannot quote should never
+    # have consumed one. Every downstream gate is unchanged.
+    agg = {k: v for k, v in agg.items() if k in OPTIONABLE_UNIVERSE}
     ranked = sorted(agg.items(), key=lambda kv: abs(kv[1]["score"]), reverse=True)
     for sym, v in ranked:
         if len(signals) >= max_signals:

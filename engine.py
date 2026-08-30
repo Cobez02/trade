@@ -39,7 +39,32 @@ from alpaca.data.historical.stock import StockHistoricalDataClient
 from alpaca.data.historical.option import OptionHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest, OptionLatestQuoteRequest
 from alpaca.data.timeframe import TimeFrame
-from alpaca.data.enums import DataFeed, OptionsFeed   # free tier: IEX stocks / indicative options
+from alpaca.data.enums import DataFeed, OptionsFeed
+
+# ---------------------------------------------------------------------------
+# DATA FEED SELECTION -- this is a correctness knob, not a preference.
+#
+# Until 2026-08-30 both feeds were hardcoded to the free tier and the whole
+# five-week record was built on them:
+#
+#   OptionsFeed.INDICATIVE -- NOT OPRA. Alpaca staff describe it as "a
+#     derivative of the original OPRA feed: the quotes are not actual OPRA
+#     quotes, they're just 'indicative' derivatives", provided "to reduce the
+#     cost burden during algo design". Every spread screen, vol-edge gate and
+#     entry price in the first 85 trades was computed against synthetic quotes.
+#
+#   DataFeed.IEX -- IEX is a single venue carrying a low single-digit share of
+#     consolidated volume. `daily_bars()` feeds RSI, MACD and trend, so the
+#     entire tech sleeve has been reading indicators off a partial tape.
+#
+# With an Algo Trader Plus subscription both upgrade: OPRA for options, SIP
+# (full consolidated tape) for equities. The subscription alone changes
+# nothing -- the code has to ask. Defaults below are the PAID tier; set
+# SPXBOT_OPT_FEED=indicative / SPXBOT_STOCK_FEED=iex to fall back.
+_OPT_FEED_NAME = os.environ.get("SPXBOT_OPT_FEED", "opra").strip().lower()
+_STK_FEED_NAME = os.environ.get("SPXBOT_STOCK_FEED", "sip").strip().lower()
+OPT_FEED = OptionsFeed.OPRA if _OPT_FEED_NAME == "opra" else OptionsFeed.INDICATIVE
+STOCK_FEED = DataFeed.SIP if _STK_FEED_NAME == "sip" else DataFeed.IEX
 
 import pandas as pd
 import numpy as np
@@ -174,7 +199,7 @@ class Broker:
             end = dt.datetime.now(dt.timezone.utc)
             start = end - dt.timedelta(days=15)
             req = StockBarsRequest(symbol_or_symbols=symbol, timeframe=TimeFrame.Day,
-                                   start=start, end=end, feed=DataFeed.IEX)
+                                   start=start, end=end, feed=STOCK_FEED)
             bars = self.stock_data.get_stock_bars(req).df
             if bars is None or len(bars) == 0:
                 return None
@@ -187,7 +212,7 @@ class Broker:
             end = dt.datetime.now(dt.timezone.utc)
             start = end - dt.timedelta(days=days * 2)  # calendar buffer for weekends
             req = StockBarsRequest(symbol_or_symbols=symbol, timeframe=TimeFrame.Day,
-                                   start=start, end=end, feed=DataFeed.IEX)
+                                   start=start, end=end, feed=STOCK_FEED)
             df = self.stock_data.get_stock_bars(req).df
             if df is None or len(df) == 0:
                 return None
@@ -281,7 +306,7 @@ class Broker:
         try:
             q = self.opt_data.get_option_latest_quote(
                 OptionLatestQuoteRequest(symbol_or_symbols=occ_symbol,
-                                         feed=OptionsFeed.INDICATIVE))
+                                         feed=OPT_FEED))
             quote = q.get(occ_symbol)
             if quote is None:
                 return None
@@ -302,7 +327,7 @@ class Broker:
         try:
             q = self.opt_data.get_option_latest_quote(
                 OptionLatestQuoteRequest(symbol_or_symbols=occ_symbol,
-                                         feed=OptionsFeed.INDICATIVE))
+                                         feed=OPT_FEED))
             quote = q.get(occ_symbol)
             if quote is None:
                 return None
@@ -327,6 +352,40 @@ class Broker:
                 "macd_rising": bool(h_now > h_prev),
                 "trend_up": trend_up(close)}
 
+    # ---- fill audit --------------------------------------------------------
+    # Every order the bot places funnels through buy_to_open / sell_to_close,
+    # so snapshotting the NBBO here covers the hourly runner, the tick watcher
+    # and the EOD flatten with one hook instead of three.
+    #
+    # What this exists to answer: the paper engine models no market impact, no
+    # latency slippage and no queue position, and does not check order size
+    # against available liquidity ("you can submit and receive a fill for an
+    # order that is much larger than the actual available liquidity" --
+    # Alpaca's own paper-trading docs). So the five-week P&L is a record of
+    # what a simulator paid, not of what a market would have charged. The
+    # measured edge is $13.53/trade; one round trip at the 4% spread cap is
+    # ~$20. Until fill quality is measured against real OPRA quotes, the sign
+    # of the edge is unknown.
+    #
+    # Nothing here can affect an order. It records and returns.
+    FILL_AUDIT_MAX = 2000
+
+    def _audit_quote(self, occ_symbol: str, side: str, qty: int,
+                     limit_price: Optional[float] = None):
+        """Snapshot the NBBO immediately before submission. Never raises."""
+        try:
+            q = self.option_quote(occ_symbol)
+            if not q:
+                return None
+            return {"symbol": occ_symbol, "side": side, "qty": int(qty),
+                    "ts": dt.datetime.now(dt.timezone.utc).isoformat(),
+                    "feed": OPT_FEED.value,
+                    "bid": q["bid"], "ask": q["ask"], "mid": q["mid"],
+                    "spread_pct": q.get("spread_pct"),
+                    "limit": round(float(limit_price), 2) if limit_price else None}
+        except Exception:
+            return None
+
     # ---- orders ------------------------------------------------------------
     def buy_to_open(self, occ_symbol: str, qty: int, tag: str = "SPXB-unknown",
                     limit_price: Optional[float] = None):
@@ -335,6 +394,7 @@ class Broker:
         # external state store needed). Format built by main.build_tag(); we append
         # an epoch-ms suffix for the uniqueness Alpaca requires.
         coid = f"{tag}-{int(time.time()*1000)}"
+        self.last_audit = self._audit_quote(occ_symbol, "buy", qty, limit_price)
         if limit_price:   # capped marketable limit -> avoids pathological fills
             order = LimitOrderRequest(symbol=occ_symbol, qty=qty, side=OrderSide.BUY,
                                       time_in_force=TimeInForce.DAY, client_order_id=coid,
@@ -345,6 +405,7 @@ class Broker:
         return self.trading.submit_order(order)
 
     def sell_to_close(self, occ_symbol: str, qty: int):
+        self.last_audit = self._audit_quote(occ_symbol, "sell", qty, None)
         order = MarketOrderRequest(symbol=occ_symbol, qty=qty, side=OrderSide.SELL,
                                    time_in_force=TimeInForce.DAY)
         return self.trading.submit_order(order)
@@ -405,7 +466,7 @@ class Broker:
         try:
             q = self.opt_data.get_option_latest_quote(OptionLatestQuoteRequest(
                 symbol_or_symbols=[short_sym, long_sym],
-                feed=OptionsFeed.INDICATIVE))
+                feed=OPT_FEED))
             s, l = q.get(short_sym), q.get(long_sym)
             if s is None or l is None:
                 return None
