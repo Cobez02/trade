@@ -53,6 +53,8 @@ jobs:
           python test_exitrules.py
           python test_watcher.py
           python test_spreads.py
+          python test_journal.py
+          python test_config.py
 
       - name: Watch
         env:
@@ -65,7 +67,25 @@ jobs:
           # process inherits THIS env, not trade.yml's. These pins are the
           # code defaults today, but if trade.yml ever changes a cap, change
           # it here too or the two entry paths will silently diverge.
-          SPXBOT_MAX_PREM: "600"
+          SPXBOT_MAX_PREM: "450"
+          # 2026-08-31 change set, from the intraday live-parity backtest.
+          # Was 600. Raising the cap is monotonically destructive at every
+          # expiry tested (15 cells); $450 is the best cap at BOTH 21 and 35
+          # DTE on out-of-sample P&L after 1% cost, and it cuts the worst
+          # single-trade loss from -$179 to about -$120.
+          #
+          # Expiry: was the 3-12 day default, i.e. weeklies. Weeklies bleed
+          # theta for every hour of an intraday hold and the sleeve loses money
+          # on them at ZERO assumed cost. DTE_PREFER makes the window mean
+          # something: without it find_contracts ranks on strike distance alone
+          # and would mix 14- and 35-day contracts arbitrarily.
+          SPXBOT_DTE_MIN: "14"
+          SPXBOT_DTE_MAX: "35"
+          SPXBOT_DTE_PREFER: "21"
+          # One entry per underlying per session, across sleeves. Measured, not
+          # assumed: it improves every metric at both the old and the new
+          # configuration, and most where the strategy is worst.
+          SPXBOT_UNDERLYING_COOLDOWN: "1"
           SPXBOT_MAX_OPEN: "3"
           SPXBOT_NO_NEW_ENTRY_MIN: "90"
           SPXBOT_SPREADS: "0"
