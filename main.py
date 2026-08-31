@@ -146,7 +146,7 @@ def rebuild_from_alpaca(broker: Broker):
     filled-order history. This is what makes the whole system survive with NO
     external state store: every entry's features live in its client_order_id."""
     orders = broker.closed_orders()
-    buys, sells = {}, {}
+    fills = {}
     for o in orders:  # newest-first
         # Spread legs must NEVER enter the singles journal: an mleg close
         # would read as a fake single round-trip and poison the learner.
@@ -163,46 +163,95 @@ def rebuild_from_alpaca(broker: Broker):
             filled = False
         if not filled:
             continue
-        sym, side = o.symbol, str(o.side).upper()
-        # Orders arrive newest-first, so the FIRST one seen is the newest. An
-        # unconditional assignment would leave the OLDEST buy in place, which on a
-        # re-entered contract would pair an old entry price with a new exit and
-        # book a fabricated P&L into the learning journal.
-        if "BUY" in side:
-            if sym not in buys:
-                buys[sym] = o
-        elif "SELL" in side and sym not in sells:
-            sells[sym] = o
+        # Index matters: `orders` is documented newest-first, so a LARGER index
+        # is an OLDER fill. Timestamps alone are not enough to sort by, because
+        # two fills can share a second and Python's stable sort would then keep
+        # them newest-first, silently reversing a buy/sell pair. Carrying the
+        # index and breaking ties on it descending is what makes the ordering
+        # correct rather than merely usually correct. The test suite caught
+        # exactly this.
+        fills.setdefault(o.symbol, []).append((len(fills.get(o.symbol, [])), o))
+
     journal, pos_feat = [], {}
-    for sym, b in buys.items():
-        feat = parse_coid(getattr(b, "client_order_id", "") or "")
-        pos_feat[sym] = feat
-        if sym in sells:
-            # If the newest buy came AFTER the newest sell, the contract was
-            # re-entered and is open right now -- there is no settled round trip
-            # to learn from yet. Journaling it would invent an exit.
+    for sym, sym_orders in fills.items():
+        # FIFO LOT MATCHING, oldest first.
+        #
+        # This function used to keep only the NEWEST buy and the NEWEST sell per
+        # option symbol. That was a real fix for a real problem -- pairing an old
+        # entry price with a new exit fabricates P&L -- but it solved it by
+        # throwing data away. Any contract traded more than once lost every round
+        # trip but its last: 6+ settled trips vanished from the P&L AND from the
+        # learner's training data, and because winners are what get re-entered,
+        # nearly all of them were winners. The reported tech-sleeve total was
+        # understated for weeks and no test caught it.
+        #
+        # Matching buys to sells first-in-first-out keeps the guarantee (an exit
+        # is only ever paired with an entry that preceded it) without discarding
+        # anything. A buy with no matching sell is an OPEN position and correctly
+        # produces no journal row.
+        seq = [o for _, o in sorted(
+            sym_orders,
+            key=lambda t: (str(getattr(t[1], "filled_at", "") or ""), -t[0]))]
+        open_lots, newest_buy = [], None
+        for o in seq:
+            side = str(o.side).upper()
             try:
-                if str(getattr(b, "filled_at", "") or "") > str(getattr(sells[sym], "filled_at", "") or ""):
-                    continue
+                qty = float(o.filled_qty or 0)
             except Exception:
-                pass
-            try:
-                ep = float(b.filled_avg_price); xp = float(sells[sym].filled_avg_price)
-                q = float(b.filled_qty or 1)
-                if ep <= 0:
-                    continue
-                info = parse_occ(sym) or {}
-                journal.append({
-                    "symbol": sym, "sleeve": feat.get("sleeve", "unknown"),
-                    "underlying": info.get("underlying"), "type": info.get("type"),
-                    "strike": info.get("strike"), "expiration": info.get("expiration"),
-                    "pnl": round((xp - ep) * q * 100, 2), "pnl_pct": round((xp - ep) / ep, 4),
-                    "exit_reason": "closed", "closed_on": str(getattr(sells[sym], "filled_at", "") or "")[:10],
-                    "features": feat, "buckets": __import__("learn").feature_keys(feat),
-                })
-            except Exception:
-                pass
+                continue
+            if qty <= 0:
+                continue
+            if "BUY" in side:
+                open_lots.append([o, qty])
+                newest_buy = o
+                continue
+            if "SELL" not in side:
+                continue
+            rem = qty
+            while rem > 1e-9 and open_lots:
+                b, bq = open_lots[0]
+                take = min(rem, bq)
+                row = _round_trip(sym, b, o, take)
+                if row:
+                    journal.append(row)
+                rem -= take
+                bq -= take
+                if bq <= 1e-9:
+                    open_lots.pop(0)
+                else:
+                    open_lots[0][1] = bq
+        if newest_buy is not None:
+            pos_feat[sym] = parse_coid(getattr(newest_buy, "client_order_id", "") or "")
+    journal.sort(key=lambda j: str(j.get("closed_on") or ""))
     return journal, pos_feat
+
+
+def _round_trip(sym, buy, sell, qty):
+    """One settled buy->sell pair, carrying the ENTRY order's features.
+
+    Features come from the BUY's client_order_id because that is what the
+    learner is trying to attribute: the conditions the position was opened
+    under, not the ones it happened to close under."""
+    try:
+        ep = float(buy.filled_avg_price)
+        xp = float(sell.filled_avg_price)
+        if ep <= 0:
+            return None
+        feat = parse_coid(getattr(buy, "client_order_id", "") or "")
+        info = parse_occ(sym) or {}
+        return {
+            "symbol": sym, "sleeve": feat.get("sleeve", "unknown"),
+            "underlying": info.get("underlying"), "type": info.get("type"),
+            "strike": info.get("strike"), "expiration": info.get("expiration"),
+            "pnl": round((xp - ep) * qty * 100, 2),
+            "pnl_pct": round((xp - ep) / ep, 4),
+            "exit_reason": "closed",
+            "closed_on": str(getattr(sell, "filled_at", "") or "")[:10],
+            "features": feat,
+            "buckets": __import__("learn").feature_keys(feat),
+        }
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -704,6 +753,37 @@ def already_positioned(state: dict, sleeve: str, underlying: str, direction: str
     return False
 
 
+# One entry per underlying per session, ACROSS SLEEVES. Default off so the
+# code change is behaviour-neutral; the workflows turn it on.
+UNDERLYING_COOLDOWN = os.environ.get("SPXBOT_UNDERLYING_COOLDOWN", "0") == "1"
+
+
+def traded_today(state: dict, underlying: str) -> bool:
+    """Has this underlying already had a round trip settle today?
+
+    Together with already_positioned (which covers a position still open) this
+    gives one entry per underlying per session. Deliberately CROSS-SLEEVE: two
+    sleeves firing on the same name on the same morning are one bet on that
+    name, not two, which is the same reasoning that made date-clustering the
+    right unit in the strategy studies.
+
+    Evidence, measured on the intraday live-parity rig over 2024-03..2026-08
+    rather than asserted. At the live configuration the rule moves the sleeve
+    from -$770 to +$1,162, and out of sample after 1% cost from -$4,245 to
+    -$2,684. At the proposed 21DTE/$450 configuration it is smaller but still
+    positive on every measure (+$2,450 -> +$2,698). It helps most where the
+    strategy is worst, which is what a rule that stops compounding a bad entry
+    should do."""
+    today = dt.date.today().isoformat()
+    for j in state.get("journal", []):
+        if not isinstance(j, dict):
+            continue
+        if (j.get("underlying") == underlying
+                and str(j.get("closed_on") or "")[:10] == today):
+            return True
+    return False
+
+
 def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret, notes: list, pending: set):
     acct = broker.account()
     try:
@@ -770,6 +850,9 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 notes.append(f"CROWD VETO {und} {direction} [{sleeve}] — {crowd[und]}")
                 continue
             if already_positioned(state, sleeve, und, direction):
+                continue
+            if UNDERLYING_COOLDOWN and traded_today(state, und):
+                notes.append(f"COOLDOWN {und} [{sleeve}] — already traded today")
                 continue
             if (sleeve, und) in pending:      # a working order already exists for this name
                 continue
@@ -978,6 +1061,16 @@ def notify_settled_trades(state: dict, journal: list) -> int:
     seen = state.get("notified_trades")
     if seen is None:                       # first deploy: seed silently
         state["notified_trades"] = [key(j) for j in journal]
+        state["journal_rebuild_v"] = 2
+        return 0
+    # The FIFO rebuild recovers round trips the newest-only version dropped.
+    # Every one of those exits was already notified when it happened, but a
+    # recovered row's pnl can round differently and so miss the dedup key. Seed
+    # the recovered keys silently ONCE rather than replaying months of settled
+    # trades as phone messages.
+    if state.get("journal_rebuild_v") != 2:
+        state["notified_trades"] = sorted(set(seen) | {key(j) for j in journal})
+        state["journal_rebuild_v"] = 2
         return 0
     seen_set = set(seen)
     sent = 0

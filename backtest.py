@@ -1,6 +1,29 @@
 """
 Backtest harness — replays the SHIPPED rules over historical NBBO option quotes.
 
+##########################################################################
+#  WARNING: THE SINGLES SIMULATION DOES NOT MATCH THE LIVE SINGLES SLEEVE #
+##########################################################################
+
+sim_singles holds a position for a MEDIAN OF 3 DAYS with zero same-day exits.
+The live bot flattens every single at 15:45 (watcher.py, EOD_FLATTEN_MIN), and
+enters hourly at :07 rather than once a day. This file has therefore been
+simulating a multi-day swing trade the bot has never run.
+
+That gap does not announce itself. It produces confident, plausible, wrong
+numbers, and it produced the "1.91% breakeven round-trip cost" that was quoted
+as fact for weeks and is not the live sleeve's breakeven.
+
+Measured on a rig that does match live (six entries a day at :07, 1-minute
+option bars, flat at 15:45): 1,357 trades over 2024-03..2026-08 lose money at
+ZERO assumed cost, and all 49 take-profit/stop-loss configurations are
+negative. Nothing in THIS file showed that.
+
+USE THE SINGLES NUMBERS HERE FOR NOTHING. The spreads simulation is unaffected
+-- spreads legitimately hold overnight, by the exemption granted 2026-07-30.
+##########################################################################
+
+
 The point is fidelity, not flattery. Wherever possible this file does not
 re-implement a rule: it imports the exact functions production trades with —
 strategies.rsi / macd_signal / trend_up for signals, vol.forecast_vol for the
@@ -460,6 +483,9 @@ def open_pos_public(p: dict) -> dict:
 # singles (tech sleeve) simulation
 # ---------------------------------------------------------------------------
 def sim_singles(symbol: str, bars: pd.DataFrame, exps: list, log=print) -> list:
+    """DOES NOT MATCH LIVE. See the module warning: this holds for days, the
+    bot is flat by 15:45. Kept because the spreads sim shares its plumbing and
+    because deleting it would erase the record of what was measured wrongly."""
     trades, open_pos = [], None
     days = [d for d in bars.index if START <= d.date() <= END]
     for day in days:

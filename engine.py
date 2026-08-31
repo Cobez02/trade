@@ -162,6 +162,14 @@ MAX_SPREAD_PCT        = _envf("SPXBOT_MAX_SPREAD", 0.04)
 # ~4.7pp worse than the already-negative retail average.
 TARGET_DTE_MIN = int(_envf("SPXBOT_DTE_MIN", 3))
 TARGET_DTE_MAX = int(_envf("SPXBOT_DTE_MAX", 12))        # short-dated: high gamma, fast feedback
+# Preferred days-to-expiry INSIDE that window. 0 disables it, which is the
+# historical behaviour: find_contracts ranked purely by strike distance and
+# took whatever expiry happened to carry the nearest strike. That is fine on a
+# 3-12 day window where every candidate is a weekly, and wrong on a wider one,
+# where it would silently mix 14-day and 35-day contracts. The intraday
+# backtest measures a large difference between those, so the window needs a
+# preference to mean anything.
+TARGET_DTE_PREFER = int(_envf("SPXBOT_DTE_PREFER", 0))
 TARGET_OTM_PCT = _envf("SPXBOT_OTM", 0.015)              # ~1.5% OTM (near the money -> moves)
 
 # Exit rules (tighter -> trades realize P&L intraday, generating lessons same day)
@@ -271,7 +279,15 @@ class Broker:
             if oi < MIN_OPEN_INTEREST:
                 continue
             strike = float(c.strike_price)
-            passing.append((abs(strike - target_strike), strike, c))
+            dte_gap = 0
+            if TARGET_DTE_PREFER > 0:
+                try:
+                    ed = str(getattr(c, "expiration_date", "") or "")[:10]
+                    dte_gap = abs((dt.date.fromisoformat(ed) - today).days
+                                  - TARGET_DTE_PREFER)
+                except Exception:
+                    dte_gap = 0
+            passing.append((dte_gap, abs(strike - target_strike), strike, c))
         # NO FALLBACK. This function used to re-scan ignoring MIN_OPEN_INTEREST
         # whenever the liquidity filter emptied the list, which inverted its own
         # purpose: the filter fired precisely when the chain was illiquid, and
@@ -284,8 +300,11 @@ class Broker:
         # "No liquid contract exists right now" is a correct and useful answer.
         # Returning None here costs one skipped signal; the fallback cost real
         # money on every signal it rescued.
-        passing.sort(key=lambda t: (t[0], t[1]))
-        return [c for _, _, c in passing[:n]]
+        # DTE gap first when a preference is set, then strike distance, then
+        # the lower strike on a tie. With TARGET_DTE_PREFER=0 every dte_gap is
+        # 0 and this is byte-for-byte the old ordering.
+        passing.sort(key=lambda t: (t[0], t[1], t[2]))
+        return [c for _, _, _, c in passing[:n]]
 
     def find_contract(self, underlying: str, direction: str, spot: float):
         """Single nearest liquid contract (back-compat wrapper)."""
