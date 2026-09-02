@@ -846,7 +846,14 @@ check("...with zero confidence", near(dec["confidence"], 0.0), dec["confidence"]
 # ===========================================================================
 section("18. Cross-module — main.py uses the new API, not the old one")
 # ===========================================================================
-main_src = open("/home/claude/spxbot/main.py", encoding="utf-8").read()
+import os as _os
+# These used to read /home/claude/spxbot/*.py -- a copy, not the code under
+# test. In CI that path does not exist and the open() would have raised, so it
+# was never exercised there; on a machine where the directory DOES exist the
+# test graded a stale snapshot. Measured 2026-09-02: three days stale, and it
+# predated a whole change set. Resolve relative to THIS FILE instead.
+_HERE = _os.path.dirname(_os.path.abspath(__file__))
+main_src = open(_os.path.join(_HERE, "main.py"), encoding="utf-8").read()
 check("main.py calls size_multiplier", "learn.size_multiplier(" in main_src)
 check("main.py no longer calls is_gated", "learn.is_gated(" not in main_src,
       "the deprecated hard-gate entry point is still wired in")
@@ -855,7 +862,7 @@ check("main.py no longer pauses a sleeve on weight <= 0",
 check("main.py applies the multiplier to size",
       "mult" in main_src and "size_budget" in main_src)
 
-rep_src = open("/home/claude/spxbot/reporting.py", encoding="utf-8").read()
+rep_src = open(_os.path.join(_HERE, "reporting.py"), encoding="utf-8").read()
 
 # Check EXECUTABLE lines only. A naive substring scan matches the comment that
 # explains the fix and reports the bug as still present — the same false

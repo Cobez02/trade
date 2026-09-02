@@ -745,6 +745,33 @@ def sleeve_open_cost(state: dict, sleeve: str) -> float:
     return sum(m.get("entry_cost", 0) for m in state["positions"].values()
               if m.get("sleeve") == sleeve)
 
+def broker_clear_to_open(broker, occ_symbol: str, underlying: str):
+    """(ok, reason) - is it safe to open `occ_symbol` RIGHT NOW?
+
+    Asks the broker rather than `state`. Blocks when:
+      * a position already exists in this exact contract, or
+      * a working order already exists in it (ours or a concurrent process's), or
+      * the query fails at all.
+
+    The last clause is deliberate. An entry skipped for lack of information
+    costs one signal; an entry taken on missing information is how one
+    underlying ended up at double its cap. Fail closed.
+    """
+    try:
+        for p in broker.positions():
+            if getattr(p, "symbol", None) == occ_symbol:
+                return False, f"broker already holds {occ_symbol} (qty {p.qty})"
+    except Exception as e:
+        return False, f"position query failed ({type(e).__name__}) - failing closed"
+    try:
+        for o in broker.open_orders():
+            if getattr(o, "symbol", None) == occ_symbol:
+                return False, f"a working order already exists on {occ_symbol}"
+    except Exception as e:
+        return False, f"open-order query failed ({type(e).__name__}) - failing closed"
+    return True, ""
+
+
 def already_positioned(state: dict, sleeve: str, underlying: str, direction: str) -> bool:
     want = "call" if direction == "bull" else "put"
     for m in state["positions"].values():
@@ -1017,6 +1044,29 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                              f"${cost:,.0f} vs cash ${cash:,.0f} / "
                              f"day budget left ${budget_left:,.0f}")
                 continue
+            # LAST-MOMENT BROKER TRUTH. Everything above this line was decided
+            # from `state`, which was loaded when the run started. That is a race
+            # the bot lost on 2026-09-01: the watcher's entry scan (every 300s,
+            # watcher.py ENTRY_SCAN_SECONDS) and the hourly run each read state
+            # before the other's fill landed, both saw no NVDA position, and both
+            # opened one nine seconds apart. Two order ids, identical feature
+            # fingerprint, same sleeve, $840 into one underlying against a $450
+            # cap whose ceiling including every multiplier is $703.
+            #
+            # already_positioned() and the `pending` set cannot see this: one
+            # reads run-start state, the other only this process's own orders.
+            # traded_today() cannot either, because it keys on SETTLED journal
+            # rows and nothing settles in nine seconds.
+            #
+            # So ask the broker, which is the only party that knows the truth,
+            # in the last instant before committing. A failed query blocks the
+            # entry rather than allowing it: skipping one signal costs nothing,
+            # and doubling a position silently is how the cap stops meaning
+            # anything.
+            ok, why_not = broker_clear_to_open(broker, contract.symbol, und)
+            if not ok:
+                notes.append(f"RACE BLOCKED {und} {direction} [{sleeve}] — {why_not}")
+                continue
             try:
                 tag = build_tag(sleeve, feat)   # fingerprint -> recoverable from Alpaca
                 broker.buy_to_open(contract.symbol, qty, tag, limit_price=limit_px)
@@ -1230,6 +1280,12 @@ def run():
         reconcile_assignments(broker, notes)
         manage_spreads(broker, state, notes)
     ensure_broker_stops(broker, state, notes)
+    if getattr(broker, "order_fetch_complete", True) is False:
+        # Never let a short order history pass silently: it shrinks the
+        # learner's training data and the only symptom is a settled-trade
+        # count that quietly goes DOWN.
+        notes.append("ORDER HISTORY INCOMPLETE — journal may be missing older "
+                     f"round trips ({getattr(broker, 'order_fetch_error', '?')})")
     if journal:                                    # Alpaca is authoritative for settled trades
         state["journal"] = journal
         state["closed"] = [{

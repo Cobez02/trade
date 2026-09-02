@@ -154,6 +154,134 @@ try:
 finally:
     _al.send_alert = _orig
 
+
+print()
+print("=" * 74)
+print("8. THE RACE GUARD: broker truth, checked in the last instant")
+print("=" * 74)
+# 2026-09-01: the watcher's entry scan and the hourly run both read state before
+# either fill landed and both opened NVDA, nine seconds apart. state-based guards
+# cannot see that. These check the guard that can.
+OCC = "NVDA260925C00225000"
+
+
+class _P:
+    def __init__(self, sym, qty="1"):
+        self.symbol = sym
+        self.qty = qty
+
+
+class _Brk:
+    def __init__(self, pos=(), orders=(), pos_raises=False, ord_raises=False):
+        self._p, self._o = list(pos), list(orders)
+        self._pr, self._or = pos_raises, ord_raises
+
+    def positions(self):
+        if self._pr:
+            raise RuntimeError("alpaca down")
+        return self._p
+
+    def open_orders(self, limit=200):
+        if self._or:
+            raise RuntimeError("alpaca down")
+        return self._o
+
+
+ok, why = M.broker_clear_to_open(_Brk(), OCC, "NVDA")
+check("clear when the broker holds nothing", ok and why == "", why)
+
+ok, why = M.broker_clear_to_open(_Brk(pos=[_P(OCC, "1")]), OCC, "NVDA")
+check("BLOCKS when the broker already holds the contract", not ok, why)
+
+ok, why = M.broker_clear_to_open(_Brk(orders=[_P(OCC)]), OCC, "NVDA")
+check("BLOCKS when a working order already exists (the 9-second race)", not ok, why)
+
+ok, why = M.broker_clear_to_open(_Brk(pos_raises=True), OCC, "NVDA")
+check("FAILS CLOSED when the position query errors", not ok, why)
+
+ok, why = M.broker_clear_to_open(_Brk(ord_raises=True), OCC, "NVDA")
+check("FAILS CLOSED when the open-order query errors", not ok, why)
+
+ok, _ = M.broker_clear_to_open(_Brk(pos=[_P("AAPL260918C00322500")]), OCC, "NVDA")
+check("does NOT block an unrelated contract", ok)
+
+src = open("main.py").read()
+seg = src.split("broker_clear_to_open(broker, contract.symbol, und)")[0]
+check("the guard sits AFTER sizing and IMMEDIATELY before buy_to_open",
+      "buy_to_open" not in seg.split("cost = qty * limit_px * 100")[-1],
+      "nothing may submit an order before the guard runs")
+
+print()
+print("=" * 74)
+print("9. closed_orders PAGINATES: the learner must stop forgetting")
+print("=" * 74)
+# 2026-09-02: the account held 520 closed orders and the old single-request
+# call returned exactly 500, hiding the 16 OLDEST filled ones. The learner
+# count went DOWN (88 -> 85) as new orders pushed old round trips out.
+import types as _t
+import engine as _E
+
+
+class _FakeTrading:
+    """Returns 500 per page, like Alpaca, over a 1,150-order history."""
+
+    def __init__(self, n=1150):
+        import datetime as _dt
+        base = _dt.datetime(2026, 9, 1, 12, 0, 0)
+        self.all = [_t.SimpleNamespace(id=f"o{i}",
+                                       submitted_at=base - _dt.timedelta(minutes=i))
+                    for i in range(n)]
+        self.calls = 0
+
+    def get_orders(self, req):
+        self.calls += 1
+        until = getattr(req, "until", None)
+        pool = self.all if until is None else [o for o in self.all
+                                               if o.submitted_at < until]
+        return pool[:min(getattr(req, "limit", 500), 500)]
+
+
+b = _E.Broker.__new__(_E.Broker)
+b.trading = _FakeTrading(1150)
+got = _E.Broker.closed_orders(b)
+check("fetches past the 500-per-page ceiling", len(got) == 1150, f"got {len(got)}")
+check("makes more than one request", b.trading.calls > 1, f"{b.trading.calls} calls")
+check("no duplicates across pages", len({o.id for o in got}) == len(got))
+check("reaches the OLDEST order", got[-1].id == "o1149", got[-1].id)
+
+b2 = _E.Broker.__new__(_E.Broker)
+b2.trading = _FakeTrading(1150)
+check("honours an explicit total cap", len(_E.Broker.closed_orders(b2, limit=600)) == 600)
+
+b3 = _E.Broker.__new__(_E.Broker)
+b3.trading = _FakeTrading(120)
+check("stops early when history is short", len(_E.Broker.closed_orders(b3)) == 120)
+
+
+class _Boom:
+    def __init__(self):
+        self.n = 0
+
+    def get_orders(self, req):
+        self.n += 1
+        if self.n > 1:
+            raise RuntimeError("alpaca down mid-pagination")
+        import datetime as _dt
+        base = _dt.datetime(2026, 9, 1, 12, 0, 0)
+        return [_t.SimpleNamespace(id=f"o{i}", submitted_at=base - _dt.timedelta(minutes=i))
+                for i in range(500)]
+
+
+b4 = _E.Broker.__new__(_E.Broker)
+b4.trading = _Boom()
+got4 = _E.Broker.closed_orders(b4)
+check("a mid-pagination failure returns the partial page, not nothing",
+      len(got4) == 500, f"got {len(got4)}")
+check("and MARKS the history incomplete rather than hiding it",
+      getattr(b4, "order_fetch_complete", None) is False)
+check("a clean full fetch is marked complete",
+      getattr(b, "order_fetch_complete", None) is True)
+
 print()
 print("=" * 74)
 print(f"{len(PASS)} passed, {len(FAIL)} failed")

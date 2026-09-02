@@ -1,5 +1,12 @@
 """Replay real price paths through the exit rules. No network, no orders."""
-import sys; sys.path.insert(0,'/home/claude/spxbot')
+import os as _os, sys as _sys
+# Import the modules that live NEXT TO THIS TEST, not a copy somewhere else.
+# This line used to be sys.path.insert(0, '/home/claude/spxbot'). In CI that
+# path does not exist so Python skipped it and the repo was imported anyway,
+# but on any machine where the directory DOES exist the test silently graded
+# a stale snapshot instead of the code about to trade. Measured 2026-09-02:
+# that copy was three days old and predated a whole change set.
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 import exitrules as E
 
 def replay(entry, path, spread=0.05, label=""):
@@ -122,3 +129,54 @@ for name, t, el, cur, trig, want in conf:
     print(f"  {name:<34} act={str(got):<6}{'OK' if got==want else 'FAIL'}")
 print(f"  need {E.CONFIRM_TICKS} ticks AND {E.CONFIRM_MIN_SEC}s; "
       f"{E.PANIC_MARGIN:.0%} past the trigger overrides both")
+
+# ---------------------------------------------------------------------------
+print()
+print("=" * 74)
+print("OVERNIGHT EXEMPTION (SPXBOT_OVERNIGHT) — off by default, gated when on")
+print("=" * 74)
+import importlib as _il
+import os as _os
+
+_FAILED = []
+
+
+def _ck(name, cond, detail=""):
+    if not cond:
+        _FAILED.append(name)
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
+
+
+Q = {"bid": 0.80, "ask": 0.84, "spread_pct": 0.05}
+ENTRY = 1.00                      # bid 0.80 vs entry 1.00 = -20%, a loser
+QW = {"bid": 1.40, "ask": 1.44, "spread_pct": 0.03}   # +40%, a winner
+
+_os.environ.pop("SPXBOT_OVERNIGHT", None)
+_il.reload(E)
+d = E.decide(ENTRY, Q, None, dte_left=20, flatten=True)
+_ck("DEFAULT OFF: the bell still flattens a loser", d["action"] == "exit", d["reason"])
+_ck("DEFAULT OFF: the switch reads False", E.OVERNIGHT_ENABLED is False)
+
+_os.environ["SPXBOT_OVERNIGHT"] = "1"
+_il.reload(E)
+d = E.decide(ENTRY, Q, None, dte_left=20, flatten=True)
+_ck("ON: a loser with room may be carried", d["action"] == "hold", d["reason"])
+d = E.decide(ENTRY, QW, None, dte_left=20, flatten=True)
+_ck("ON: a WINNER is still flattened (measured -$15 to -$17/trade)",
+    d["action"] == "exit", d["reason"])
+d = E.decide(ENTRY, {"bid": 0.30, "ask": 0.34, "spread_pct": 0.12}, None,
+             dte_left=20, flatten=True)
+_ck("ON: a position already down 70% is flattened", d["action"] == "exit", d["reason"])
+d = E.decide(ENTRY, Q, None, dte_left=2, flatten=True)
+_ck("ON: near expiry is flattened regardless", d["action"] == "exit", d["reason"])
+d = E.decide(ENTRY, {"bid": 0, "ask": 0}, None, dte_left=20, flatten=True)
+_ck("ON: an unpriceable position is NEVER carried", d["action"] == "exit", d["reason"])
+
+_os.environ.pop("SPXBOT_OVERNIGHT", None)
+_il.reload(E)
+d = E.decide(ENTRY, Q, None, dte_left=20, flatten=True)
+_ck("restored: default behaviour is flatten", d["action"] == "exit")
+
+print(f"\n  overnight section: {'ALL PASS' if not _FAILED else 'FAILURES: ' + str(_FAILED)}")
+if _FAILED:
+    raise SystemExit(1)

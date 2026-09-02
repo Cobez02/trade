@@ -581,13 +581,57 @@ class Broker:
         return close_spread_order(self.trading, short_sym, long_sym, qty,
                                   net_debit_limit, client_order_id)
 
-    def closed_orders(self, limit: int = 500):
-        """All filled/closed orders (both sides), newest first."""
-        try:
-            req = GetOrdersRequest(status=QueryOrderStatus.CLOSED, limit=limit)
-            return list(self.trading.get_orders(req))
-        except Exception:
-            return []
+    ORDER_PAGE = 500          # Alpaca's per-request maximum
+
+    def closed_orders(self, limit: int = 2000):
+        """All filled/closed orders (both sides), newest first, PAGINATED.
+
+        `limit` used to be a single-request cap of 500, and Alpaca returns at
+        most 500 per call, so the journal rebuild silently saw only the newest
+        500 orders. Measured 2026-09-02: the account held 520 closed orders and
+        the old call returned exactly 500, hiding 16 filled ones -- the OLDEST,
+        which is to say weeks 1 and 2, the profitable ones.
+
+        The visible symptom was the learner count going DOWN (88 settled at
+        15:08 on 9/1, 85 at 16:07): four new orders pushed four old ones past
+        the ceiling and three completed round trips left the training data. It
+        would have kept getting worse with every trade, and nothing would have
+        reported it.
+
+        `limit` is now a TOTAL cap across pages, not a page size. Pagination
+        walks backwards on submitted_at and dedupes by order id, because two
+        orders can share a timestamp and a naive cursor would drop one.
+        """
+        out, seen, cursor = [], set(), None
+        self.order_fetch_complete = True
+        while len(out) < limit:
+            kw = {"status": QueryOrderStatus.CLOSED, "limit": self.ORDER_PAGE}
+            if cursor is not None:
+                kw["until"] = cursor
+            try:
+                batch = list(self.trading.get_orders(GetOrdersRequest(**kw)))
+            except Exception as e:
+                # A page that fails must NOT look like the end of history. The
+                # whole point of this function is that silently short history
+                # shrinks the learner's training data with no signal, which is
+                # exactly how the 88->85 regression stayed invisible. Return
+                # what we have AND mark it incomplete so the caller can say so.
+                self.order_fetch_complete = False
+                self.order_fetch_error = f"{type(e).__name__}: {e}"
+                break
+            if not batch:
+                break
+            fresh = [o for o in batch if str(getattr(o, "id", "")) not in seen]
+            for o in fresh:
+                seen.add(str(getattr(o, "id", "")))
+            out += fresh
+            if len(batch) < self.ORDER_PAGE or not fresh:
+                break
+            cursor = batch[-1].submitted_at
+        if len(out) >= limit:
+            self.order_fetch_complete = False
+            self.order_fetch_error = f"hit the {limit}-order cap"
+        return out[:limit]
 
     def open_orders(self, limit: int = 200):
         """Working (unfilled) orders — used to avoid re-submitting the same name."""

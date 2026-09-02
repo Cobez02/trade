@@ -26,6 +26,7 @@ Three ideas do the work:
    has proven itself, then follows the peak up and never retreats.
 """
 from __future__ import annotations
+import os
 
 # --- tunables ---------------------------------------------------------------
 STOP_PCT          = -0.30   # base stop, measured on the bid
@@ -95,6 +96,68 @@ def update_peak(peak_pct: float | None, cur_pct: float) -> float:
     return cur_pct if peak_pct is None else max(peak_pct, cur_pct)
 
 
+# ---------------------------------------------------------------------------
+# OVERNIGHT EXEMPTION  (SPXBOT_OVERNIGHT, default OFF)
+# ---------------------------------------------------------------------------
+# Connor asked on 2026-09-02 for the singles sleeve to be able to hold
+# overnight "if it thinks it will make a profit". This is that switch, and it
+# ships OFF because the measurement says the answer is usually no.
+#
+# WHAT WAS MEASURED, on the live-parity intraday rig at 21-35 DTE / $450 cap,
+# 486 trades over 2024-03..2026-08, each trade priced BOTH ways:
+#
+#   arm                                   fit half      test half
+#   flat at 15:45 (current)              +$5.53/trade  +$4.09/trade
+#   hold overnight -> next 15:45         +$1.52        +$1.56
+#   hold overnight -> next open          +$0.89        +$2.87
+#   paired difference                    -$3.56/trade overall, t = -0.89
+#
+# So unconditional overnight costs about $3.56 a trade, in the same direction
+# in both halves. Then the gates, judged only on the trades each one selects:
+#
+#   gate                fit delta   test delta
+#   winner at 15:45     -$17.27     -$15.46     <- "let winners run" is the WORST
+#   loser  at 15:45     + $8.12     +$10.93     <- the only gate that helps
+#   DTE >= 25           -$38.00     -$41.50     (n=2 each half, meaningless)
+#   premium < $300      - $4.52     - $0.95
+#   premium >= $300     - $3.64     - $3.71
+#
+# The trading-folklore rule is the actively harmful one. The only gate with a
+# consistent sign is holding LOSERS, and even that merely turns a -$35.74
+# average into -$27.62: a smaller loss, not a profit, on trades you would
+# rather not have had. It is also not significant (t about 0.7), and it means
+# carrying overnight gap risk on positions already going against you.
+#
+# So: the switch exists, it defaults off, and when it is on it implements the
+# gate the data supports rather than the one intuition suggests. Enabling it is
+# a decision to accept a measured expected loss for a smaller variance of
+# outcome on losers. I do not recommend it.
+OVERNIGHT_ENABLED = os.environ.get("SPXBOT_OVERNIGHT", "0") == "1"
+OVERNIGHT_MAX_LOSS_PCT = float(os.environ.get("SPXBOT_OVERNIGHT_MAX_LOSS", "-0.50"))
+OVERNIGHT_MIN_DTE = int(os.environ.get("SPXBOT_OVERNIGHT_MIN_DTE", "3"))
+
+
+def may_hold_overnight(pnl_pct, dte_left, quote_ok_flag):
+    """(hold, reason) - may this position skip the bell?
+
+    Every clause is a refusal by default. A position is carried ONLY when the
+    switch is on, the quote is usable, expiry is not imminent, the position is
+    down (the only gate with support in both halves), and it is not down so far
+    that another night could take the rest.
+    """
+    if not OVERNIGHT_ENABLED:
+        return False, ""
+    if not quote_ok_flag or pnl_pct is None:
+        return False, ""          # never carry a position we cannot price
+    if dte_left is not None and dte_left <= OVERNIGHT_MIN_DTE:
+        return False, ""          # theta into expiry is the one certainty here
+    if pnl_pct >= 0:
+        return False, ""          # winners overnight measured -$15 to -$17/trade
+    if pnl_pct <= OVERNIGHT_MAX_LOSS_PCT:
+        return False, ""          # already deeply wrong; do not fund another night
+    return True, f"down {pnl_pct:+.0%}, {dte_left} DTE"
+
+
 def decide(entry: float, q: dict, peak_pct: float | None,
            dte_left: int | None = None, flatten: bool = False,
            age_s: float | None = None) -> dict:
@@ -113,6 +176,11 @@ def decide(entry: float, q: dict, peak_pct: float | None,
     if flatten:
         cur = _pnl_pct(float(q["bid"]), entry) if ok else None
         shown = f"{cur:+.0%}" if cur is not None else f"no usable quote ({why})"
+        hold, reason = may_hold_overnight(cur, dte_left, ok)
+        if hold:
+            return {"action": "hold", "reason": f"overnight ({reason}) {shown}",
+                    "pnl_pct": cur, "peak_pct": peak_pct, "confident": ok,
+                    "trigger": None}
         return {"action": "exit", "reason": f"eod-flatten {shown}",
                 "pnl_pct": cur, "peak_pct": peak_pct, "confident": ok,
                 "trigger": None}
