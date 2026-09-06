@@ -1,30 +1,5 @@
+.env
+cache/
+reports/
 __pycache__/
 *.pyc
-run.log
-watcher.log
-# Per-process runtime receipt, written by every watcher on exit — including
-# GitHub runners, which discard theirs with the VM. The durable record of the
-# same exits is state.json's journal, rebuilt from Alpaca's own order history;
-# committing one process's snapshot would just go stale and mislead.
-watcher_exits.json
-
-# The Alpaca keys live here and must never be committed. They are paper-trading
-# keys, but the habit is the point: this file is sourced at runtime and supplied
-# to GitHub Actions as repository secrets, never as a tracked file.
-config.env
-*.env
-bt_run.log
-backtest_result.json
-
-# backtest scratch: run logs are ephemeral; the committed artifacts are
-# backtest_result.json / sensitivity_result.json / BACKTEST_REPORT.md
-bt_run.log
-sens_run.log
-
-# insider study scratch log (committed artifacts: insider_result.json + INSIDER_REPORT.md)
-insider_run.log
-sens_insider.log
-tsla_cap_run.log
-watchlist_run.log
-spreads45_run.log
-override_run.log

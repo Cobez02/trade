@@ -1,0 +1,4 @@
+alpaca-py>=0.42
+pandas
+numpy
+requests

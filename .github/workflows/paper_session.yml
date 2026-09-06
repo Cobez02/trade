@@ -1,0 +1,62 @@
+# Alpaca PAPER forward-test of the futures logic on the SPY/QQQ share proxy.
+# Two jobs per day because a full session (6h22m) exceeds the 6h job limit.
+# Crons are listed for BOTH daylight and standard time; the runner checks the
+# exchange clock and exits at once if it started on the wrong variant, so the
+# November switch needs no edit. (This is the bug that would have carried the
+# options bot's positions overnight all winter.)
+name: paper-session
+on:
+  schedule:
+    - cron: "26 13 * * 1-5"   # 08:26 CT in CDT  (first half)
+    - cron: "26 14 * * 1-5"   # 08:26 CT in CST
+    - cron: "40 16 * * 1-5"   # 11:40 CT in CDT  (second half)
+    - cron: "40 17 * * 1-5"   # 11:40 CT in CST
+  workflow_dispatch:
+concurrency:
+  group: spxf-paper
+  cancel-in-progress: false
+jobs:
+  session:
+    runs-on: ubuntu-latest
+    timeout-minutes: 215
+    env:
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+      SPXF_INSTRUMENT: SPY
+      SPXF_PROXY_SHARES: "20"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: self-test
+        run: python -m tests.test_core
+      - name: run session (exits immediately on the wrong DST variant or a holiday)
+        run: |
+          python - <<'PY'
+          import datetime as dt, sys
+          from data import sessions as S
+          now = S.now_ct(); d = now.date()
+          if not S.is_trading_day(d): print("holiday/weekend"); sys.exit(0)
+          o, c, f, _ = S.session_bounds(d)
+          if now < o - dt.timedelta(minutes=12): print("wrong DST variant (too early)"); sys.exit(0)
+          if now >= f: print("after flatten"); sys.exit(0)
+          PY
+          python -m live.runner --broker alpaca --symbol SPY --instrument SPY --source alpaca \
+            --start $(date -u -d '-45 days' +%F) --end $(date -u +%F)
+      - name: telegram end-of-day summary (optional, uses the existing SPXBOT_TG_* secrets)
+        if: always()
+        env:
+          TG_TOKEN: ${{ secrets.SPXBOT_TG_TOKEN }}
+          TG_CHAT: ${{ secrets.SPXBOT_TG_CHAT }}
+        run: |
+          if [ -n "$TG_TOKEN" ] && [ -f days.jsonl ] && tail -n1 days.jsonl | grep -q "\"day\": \"$(date -u +%F)\""; then
+            curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" --data-urlencode text="spxf paper: $(tail -n1 days.jsonl)" >/dev/null || true
+          fi
+      - name: commit state
+        run: |
+          git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
+          git add -A state_futures.json days.jsonl 2>/dev/null || true
+          git commit -m "paper session $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
+          git push || echo "push skipped"
