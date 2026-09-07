@@ -13,6 +13,8 @@ on:
       holdout: { default: "2024-01-01", description: "out-of-sample from" }
   push:
     paths: [".github/workflows/backtest.yml"]
+permissions:
+  contents: write      # the run commits state / reports back; the repo default token is read-only
 concurrency:
   group: spxf-backtest
   cancel-in-progress: false
@@ -66,7 +68,8 @@ jobs:
           git stash -u -- cache state_futures.json days.jsonl 2>/dev/null || true
           git add -f research/ 2>/dev/null || true
           git status --short
-          git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)" || echo "NOTHING TO COMMIT"
-          for i in 1 2 3; do
-            git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && { echo "PUSHED"; break; } || { echo "retry $i"; sleep 5; }
-          done
+          ls research/*/*/*_report.md || { echo "NO REPORT FILES PRODUCED"; exit 1; }
+          git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)"
+          ok=0; for i in 1 2 3; do
+            git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && { echo "PUSHED"; ok=1; break; } || { echo "retry $i"; sleep 5; }
+          done; [ "$ok" = 1 ] || { echo "PUSH FAILED"; exit 1; }

@@ -12,6 +12,8 @@ on:
     - cron: "40 16 * * 1-5"   # 11:40 CT in CDT  (second half)
     - cron: "40 17 * * 1-5"   # 11:40 CT in CST
   workflow_dispatch:
+permissions:
+  contents: write      # the run commits state / reports back; the repo default token is read-only
 concurrency:
   group: spxf-paper
   cancel-in-progress: false
