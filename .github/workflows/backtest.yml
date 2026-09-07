@@ -34,17 +34,19 @@ jobs:
       - run: pip install -r requirements.txt
       - run: python -m tests.test_core
       - name: SPY proxy for MES
+        if: always()
         env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "50", SPXF_PROXY_SLIP_CENTS: "4.5" }
         run: |
-          python -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 \
-            --out research/$(date -u +%F)/SPY-as-MES 2>&1 | tail -120
+          set -o pipefail; OUT=research/$(date -u +%F)/SPY-as-MES; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
       - name: QQQ proxy for MNQ
+        if: always()
         env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "80", SPXF_PROXY_SLIP_CENTS: "1.9" }
         run: |
-          python -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 \
-            --out research/$(date -u +%F)/QQQ-as-MNQ 2>&1 | tail -120
+          set -o pipefail; OUT=research/$(date -u +%F)/QQQ-as-MNQ; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
       - name: commit the reports
         if: always()
         run: |

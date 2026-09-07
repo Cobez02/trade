@@ -17,7 +17,7 @@ All loaders cache to parquet under config.CACHE_DIR keyed by source/symbol/
 start/end so a re-run is free.
 """
 from __future__ import annotations
-import os
+import os, sys, time
 import datetime as dt
 from typing import Optional
 
@@ -109,7 +109,20 @@ def load_alpaca(symbol: str, start: str, end: str, feed: str | None = None,
                                timeframe=TimeFrame(1, TimeFrameUnit.Minute),
                                start=cur.to_pydatetime(), end=nxt.to_pydatetime(),
                                feed=fd, adjustment=Adjustment.RAW)
-        df = client.get_stock_bars(req).df
+        df = None
+        for attempt in range(6):
+            try:
+                df = client.get_stock_bars(req).df
+                break
+            except Exception as ex:                      # 429 rate limit, 5xx, network
+                wait = 20 * (attempt + 1)
+                print(f"  {symbol} {cur.date()}..{nxt.date()}: {type(ex).__name__}: {str(ex)[:120]} — retry in {wait}s",
+                      file=sys.stderr, flush=True)
+                time.sleep(wait)
+        else:
+            raise RuntimeError(f"alpaca fetch failed for {symbol} {cur.date()}..{nxt.date()} after 6 attempts")
+        print(f"  {symbol} {cur.date()}..{nxt.date()}: {0 if df is None else len(df):,} bars", file=sys.stderr, flush=True)
+        time.sleep(0.4)          # stay under the basic plan's 200 req/min even with pagination
         if df is not None and len(df):
             if isinstance(df.index, pd.MultiIndex):
                 df = df.reset_index(level=0, drop=True)
