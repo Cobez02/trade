@@ -1,0 +1,55 @@
+# Proxy backtest inside Actions: 10 years of Alpaca SIP minute bars on SPY (~MES) and QQQ (~MNQ),
+# costs set to the futures' equivalents, report committed to research/<date>/.
+# Triggers on manual dispatch or when this file changes.
+# Cost mapping: 1 MES ~= 50 SPY shares; MES round trip = 2 x ($1.00 comm + $1.25 slip) = $4.50
+#   -> 9c per SPY share round trip -> 4.5c/side.  1 MNQ ~= 80 QQQ shares; MNQ round trip
+#   = 2 x ($1.00 + $0.50) = $3.00 -> 3.75c/share -> 1.9c/side.
+name: backtest
+on:
+  workflow_dispatch:
+    inputs:
+      start:   { default: "2016-01-04", description: "history start" }
+      end:     { default: "2026-09-05", description: "history end" }
+      holdout: { default: "2024-01-01", description: "out-of-sample from" }
+  push:
+    paths: [".github/workflows/backtest.yml"]
+concurrency:
+  group: spxf-backtest
+  cancel-in-progress: false
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+      SPXF_ALPACA_FEED: ${{ vars.SPXF_ALPACA_FEED || 'sip' }}
+      START:   ${{ github.event.inputs.start   || '2016-01-04' }}
+      END:     ${{ github.event.inputs.end     || '2026-09-05' }}
+      HOLDOUT: ${{ github.event.inputs.holdout || '2024-01-01' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: python -m tests.test_core
+      - name: SPY proxy for MES
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "50", SPXF_PROXY_SLIP_CENTS: "4.5" }
+        run: |
+          python -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 \
+            --out research/$(date -u +%F)/SPY-as-MES 2>&1 | tail -120
+      - name: QQQ proxy for MNQ
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "80", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        run: |
+          python -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 \
+            --out research/$(date -u +%F)/QQQ-as-MNQ 2>&1 | tail -120
+      - name: commit the reports
+        if: always()
+        run: |
+          git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
+          git add research/ 2>/dev/null || true
+          git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)" || echo "nothing to commit"
+          git pull --rebase origin main || true
+          git push || echo "push skipped"
