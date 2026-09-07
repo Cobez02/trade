@@ -47,11 +47,26 @@ jobs:
           set -o pipefail; OUT=research/$(date -u +%F)/QQQ-as-MNQ; mkdir -p "$OUT"
           python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
             --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
+      - name: show results in the job summary
+        if: always()
+        run: |
+          DIR=research/$(date -u +%F)
+          for f in "$DIR"/SPY-as-MES/*_report.md "$DIR"/QQQ-as-MNQ/*_report.md; do
+            [ -f "$f" ] || continue
+            echo "## $f" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"; cat "$f" >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "### tail of run logs" >> "$GITHUB_STEP_SUMMARY"
+          for f in "$DIR"/*/run.log; do [ -f "$f" ] && { echo "#### $f" >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; tail -40 "$f" >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }; done
+          ls -la "$DIR"/*/ || true
       - name: commit the reports
         if: always()
         run: |
           git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
-          git add research/ 2>/dev/null || true
-          git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)" || echo "nothing to commit"
-          git pull --rebase origin main || true
-          git push || echo "push skipped"
+          git stash -u -- cache state_futures.json days.jsonl 2>/dev/null || true
+          git add -f research/ 2>/dev/null || true
+          git status --short
+          git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)" || echo "NOTHING TO COMMIT"
+          for i in 1 2 3; do
+            git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && { echo "PUSHED"; break; } || { echo "retry $i"; sleep 5; }
+          done
