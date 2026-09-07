@@ -46,8 +46,9 @@ class Runner:
     def __init__(self, broker: Broker, strategy, risk: RiskEngine, symbol: str, instrument,
                  history_1m: pd.DataFrame, day: dt.date, state_path: str = C.STATE_PATH,
                  bar_minutes: int = C.BAR_MINUTES, acct: AccountState | None = None,
-                 feed_bars=None, dry_run: bool = False):
+                 feed_bars=None, dry_run: bool = False, until: str | None = None):
         self.b = broker; self.strat = strategy; self.risk = risk
+        self.until = (dt.datetime.combine(day, dt.time(*map(int, until.split(":"))), S.TZ) if until else None)
         self.symbol = symbol; self.inst = instrument
         self.history = history_1m           # prior sessions' 1-min bars (UTC), for the lookback
         self.day = day; self.bar_minutes = bar_minutes
@@ -61,7 +62,7 @@ class Runner:
                               halt_reason=self.state.get("halt_reason", ""))
         self.last_slot_done = self.state.get("last_slot", -1)
         self.entry_stop_pts = self.state.get("stop_pts", 0.0)
-        self.start_day_pnl = None
+        self.start_day_pnl = self.state.get("start_day_pnl")   # set once per day, survives job handover
 
     # ---- state -----------------------------------------------------------
     def _load_state(self) -> dict:
@@ -77,7 +78,7 @@ class Runner:
         self.state.update({"day": str(self.day), "symbol": self.symbol, "entries": self.dayst.entries,
                            "halted": self.dayst.halted, "halt_reason": self.dayst.halt_reason,
                            "last_slot": self.last_slot_done, "stop_pts": self.entry_stop_pts,
-                           "updated": S.now_ct().isoformat()})
+                           "start_day_pnl": self.start_day_pnl, "updated": S.now_ct().isoformat()})
         if not self.dry:
             json.dump(self.state, open(self.state_path, "w"), indent=2)
 
@@ -99,6 +100,7 @@ class Runner:
         a = self.b.account()
         if self.start_day_pnl is None:
             self.start_day_pnl = a["day_pnl"] if self.b.name != "sim" else 0.0
+            self.state["start_day_pnl"] = self.start_day_pnl; self._save_state()
         return a["day_pnl"] - (self.start_day_pnl or 0.0)
 
     def _flatten(self, why: str):
@@ -198,6 +200,12 @@ class Runner:
             now = S.now_ct()
             if now.date() != self.day:
                 log("date rolled; exiting"); return
+            if self.until and now >= self.until:
+                p = self.b.position(self.symbol)
+                self._save_state()
+                log(f"handover at {self.until.strftime('%H:%M')} CT: exiting with position {p.qty:+d} "
+                    f"(resting stop {self.b.resting_stop_qty(self.symbol)}) for the next job")
+                return
             if not self.step(now):
                 return
             # sleep to 2 s past the next minute boundary
@@ -254,6 +262,7 @@ def main(argv=None):
     ap.add_argument("--kill", type=float, default=C.DAILY_KILL_LOSS)
     ap.add_argument("--cap", type=float, default=C.DAILY_PROFIT_CAP)
     ap.add_argument("--max-dd", type=float, default=2000.0)
+    ap.add_argument("--until", default=None, help="HH:MM CT: exit cleanly (no flatten) for a job handover")
     args = ap.parse_args(argv)
 
     inst, strat, risk, broker = build(args)
@@ -270,7 +279,7 @@ def main(argv=None):
     day_idx = hist.index.tz_convert(C.SESSION_TZ).date
     today_bars = hist[day_idx == day]
     lookback = hist[day_idx < day]
-    r = Runner(broker, strat, risk, args.symbol, inst, lookback, day, dry_run=args.dry_run)
+    r = Runner(broker, strat, risk, args.symbol, inst, lookback, day, dry_run=args.dry_run, until=args.until)
     if args.dry_run:
         if today_bars.empty:
             raise SystemExit(f"no bars for {day} in the history source")
