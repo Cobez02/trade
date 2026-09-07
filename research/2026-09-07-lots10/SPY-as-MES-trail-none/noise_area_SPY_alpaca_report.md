@@ -1,0 +1,151 @@
+# Backtest: noise_area on SPY (alpaca)
+
+`instrument=SPY tick=0.01/$0.1 point=$10.0 rt_cost=$0.90 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT`
+
+## Summary (all sessions)
+```
+{
+  "sessions": 2681,
+  "trades": 1753,
+  "trades_per_day": 0.65,
+  "net_pnl": -8562.39,
+  "mean_trade": -4.88,
+  "win_rate": 0.415,
+  "avg_win": 198.21,
+  "avg_loss": -148.79,
+  "payoff": 1.33,
+  "profit_factor": 0.94,
+  "mean_day": -3.19,
+  "sd_day": 183.25,
+  "sharpe_daily_ann": -0.28,
+  "best_day": 1460.15,
+  "worst_day": -384.0,
+  "worst_intraday_low": -384.0,
+  "max_drawdown": -17921.38,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 739,
+  "flattens": 1013,
+  "costs_total": 24198.3,
+  "t_stat_daily": -0.9
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst    best
+year                                                       
+2016   249     178 -7340.0     -29.5   165.6 -376.0   592.0
+2017   251     169 -7347.0     -29.3   154.2 -364.0   591.0
+2018   251     175  2827.0      11.3   243.1 -375.0  1460.0
+2019   252     144 -4279.0     -17.0   142.4 -372.0   798.0
+2020   253     152 -1343.0      -5.3   178.6 -383.0  1046.0
+2021   252     149  2853.0      11.3   151.8 -371.0   715.0
+2022   251     174  6176.0      24.6   222.0 -379.0  1324.0
+2023   250     165 -1072.0      -4.3   178.9 -384.0   943.0
+2024   252     168  3857.0      15.3   218.9 -379.0  1433.0
+2025   250     162  -683.0      -2.7   174.2 -382.0  1365.0
+2026   170     117 -2210.0     -13.0   131.7 -373.0   456.0
+```
+
+## IN-SAMPLE — 2009 sessions
+```
+{
+  "sessions": 2009,
+  "trades": 1306,
+  "trades_per_day": 0.65,
+  "net_pnl": -9525.58,
+  "mean_trade": -7.29,
+  "win_rate": 0.41,
+  "avg_win": 201.68,
+  "avg_loss": -152.3,
+  "payoff": 1.32,
+  "profit_factor": 0.92,
+  "mean_day": -4.74,
+  "sd_day": 183.16,
+  "sharpe_daily_ann": -0.41,
+  "best_day": 1460.15,
+  "worst_day": -384.0,
+  "worst_intraday_low": -384.0,
+  "max_drawdown": -17921.38,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 574,
+  "flattens": 731,
+  "costs_total": 20750.4,
+  "t_stat_daily": -1.16
+}
+```
+
+## HOLDOUT (out-of-sample) — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 447,
+  "trades_per_day": 0.67,
+  "net_pnl": 963.19,
+  "mean_trade": 2.15,
+  "win_rate": 0.43,
+  "avg_win": 188.54,
+  "avg_loss": -138.18,
+  "payoff": 1.36,
+  "profit_factor": 1.03,
+  "mean_day": 1.43,
+  "sd_day": 183.43,
+  "sharpe_daily_ann": 0.12,
+  "best_day": 1432.6,
+  "worst_day": -382.4,
+  "worst_intraday_low": -382.4,
+  "max_drawdown": -4471.26,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 165,
+  "flattens": 282,
+  "costs_total": 3447.9,
+  "t_stat_daily": 0.2
+}
+```
+
+## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)
+
+Scale = multiple of the sizing above. P(pass) is the share of bootstrapped
+paths that hit the target before touching the trailing floor (intraday-touch aware).
+
+### MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 17.9% | 81.5% | 100.0 | drawdown (intraday touch) |
+| 2x | 17.3% | 82.7% | 33.0 | drawdown (intraday touch) |
+| 3x | 17.2% | 82.8% | 19.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 81, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1562.0)}**  (intraday-low fraction used: 0.205)
+
+### Topstep Combine $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of target, flat by 15:10 CT, bots on funded: False
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 17.9% | 81.5% | 100.0 | drawdown (intraday touch) |
+| 2x | 17.2% | 82.8% | 33.0 | drawdown (intraday touch) |
+| 3x | 16.9% | 83.1% | 19.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 81, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1562.0)}**  (intraday-low fraction used: 0.205)
+
+### Tradeify Growth $50K: target $3,000, DD $2,000 (eod, locks), DLL $0, consistency 35% of profit, flat by 15:59 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 14.4% | 83.5% | 103.0 | drawdown (intraday touch) |
+| 2x | 12.3% | 87.2% | 35.0 | drawdown (intraday touch) |
+| 3x | 11.0% | 88.7% | 19.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 81, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1562.0)}**  (intraday-low fraction used: 0.205)
+
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 26.1% — anything close to this number is luck, not edge.
+
+## Falsification gates (from the research brief)
+
+- days with intraday low <= -$700: **0** of 2681
+- days with intraday low <= -$1,000: **0**
+- daily t-stat: **-0.9** (want > 2 on the holdout, not just in-sample)
+- costs as share of gross: **74%**
