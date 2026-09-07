@@ -37,18 +37,18 @@ jobs:
       - run: python -m tests.test_core
       - name: SPY proxy for MES
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "50", SPXF_PROXY_SLIP_CENTS: "4.5" }
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)/SPY-as-MES; mkdir -p "$OUT"
+          set -o pipefail; OUT=research/$(date -u +%F)-lots10/SPY-as-MES; mkdir -p "$OUT"
           python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
       - name: QQQ proxy for MNQ
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "80", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)/QQQ-as-MNQ; mkdir -p "$OUT"
+          set -o pipefail; OUT=research/$(date -u +%F)-lots10/QQQ-as-MNQ; mkdir -p "$OUT"
           python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
       - name: show results in the job summary
         if: always()
         run: |
@@ -63,18 +63,18 @@ jobs:
           ls -la "$DIR"/*/ || true
       - name: SPY trail=none variant (hold to flatten or stop)
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "50", SPXF_PROXY_SLIP_CENTS: "4.5" }
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)/SPY-as-MES-trail-none; mkdir -p "$OUT"
+          set -o pipefail; OUT=research/$(date -u +%F)-lots10/SPY-as-MES-trail-none; mkdir -p "$OUT"
           python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --trail none \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
       - name: QQQ trail=none variant
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "80", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)/QQQ-as-MNQ-trail-none; mkdir -p "$OUT"
+          set -o pipefail; OUT=research/$(date -u +%F)-lots10/QQQ-as-MNQ-trail-none; mkdir -p "$OUT"
           python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --trail none \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
       - name: commit the reports
         if: always()
         run: |
