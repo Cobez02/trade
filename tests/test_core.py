@@ -227,5 +227,22 @@ if t2:
     check("stop loss <= risk per trade + slippage/commissions", t2[0].pnl >= -(200 + 5 * 2 * (C.MES.slippage_cost + C.MES.commission_side)) - 1, t2[0].pnl)
     check("gap-through-stop fills at the bar open (worse than the stop)", t2[0].exit_px <= t2[0].stop_px, (t2[0].exit_px, t2[0].stop_px))
 
+print("BACKTESTER: research replay never freezes")
+def losing(i, n, px):
+    return px * (1 + 0.012 * min(i, 60) / 60) if i < 60 else px * (1 - 0.006 * (i - 60) / 330)   # breakout then bleed
+bars_l = bars.copy()
+for dd in days[3::2]:          # every other day: the band keeps learning from quiet days, so entries never dry up
+    m = bars_l.index.tz_convert("America/Chicago").date == dd
+    idx = bars_l.index[m]; px0 = float(bars_l.loc[idx[0], "open"])
+    closes = np.array([losing(i, len(idx), px0) for i in range(len(idx))]); opens = np.r_[px0, closes[:-1]]
+    bars_l.loc[m, "open"] = opens; bars_l.loc[m, "close"] = closes
+    bars_l.loc[m, "high"] = np.maximum(opens, closes); bars_l.loc[m, "low"] = np.minimum(opens, closes)
+ctx_l = build_sessions(bars_l, 30, 14, 1.0)
+rep_l = Backtester(NoiseAreaStrategy(trail="band", instrument=C.MES), RiskEngine(C.MES, 200, 5, 700, 1200, 2000), C.MES, 30).run(ctx_l)
+days_traded = sorted({t.day for t in rep_l.trades})
+check("keeps trading through a long losing stretch (no buffer-gate freeze)", len(days_traded) >= 8 and days_traded[-1] >= str(days[-3]),
+      (len(days_traded), days_traded[-1:], str(days[-3])))
+check("...and the cumulative loss is well past a $2,000 floor (so the freeze would have bitten)", sum(rep_l.daily) < -2000, sum(rep_l.daily))
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

@@ -166,17 +166,21 @@ class Backtester:
 
     # ------------------------------------------------------------------
     def run(self, contexts: list[SessionContext], max_drawdown: float = 2_000.0) -> "Report":
-        acct = RiskEngine.fresh_account(max_drawdown)
+        """Research replay: the account has an UNBOUNDED buffer.
+
+        The trailing-drawdown floor and the buffer gate are live-account
+        mechanics; applying them here freezes the replay after any losing
+        stretch (entries refused forever), which is exactly what happened in
+        the first proxy run. Evaluation geometry is scored separately by
+        risk/rules.py on the daily P&L this replay produces. The per-day gates
+        (kill, cap, max entries) still apply — they are part of the strategy.
+        """
+        acct = AccountState(0.0, 0.0, -1e12)
         for ctx in contexts:
             if not ctx.ready():
                 continue
             r = self.run_session(ctx, acct)
-            self.risk.end_of_day(acct, r.pnl)
-            # research mode: do not stop at a drawdown breach; the rule
-            # simulator scores that separately. But keep the buffer realistic
-            # by resetting the floor when it would have failed (new attempt).
-            if acct.balance <= acct.floor:
-                acct = RiskEngine.fresh_account(max_drawdown)
+            acct.balance += r.pnl
         return Report(self.trades, self.days, self.inst)
 
 
@@ -233,8 +237,9 @@ class Report:
             return df
         df["year"] = df["day"].str[:4]
         g = df.groupby("year")["pnl"]
-        return pd.DataFrame({"days": g.size(), "pnl": g.sum().round(0), "mean_day": g.mean().round(1),
-                             "sd_day": g.std().round(1), "worst": g.min().round(0), "best": g.max().round(0)})
+        return pd.DataFrame({"days": g.size(), "trades": df.groupby("year")["trades"].sum(), "pnl": g.sum().round(0),
+                             "mean_day": g.mean().round(1), "sd_day": g.std().round(1),
+                             "worst": g.min().round(0), "best": g.max().round(0)})
 
     def prop_score(self, rules: R.RuleSet, n: int = 10_000, scale: float = 1.0) -> dict:
         """P(pass) by block-bootstrapping this report's own daily P&L."""

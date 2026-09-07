@@ -61,6 +61,20 @@ jobs:
           echo "### tail of run logs" >> "$GITHUB_STEP_SUMMARY"
           for f in "$DIR"/*/run.log; do [ -f "$f" ] && { echo "#### $f" >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; tail -40 "$f" >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"; }; done
           ls -la "$DIR"/*/ || true
+      - name: SPY trail=none variant (hold to flatten or stop)
+        if: always()
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "50", SPXF_PROXY_SLIP_CENTS: "4.5" }
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)/SPY-as-MES-trail-none; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --trail none \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+      - name: QQQ trail=none variant
+        if: always()
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "80", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)/QQQ-as-MNQ-trail-none; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --trail none \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
       - name: commit the reports
         if: always()
         run: |
