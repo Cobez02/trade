@@ -1,74 +1,74 @@
 {
   "summary": {
     "sessions": 2681,
-    "trades": 87,
-    "trades_per_day": 0.03,
-    "net_pnl": -1482.74,
-    "mean_trade": -17.04,
-    "win_rate": 0.23,
-    "avg_win": 156.95,
-    "avg_loss": -68.98,
-    "payoff": 2.28,
-    "profit_factor": 0.68,
-    "mean_day": -0.55,
-    "sd_day": 23.21,
-    "sharpe_daily_ann": -0.38,
-    "best_day": 498.0,
-    "worst_day": -315.5,
-    "worst_intraday_low": -315.5,
-    "max_drawdown": -1787.24,
+    "trades": 1836,
+    "trades_per_day": 0.68,
+    "net_pnl": -3124.63,
+    "mean_trade": -1.7,
+    "win_rate": 0.327,
+    "avg_win": 150.48,
+    "avg_loss": -75.58,
+    "payoff": 1.99,
+    "profit_factor": 0.97,
+    "mean_day": -1.17,
+    "sd_day": 131.37,
+    "sharpe_daily_ann": -0.14,
+    "best_day": 1323.75,
+    "worst_day": -362.75,
+    "worst_intraday_low": -362.75,
+    "max_drawdown": -9734.51,
     "days_below_-1000": 0,
     "days_below_-700": 0,
-    "stop_outs": 18,
-    "flattens": 21,
-    "costs_total": 1363.5,
-    "t_stat_daily": -1.23
+    "stop_outs": 321,
+    "flattens": 509,
+    "costs_total": 21123.0,
+    "t_stat_daily": -0.46
   },
   "prop": {
     "mffu_core_50k@1x": {
-      "pass": 0.0,
-      "fail": 0.0004,
-      "median_days": 250.0
+      "pass": 0.1568,
+      "fail": 0.7244,
+      "median_days": 167.0
     },
     "mffu_core_50k@2x": {
-      "pass": 0.0,
-      "fail": 0.0802,
-      "median_days": 306
+      "pass": 0.1856,
+      "fail": 0.8124,
+      "median_days": 60.0
     },
     "mffu_core_50k@3x": {
-      "pass": 0.0038,
-      "fail": 0.2666,
-      "median_days": 258.0
+      "pass": 0.1626,
+      "fail": 0.8364,
+      "median_days": 34
     },
     "topstep_50k@1x": {
-      "pass": 0.0,
-      "fail": 0.0004,
-      "median_days": 250.0
+      "pass": 0.1566,
+      "fail": 0.7246,
+      "median_days": 167.5
     },
     "topstep_50k@2x": {
-      "pass": 0.0,
-      "fail": 0.0802,
-      "median_days": 306
+      "pass": 0.1842,
+      "fail": 0.8138,
+      "median_days": 60.0
     },
     "topstep_50k@3x": {
-      "pass": 0.003,
-      "fail": 0.2666,
-      "median_days": 258.0
+      "pass": 0.16,
+      "fail": 0.839,
+      "median_days": 34
     },
     "tradeify_growth_50k@1x": {
-      "pass": 0.0,
-      "fail": 0.0004,
-      "median_days": 250.0
+      "pass": 0.125,
+      "fail": 0.7282,
+      "median_days": 168.0
     },
     "tradeify_growth_50k@2x": {
-      "pass": 0.0,
-      "fail": 0.0802,
-      "median_days": 306
+      "pass": 0.128,
+      "fail": 0.8518,
+      "median_days": 63
     },
     "tradeify_growth_50k@3x": {
-      "pass": 0.0008,
-      "fail": 0.2666,
-      "median_days": 258
+      "pass": 0.1018,
+      "fail": 0.8872,
+      "median_days": 36
     }
   }
 }

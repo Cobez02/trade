@@ -1,0 +1,74 @@
+{
+  "summary": {
+    "sessions": 2679,
+    "trades": 1139,
+    "trades_per_day": 0.43,
+    "net_pnl": 8709.32,
+    "mean_trade": 7.65,
+    "win_rate": 0.437,
+    "avg_win": 180.2,
+    "avg_loss": -126.41,
+    "payoff": 1.43,
+    "profit_factor": 1.11,
+    "mean_day": 3.25,
+    "sd_day": 124.77,
+    "sharpe_daily_ann": 0.41,
+    "best_day": 1380.8,
+    "worst_day": -382.08,
+    "worst_intraday_low": -382.08,
+    "max_drawdown": -4617.57,
+    "days_below_-1000": 0,
+    "days_below_-700": 0,
+    "stop_outs": 481,
+    "flattens": 657,
+    "costs_total": 7998.24,
+    "t_stat_daily": 1.35
+  },
+  "prop": {
+    "mffu_core_50k@1x": {
+      "pass": 0.3372,
+      "fail": 0.444,
+      "median_days": 202.0
+    },
+    "mffu_core_50k@2x": {
+      "pass": 0.3494,
+      "fail": 0.6474,
+      "median_days": 70.0
+    },
+    "mffu_core_50k@3x": {
+      "pass": 0.303,
+      "fail": 0.696,
+      "median_days": 35
+    },
+    "topstep_50k@1x": {
+      "pass": 0.3372,
+      "fail": 0.444,
+      "median_days": 202.0
+    },
+    "topstep_50k@2x": {
+      "pass": 0.349,
+      "fail": 0.6478,
+      "median_days": 70.5
+    },
+    "topstep_50k@3x": {
+      "pass": 0.3014,
+      "fail": 0.6976,
+      "median_days": 36
+    },
+    "tradeify_growth_50k@1x": {
+      "pass": 0.2968,
+      "fail": 0.4456,
+      "median_days": 204.0
+    },
+    "tradeify_growth_50k@2x": {
+      "pass": 0.3144,
+      "fail": 0.6658,
+      "median_days": 74
+    },
+    "tradeify_growth_50k@3x": {
+      "pass": 0.2412,
+      "fail": 0.7498,
+      "median_days": 40
+    }
+  }
+}
