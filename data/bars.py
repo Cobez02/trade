@@ -75,7 +75,7 @@ def load_databento(symbol: str, start: str, end: str, dataset: str = "GLBX.MDP3"
     return df
 
 
-def load_alpaca(symbol: str, start: str, end: str, feed: str = "sip",
+def load_alpaca(symbol: str, start: str, end: str, feed: str | None = None,
                 api_key: Optional[str] = None, secret: Optional[str] = None) -> pd.DataFrame:
     """SPY/QQQ 1-minute bars from Alpaca (SIP with Algo Trader Plus, else IEX).
 
@@ -83,7 +83,8 @@ def load_alpaca(symbol: str, start: str, end: str, feed: str = "sip",
     minute ranges is slow and memory-hungry; each month is cached separately
     so an interrupted download resumes.
     """
-    p = _cache_path("alpaca", symbol, start, end, "1m")
+    feed = (feed or os.environ.get("SPXF_ALPACA_FEED", "sip")).lower()
+    p = _cache_path("alpaca", symbol, start, end, feed + "_1m")
     if os.path.exists(p):
         return pd.read_parquet(p)
     from alpaca.data.historical.stock import StockHistoricalDataClient
