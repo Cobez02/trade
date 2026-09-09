@@ -1,0 +1,131 @@
+# Backtest: lasthalf on QQQ (alpaca)
+
+`instrument=QQQ tick=0.01/$0.1 point=$10.0 rt_cost=$0.38 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:58 CT, no entries after 14:35 CT`
+
+## Summary (all sessions)
+```
+{
+  "sessions": 2679,
+  "trades": 855,
+  "trades_per_day": 0.32,
+  "net_pnl": -3508.89,
+  "mean_trade": -4.1,
+  "win_rate": 0.464,
+  "avg_win": 110.16,
+  "avg_loss": -103.15,
+  "payoff": 1.07,
+  "profit_factor": 0.93,
+  "mean_day": -1.31,
+  "sd_day": 81.72,
+  "sharpe_daily_ann": -0.25,
+  "best_day": 965.79,
+  "worst_day": -198.24,
+  "worst_intraday_low": -198.24,
+  "max_drawdown": -8547.92,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 145,
+  "flattens": 709,
+  "costs_total": 7368.2,
+  "t_stat_daily": -0.83
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst   best
+year                                                      
+2016   249      58 -1170.0      -4.7    45.2 -189.0  163.0
+2017   251      40  -999.0      -4.0    39.0 -190.0  205.0
+2018   249      92  2332.0       9.4   117.4 -196.0  928.0
+2019   252      75 -1074.0      -4.3    60.5 -193.0  367.0
+2020   253     122  2117.0       8.4   133.7 -196.0  966.0
+2021   252      64 -1582.0      -6.3    64.8 -197.0  281.0
+2022   251     136  -876.0      -3.5    89.2 -198.0  286.0
+2023   250      81 -1491.0      -6.0    56.8 -196.0  221.0
+2024   252      62 -1601.0      -6.4    85.8 -195.0  762.0
+2025   250      64 -1110.0      -4.4    69.0 -198.0  320.0
+2026   170      61  1944.0      11.4    83.6 -196.0  625.0
+```
+
+## IN-SAMPLE — 2007 sessions
+```
+{
+  "sessions": 2007,
+  "trades": 668,
+  "trades_per_day": 0.33,
+  "net_pnl": -2742.2,
+  "mean_trade": -4.11,
+  "win_rate": 0.469,
+  "avg_win": 106.91,
+  "avg_loss": -101.98,
+  "payoff": 1.05,
+  "profit_factor": 0.92,
+  "mean_day": -1.37,
+  "sd_day": 82.46,
+  "sharpe_daily_ann": -0.26,
+  "best_day": 965.79,
+  "worst_day": -197.73,
+  "worst_intraday_low": -197.73,
+  "max_drawdown": -5108.17,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 112,
+  "flattens": 555,
+  "costs_total": 6582.74,
+  "t_stat_daily": -0.74
+}
+```
+
+## HOLDOUT (out-of-sample) — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 187,
+  "trades_per_day": 0.28,
+  "net_pnl": -766.69,
+  "mean_trade": -4.1,
+  "win_rate": 0.449,
+  "avg_win": 122.3,
+  "avg_loss": -107.18,
+  "payoff": 1.14,
+  "profit_factor": 0.93,
+  "mean_day": -1.14,
+  "sd_day": 79.5,
+  "sharpe_daily_ann": -0.23,
+  "best_day": 762.24,
+  "worst_day": -198.24,
+  "worst_intraday_low": -198.24,
+  "max_drawdown": -3505.43,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 33,
+  "flattens": 154,
+  "costs_total": 785.46,
+  "t_stat_daily": -0.37
+}
+```
+
+## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)
+
+Scale = multiple of the sizing above. P(pass) is the share of bootstrapped
+paths that hit the target before touching the trailing floor (intraday-touch aware).
+
+### MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 4.5% | 49.1% | 246 | drawdown (intraday touch) |
+| 2x | 15.4% | 81.9% | 115.0 | drawdown (intraday touch) |
+| 3x | 16.1% | 83.5% | 64 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 486, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1975.0)}**  (intraday-low fraction used: 0.258)
+
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 7.2% — anything close to this number is luck, not edge.
+
+## Falsification gates (from the research brief)
+
+- days with intraday low <= -$700: **0** of 2679
+- days with intraday low <= -$1,000: **0**
+- daily t-stat: **-0.83** (want > 2 on the holdout, not just in-sample)
+- costs as share of gross: **68%**

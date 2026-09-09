@@ -1,0 +1,114 @@
+{
+  "per": {
+    "IN-SAMPLE:S1r": {
+      "sessions": 2007,
+      "net": 20530,
+      "mean_day": 10.23,
+      "sd_day": 130.3,
+      "sharpe": 1.25,
+      "t": 3.52,
+      "worst_day": -387,
+      "best_day": 1588
+    },
+    "IN-SAMPLE:S2r": {
+      "sessions": 2007,
+      "net": -2742,
+      "mean_day": -1.37,
+      "sd_day": 82.5,
+      "sharpe": -0.26,
+      "t": -0.74,
+      "worst_day": -198,
+      "best_day": 966
+    },
+    "IN-SAMPLE:S3r": {
+      "sessions": 2007,
+      "net": -9731,
+      "mean_day": -4.85,
+      "sd_day": 91.7,
+      "sharpe": -0.84,
+      "t": -2.37,
+      "worst_day": -496,
+      "best_day": 758
+    },
+    "IN-SAMPLE:combined": {
+      "sessions": 2007,
+      "net": 8057,
+      "mean_day": 4.01,
+      "sd_day": 162.3,
+      "sharpe": 0.39,
+      "t": 1.11,
+      "worst_day": -750,
+      "best_day": 1605
+    },
+    "HOLDOUT:S1r": {
+      "sessions": 672,
+      "net": 3874,
+      "mean_day": 5.77,
+      "sd_day": 100.5,
+      "sharpe": 0.91,
+      "t": 1.49,
+      "worst_day": -375,
+      "best_day": 653
+    },
+    "HOLDOUT:S2r": {
+      "sessions": 672,
+      "net": -767,
+      "mean_day": -1.14,
+      "sd_day": 79.5,
+      "sharpe": -0.23,
+      "t": -0.37,
+      "worst_day": -198,
+      "best_day": 762
+    },
+    "HOLDOUT:S3r": {
+      "sessions": 672,
+      "net": -639,
+      "mean_day": -0.95,
+      "sd_day": 72.2,
+      "sharpe": -0.21,
+      "t": -0.34,
+      "worst_day": -354,
+      "best_day": 444
+    },
+    "HOLDOUT:combined": {
+      "sessions": 672,
+      "net": 2469,
+      "mean_day": 3.67,
+      "sd_day": 126.4,
+      "sharpe": 0.46,
+      "t": 0.75,
+      "worst_day": -526,
+      "best_day": 762
+    }
+  },
+  "corr": {
+    "S1r": {
+      "S1r": 1.0,
+      "S2r": 0.05,
+      "S3r": -0.28
+    },
+    "S2r": {
+      "S1r": 0.05,
+      "S2r": 1.0,
+      "S3r": -0.05
+    },
+    "S3r": {
+      "S1r": -0.28,
+      "S2r": -0.05,
+      "S3r": 1.0
+    }
+  },
+  "mc": {
+    "all": 0.33166666666666667,
+    "holdout": 0.35333333333333333,
+    "zero_edge": 0.20216666666666666
+  },
+  "gates": {
+    "combined holdout Sharpe >= 1.2": false,
+    "combined holdout t >= 1.5": false,
+    "P(pass) all-years >= 65%": false,
+    "P(pass) holdout >= 55%": false,
+    "zero sessions below -$1,000": true,
+    "max pairwise correlation < 0.5": true
+  }
+}

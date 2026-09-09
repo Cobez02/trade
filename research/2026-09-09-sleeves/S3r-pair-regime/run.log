@@ -1,0 +1,124 @@
+loaded 2,140,777 SPY bars, 2,064,414 QQQ bars
+# Pair backtest: SPY vs QQQ (alpaca)
+
+z_entry 1.5, z_exit 0.5, stop 1.0 sigma, risk $200, slippage 0.045/0.019 $/share/side, regime=True
+
+## Summary
+```
+{
+  "sessions": 2679,
+  "trades": 782,
+  "trades_per_day": 0.29,
+  "net_pnl": -10370.44,
+  "mean_trade": -13.26,
+  "win_rate": 0.442,
+  "avg_win": 130.81,
+  "avg_loss": -127.59,
+  "payoff": 1.03,
+  "profit_factor": 0.81,
+  "mean_day": -3.87,
+  "sd_day": 87.22,
+  "sharpe_daily_ann": -0.7,
+  "best_day": 757.77,
+  "worst_day": -495.77,
+  "worst_intraday_low": -495.77,
+  "max_drawdown": -11752.84,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "costs_total": 19011.54,
+  "t_stat_daily": -2.3,
+  "exits": {
+    "reverted": 123,
+    "stop": 163,
+    "flatten": 496,
+    "daily kill": 0
+  }
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst   best
+year                                                      
+2016   249      64 -1021.0      -4.1    65.4 -264.0  269.0
+2017   251      33 -1233.0      -4.9    48.4 -283.0  225.0
+2018   249      95 -1571.0      -6.3   104.7 -447.0  352.0
+2019   252      66  -401.0      -1.6    51.9 -266.0  193.0
+2020   253      97 -2095.0      -8.3   135.6 -358.0  758.0
+2021   252      78  -868.0      -3.4    89.1 -408.0  321.0
+2022   251     113  -895.0      -3.6   124.5 -496.0  417.0
+2023   250      64 -1647.0      -6.6    72.9 -264.0  330.0
+2024   252      53  -300.0      -1.2    61.6 -354.0  290.0
+2025   250      63  -984.0      -3.9    66.9 -320.0  276.0
+2026   170      56   644.0       3.8    91.9 -287.0  444.0
+```
+
+## IN-SAMPLE — 2007 sessions
+```
+{
+  "sessions": 2007,
+  "trades": 610,
+  "trades_per_day": 0.3,
+  "net_pnl": -9731.27,
+  "mean_trade": -15.95,
+  "win_rate": 0.433,
+  "avg_win": 135.49,
+  "avg_loss": -131.5,
+  "payoff": 1.03,
+  "profit_factor": 0.79,
+  "mean_day": -4.85,
+  "sd_day": 91.68,
+  "sharpe_daily_ann": -0.84,
+  "best_day": 757.77,
+  "worst_day": -495.77,
+  "worst_intraday_low": -495.77,
+  "max_drawdown": -9792.3,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "costs_total": 16785.76,
+  "t_stat_daily": -2.37,
+  "exits": {
+    "reverted": 101,
+    "stop": 130,
+    "flatten": 379,
+    "daily kill": 0
+  }
+}
+```
+
+## HOLDOUT — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 172,
+  "trades_per_day": 0.26,
+  "net_pnl": -639.17,
+  "mean_trade": -3.72,
+  "win_rate": 0.477,
+  "avg_win": 115.74,
+  "avg_loss": -112.55,
+  "payoff": 1.03,
+  "profit_factor": 0.94,
+  "mean_day": -0.95,
+  "sd_day": 72.19,
+  "sharpe_daily_ann": -0.21,
+  "best_day": 443.87,
+  "worst_day": -354.03,
+  "worst_intraday_low": -359.29,
+  "max_drawdown": -2323.11,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "costs_total": 2225.78,
+  "t_stat_daily": -0.34,
+  "exits": {
+    "reverted": 22,
+    "stop": 33,
+    "flatten": 117,
+    "daily kill": 0
+  }
+}
+```
+
+## Prop-rule Monte Carlo — MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+P(pass) 1x = **1.6%**, median days 208.0
+Zero-edge control: P(pass) = 8.2%
