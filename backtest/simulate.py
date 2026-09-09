@@ -165,7 +165,8 @@ class Backtester:
         return res
 
     # ------------------------------------------------------------------
-    def run(self, contexts: list[SessionContext], max_drawdown: float = 2_000.0) -> "Report":
+    def run(self, contexts: list[SessionContext], max_drawdown: float = 2_000.0,
+            session_filter: dict | None = None) -> "Report":
         """Research replay: the account has an UNBOUNDED buffer.
 
         The trailing-drawdown floor and the buffer gate are live-account
@@ -178,6 +179,9 @@ class Backtester:
         acct = AccountState(0.0, 0.0, -1e12)
         for ctx in contexts:
             if not ctx.ready():
+                continue
+            if session_filter is not None and not session_filter.get(ctx.day, True):
+                self.days.append(DayResult(str(ctx.day), 0.0, 0.0, 0.0, 0, "regime off"))
                 continue
             r = self.run_session(ctx, acct)
             acct.balance += r.pnl
@@ -224,7 +228,7 @@ class Report:
             "days_below_-700": sum(1 for x in self.daily_lows if x <= -700),
             "stop_outs": sum(1 for x in t if x.reason_out == "stop"),
             "flattens": sum(1 for x in t if x.reason_out == "flatten"),
-            "costs_total": round(sum(2 * x.qty * (self.inst.commission_side + self.inst.slippage_cost) for x in t), 2),
+            "costs_total": round(sum(2 * getattr(x, "qty", 1) * (self.inst.commission_side + self.inst.slippage_cost) for x in t), 2),
         }
         # t-stat of mean daily P&L (day-clustered by construction)
         if sd_d and len(d) > 1:

@@ -35,27 +35,56 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: python -m tests.test_core
-      - name: SPY refined (mult 1.5, no entries after 11:00 CT)
+      - name: S2 last-half-hour, QQQ
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5", SPXF_NO_ENTRY_AFTER: "11:00" }
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_FLATTEN_AT: "14:58", SPXF_NO_ENTRY_AFTER: "14:35" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-refined/SPY-as-MES; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --mult 1.5 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
-      - name: QQQ refined, band exit
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S2-lasthalf-QQQ; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --strategy lasthalf \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: S2 last-half-hour, SPY (standalone report only)
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_NO_ENTRY_AFTER: "11:00" }
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5", SPXF_FLATTEN_AT: "14:58", SPXF_NO_ENTRY_AFTER: "14:35" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-refined/QQQ-as-MNQ; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --mult 1.5 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
-      - name: QQQ refined, hold-to-close
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S2-lasthalf-SPY; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --strategy lasthalf \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: S2 last-half-hour, QQQ, regime switch
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_NO_ENTRY_AFTER: "11:00" }
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_FLATTEN_AT: "14:58", SPXF_NO_ENTRY_AFTER: "14:35" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-refined/QQQ-as-MNQ-trail-none; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --mult 1.5 --trail none \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S2r-lasthalf-QQQ-regime; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --strategy lasthalf --regime \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: S1 noise-area, QQQ, regime switch
+        if: always()
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S1r-noise-QQQ-regime; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: S3 pair spread SPY/QQQ
+        if: always()
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S3-pair; mkdir -p "$OUT"
+          python -u -m scripts.run_pair_backtest --source alpaca --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: S3 pair spread, regime switch
+        if: always()
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)-sleeves/S3r-pair-regime; mkdir -p "$OUT"
+          python -u -m scripts.run_pair_backtest --source alpaca --regime --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: portfolios (pre-registered sets)
+        if: always()
+        run: |
+          set -o pipefail; D=research/$(date -u +%F)-sleeves
+          python -u -m scripts.portfolio --holdout-from "$HOLDOUT" --mc 6000 --out "$D/portfolio-base" \
+            S1=research/2026-09-07-lots10/QQQ-as-MNQ/noise_area_QQQ_alpaca_daily.csv \
+            S2=$D/S2-lasthalf-QQQ/lasthalf_QQQ_alpaca_daily.csv \
+            S3=$D/S3-pair/pair_spread_SPYQQQ_alpaca_daily.csv 2>&1 | tail -60
+          python -u -m scripts.portfolio --holdout-from "$HOLDOUT" --mc 6000 --out "$D/portfolio-regime" \
+            S1r=$D/S1r-noise-QQQ-regime/noise_area_regime_QQQ_alpaca_daily.csv \
+            S2r=$D/S2r-lasthalf-QQQ-regime/lasthalf_regime_QQQ_alpaca_daily.csv \
+            S3r=$D/S3r-pair-regime/pair_spread_regime_SPYQQQ_alpaca_daily.csv 2>&1 | tail -60
       - name: show results in the job summary
         if: always()
         run: |
@@ -89,7 +118,7 @@ jobs:
           git stash -u -- cache state_futures.json days.jsonl 2>/dev/null || true
           git add -f research/ 2>/dev/null || true
           git status --short
-          ls research/*/*/*_report.md || { echo "NO REPORT FILES PRODUCED"; exit 1; }
+          ls research/*/*/*report.md || { echo "NO REPORT FILES PRODUCED"; exit 1; }
           git commit -m "backtest $(date -u +%FT%H:%MZ): SPY-as-MES, QQQ-as-MNQ ($START..$END, holdout $HOLDOUT)"
           ok=0; for i in 1 2 3; do
             git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && { echo "PUSHED"; ok=1; break; } || { echo "retry $i"; sleep 5; }

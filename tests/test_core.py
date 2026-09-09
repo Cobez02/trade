@@ -244,5 +244,58 @@ check("keeps trading through a long losing stretch (no buffer-gate freeze)", len
       (len(days_traded), days_traded[-1:], str(days[-3])))
 check("...and the cumulative loss is well past a $2,000 floor (so the freeze would have bitten)", sum(rep_l.daily) < -2000, sum(rep_l.daily))
 
+
+# ---------------------------------------------------------------------------
+print("SLEEVE 2 — last half hour")
+from strategy.lasthalf import LastHalfHourStrategy, vol_regime
+lh = LastHalfHourStrategy(min_move=0.0005, confirm=True, instrument=C.MES)
+ctxL = ctxs[20]
+dec_early = lh.on_bar_close(ctxL, 3, 0, 0, ctxL.open_ts + pd.Timedelta(minutes=120))
+check("no decision before the second-to-last bar", dec_early.target == 0 and "not the decision" in dec_early.reason, dec_early)
+slotd = ctxL.n_slots - 2
+dec = lh.on_bar_close(ctxL, slotd, 0, 0, ctxL.open_ts + pd.Timedelta(minutes=30 * (slotd + 1)))
+r_first = float(ctxL.bars_n["close"].iloc[0]) / ctxL.prev_close - 1
+r_late = float(ctxL.bars_n["close"].iloc[slotd]) / float(ctxL.bars_n["close"].iloc[slotd - 1]) - 1
+expected = (1 if (r_first > 0.0005 and r_late >= 0) else (-1 if (r_first < -0.0005 and r_late <= 0) else 0))
+check("decision at 14:30 follows sign(r_first) with r_late confirmation", dec.target == expected, (dec, r_first, r_late))
+hold = lh.on_bar_close(ctxL, slotd + 1, 1, 1, ctxL.close_ts)
+check("holds to the close once in", hold.target == 1)
+mask = vol_regime(ctxs, lookback=5, min_obs=3)
+check("regime mask covers every session and is boolean", len(mask) == len(ctxs) and all(isinstance(v, bool) for v in mask.values()))
+ctxs_alt = build_sessions(bars2, 30, 14, 1.0)
+m1 = vol_regime(ctxs, lookback=5, min_obs=3); m2 = vol_regime(ctxs_alt, lookback=5, min_obs=3)
+check("regime has no look-ahead: changing the last session cannot change earlier flags",
+      all(m1[c.day] == m2[c.day] for c in ctxs[:-1]))
+
+print("SLEEVE 3 — pair spread")
+from backtest.pair_simulate import PairBacktester
+# leg B = an independent random walk (so the spread has a real sigma) with a 1% divergence on the last day that reverts
+bars_b = synth_days(days, seed=7)
+lastm = bars_b.index.tz_convert("America/Chicago").date == days[-1]
+idxl = bars_b.index[lastm]; k = len(idxl)
+bump = np.array([1 + 0.012 * min(i, 60) / 60 if i < 90 else 1 + 0.012 * max(0, (150 - i)) / 60 for i in range(k)])   # +1.2% by 09:30, back to 0 by 11:00
+for col in ("open", "high", "low", "close"):
+    bars_b.loc[lastm, col] = bars_b.loc[lastm, col].to_numpy() * bump
+pb = PairBacktester(z_entry=1.5, z_exit=0.5, stop_sigma=1.0, risk=200, slip_a=0.045, slip_b=0.019)
+repp = pb.run(bars, bars_b)
+tl = [t for t in repp.trades if t.day == str(days[-1])]
+check("pair: divergence day produced one spread trade", len(tl) == 1, [(t.day, t.side, t.reason_out) for t in repp.trades][-3:])
+if tl:
+    check("pair: faded the outperformer (short QQQ / long SPY when QQQ ran up)", tl[0].side == -1, tl[0])
+    check("pair: closed on reversion or flatten and made money net of both legs' costs", tl[0].reason_out in ("reverted", "flatten") and tl[0].pnl > 0, tl[0])
+check("pair: summary and prop score work", "net_pnl" in repp.summary() and "pass" in repp.prop_score(R.PRESETS["mffu_core_50k"], n=200))
+
+print("PORTFOLIO")
+import subprocess, tempfile, json as _json
+tmp = tempfile.mkdtemp()
+pd.DataFrame([d.__dict__ for d in rep.days]).to_csv(f"{tmp}/a.csv", index=False)
+pd.DataFrame([d.__dict__ for d in repp.days]).to_csv(f"{tmp}/b.csv", index=False)
+r = subprocess.run([sys.executable, "-m", "scripts.portfolio", f"A={tmp}/a.csv", f"B={tmp}/b.csv", "--holdout-from", str(days[15]),
+                    "--mc", "200", "--out", f"{tmp}/out"], capture_output=True, text=True, cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ok = r.returncode == 0 and os.path.exists(f"{tmp}/out/portfolio_summary.json")
+check("portfolio script runs and writes the summary with gates", ok, r.stderr[-400:])
+if ok:
+    j = _json.load(open(f"{tmp}/out/portfolio_summary.json")); check("portfolio: six gates evaluated", len(j["gates"]) == 6, j["gates"])
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

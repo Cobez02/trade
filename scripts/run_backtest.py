@@ -29,6 +29,7 @@ import config as C
 from data import bars as D
 from strategy.noise_area import build_sessions, NoiseAreaStrategy
 from strategy.orb import ORBStrategy
+from strategy.lasthalf import LastHalfHourStrategy, vol_regime
 from risk.engine import RiskEngine
 from risk import rules as R
 from backtest.simulate import Backtester, Report
@@ -47,16 +48,22 @@ def run(args) -> dict:
     print(f"{len(ctxs)} sessions; {sum(c.ready() for c in ctxs)} with bands")
     if args.strategy == "orb":
         strat = ORBStrategy(instrument=inst)
+    elif args.strategy == "lasthalf":
+        strat = LastHalfHourStrategy(min_move=args.min_move, confirm=not args.no_confirm,
+                                     long_only=args.long_only, instrument=inst)
     else:
         strat = NoiseAreaStrategy(trail=args.trail, allow_reversal=not args.no_reversal,
                                   long_only=args.long_only, max_entries=args.max_entries,
                                   stop_range_mult=args.stop_mult, instrument=inst)
     risk = RiskEngine(inst, args.risk, args.max_contracts, args.kill, args.cap, args.max_dd,
                       max_entries=args.max_entries)
-    rep = Backtester(strat, risk, inst, args.bar_minutes, verbose=args.verbose).run(ctxs, args.max_dd)
+    flt = vol_regime(ctxs, pct=args.regime_pct) if args.regime else None
+    if flt is not None:
+        on = sum(1 for c in ctxs if flt.get(c.day, True)); print(f"regime switch: {on}/{len(ctxs)} sessions ON")
+    rep = Backtester(strat, risk, inst, args.bar_minutes, verbose=args.verbose).run(ctxs, args.max_dd, session_filter=flt)
 
     os.makedirs(args.out, exist_ok=True)
-    tag = f"{strat.name}_{inst.symbol}_{args.source}"
+    tag = f"{strat.name}{'_regime' if args.regime else ''}_{inst.symbol}_{args.source}"
     rep.trades_frame().to_csv(os.path.join(args.out, f"{tag}_trades.csv"), index=False)
     pd.DataFrame([d.__dict__ for d in rep.days]).to_csv(os.path.join(args.out, f"{tag}_daily.csv"), index=False)
 
@@ -126,7 +133,10 @@ def main(argv=None):
     ap.add_argument("--instrument", default=C.INSTRUMENT.symbol)
     ap.add_argument("--start", default="2019-06-01"); ap.add_argument("--end", default="2026-09-01")
     ap.add_argument("--period", default="60d"); ap.add_argument("--interval", default="5m")
-    ap.add_argument("--strategy", default="noise_area", choices=["noise_area", "orb"])
+    ap.add_argument("--strategy", default="noise_area", choices=["noise_area", "orb", "lasthalf"])
+    ap.add_argument("--min-move", type=float, default=0.0005); ap.add_argument("--no-confirm", action="store_true")
+    ap.add_argument("--regime", action="store_true", help="volatility-regime switch (trade only when trailing vol >= expanding median)")
+    ap.add_argument("--regime-pct", type=float, default=0.5)
     ap.add_argument("--bar-minutes", type=int, default=C.BAR_MINUTES)
     ap.add_argument("--lookback", type=int, default=C.NOISE_LOOKBACK_DAYS)
     ap.add_argument("--mult", type=float, default=C.NOISE_MULT)
