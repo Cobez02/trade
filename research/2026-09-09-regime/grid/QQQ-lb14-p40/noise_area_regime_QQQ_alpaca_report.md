@@ -1,0 +1,131 @@
+# Backtest: noise_area on QQQ (alpaca)
+
+`instrument=QQQ tick=0.01/$0.1 point=$10.0 rt_cost=$0.38 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT`
+
+## Summary (all sessions)
+```
+{
+  "sessions": 2679,
+  "trades": 1427,
+  "trades_per_day": 0.53,
+  "net_pnl": 11127.22,
+  "mean_trade": 7.8,
+  "win_rate": 0.369,
+  "avg_win": 167.73,
+  "avg_loss": -85.57,
+  "payoff": 1.96,
+  "profit_factor": 1.14,
+  "mean_day": 4.15,
+  "sd_day": 123.0,
+  "sharpe_daily_ann": 0.54,
+  "best_day": 984.24,
+  "worst_day": -387.02,
+  "worst_intraday_low": -387.02,
+  "max_drawdown": -3205.7,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 190,
+  "flattens": 427,
+  "costs_total": 7112.84,
+  "t_stat_daily": 1.75
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst   best
+year                                                      
+2016   249     107  -241.0      -1.0   110.6 -384.0  805.0
+2017   251      70 -1261.0      -5.0    71.3 -314.0  377.0
+2018   249     160  6078.0      24.4   169.4 -384.0  966.0
+2019   252     125 -1652.0      -6.6    98.7 -381.0  520.0
+2020   253     166   460.0       1.8   149.4 -387.0  851.0
+2021   252     133  2229.0       8.8   115.3 -372.0  596.0
+2022   251     213  2862.0      11.4   158.6 -384.0  984.0
+2023   250     143  1734.0       6.9   124.5 -384.0  670.0
+2024   252     109  1124.0       4.5   120.8 -375.0  653.0
+2025   250     101  -454.0      -1.8    90.2 -373.0  406.0
+2026   170     100   249.0       1.5    99.3 -292.0  374.0
+```
+
+## IN-SAMPLE — 2007 sessions
+```
+{
+  "sessions": 2007,
+  "trades": 1117,
+  "trades_per_day": 0.56,
+  "net_pnl": 10208.58,
+  "mean_trade": 9.14,
+  "win_rate": 0.367,
+  "avg_win": 171.17,
+  "avg_loss": -84.83,
+  "payoff": 2.02,
+  "profit_factor": 1.17,
+  "mean_day": 5.09,
+  "sd_day": 128.54,
+  "sharpe_daily_ann": 0.63,
+  "best_day": 984.24,
+  "worst_day": -387.02,
+  "worst_intraday_low": -387.02,
+  "max_drawdown": -3205.7,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 144,
+  "flattens": 332,
+  "costs_total": 6444.42,
+  "t_stat_daily": 1.77
+}
+```
+
+## HOLDOUT (out-of-sample) — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 310,
+  "trades_per_day": 0.46,
+  "net_pnl": 918.64,
+  "mean_trade": 2.96,
+  "win_rate": 0.374,
+  "avg_win": 155.59,
+  "avg_loss": -88.3,
+  "payoff": 1.76,
+  "profit_factor": 1.05,
+  "mean_day": 1.37,
+  "sd_day": 104.66,
+  "sharpe_daily_ann": 0.21,
+  "best_day": 653.2,
+  "worst_day": -375.42,
+  "worst_intraday_low": -375.42,
+  "max_drawdown": -1688.26,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 46,
+  "flattens": 95,
+  "costs_total": 668.42,
+  "t_stat_daily": 0.34
+}
+```
+
+## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)
+
+Scale = multiple of the sizing above. P(pass) is the share of bootstrapped
+paths that hit the target before touching the trailing floor (intraday-touch aware).
+
+### MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 39.7% | 36.0% | 214.5 | drawdown (intraday touch) |
+| 2x | 40.2% | 59.7% | 74.0 | drawdown (intraday touch) |
+| 3x | 32.8% | 67.2% | 40.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 360, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-648.0)}**  (intraday-low fraction used: 0.222)
+
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 18.5% — anything close to this number is luck, not edge.
+
+## Falsification gates (from the research brief)
+
+- days with intraday low <= -$700: **0** of 2679
+- days with intraday low <= -$1,000: **0**
+- daily t-stat: **1.75** (want > 2 on the holdout, not just in-sample)
+- costs as share of gross: **39%**

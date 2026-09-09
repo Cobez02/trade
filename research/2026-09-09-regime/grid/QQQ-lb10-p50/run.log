@@ -1,0 +1,137 @@
+loaded 2,064,414 bars 2016-01-04 09:00:00+00:00 .. 2026-09-04 23:59:00+00:00
+2682 sessions; 2679 with bands
+regime switch: 1686/2682 sessions ON
+# Backtest: noise_area on QQQ (alpaca)
+
+`instrument=QQQ tick=0.01/$0.1 point=$10.0 rt_cost=$0.38 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT`
+
+## Summary (all sessions)
+```
+{
+  "sessions": 2679,
+  "trades": 1197,
+  "trades_per_day": 0.45,
+  "net_pnl": 13271.3,
+  "mean_trade": 11.09,
+  "win_rate": 0.385,
+  "avg_win": 165.28,
+  "avg_loss": -85.49,
+  "payoff": 1.93,
+  "profit_factor": 1.21,
+  "mean_day": 4.95,
+  "sd_day": 114.54,
+  "sharpe_daily_ann": 0.69,
+  "best_day": 984.24,
+  "worst_day": -387.02,
+  "worst_intraday_low": -387.02,
+  "max_drawdown": -3390.49,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 153,
+  "flattens": 356,
+  "costs_total": 5608.42,
+  "t_stat_daily": 2.24
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst   best
+year                                                      
+2016   249      83   597.0       2.4   107.9 -384.0  805.0
+2017   251      58  -978.0      -3.9    65.7 -314.0  377.0
+2018   249     132  5566.0      22.4   156.1 -381.0  966.0
+2019   252     105 -1663.0      -6.6    84.6 -381.0  520.0
+2020   253     152   927.0       3.7   145.8 -387.0  851.0
+2021   252     105  2313.0       9.2    97.3 -232.0  596.0
+2022   251     213  2862.0      11.4   158.6 -384.0  984.0
+2023   250      99   961.0       3.8   107.9 -384.0  670.0
+2024   252      80  1498.0       5.9   108.6 -375.0  653.0
+2025   250      84   313.0       1.3    83.5 -373.0  406.0
+2026   170      86   874.0       5.1    96.5 -292.0  374.0
+```
+
+## IN-SAMPLE — 2007 sessions
+```
+{
+  "sessions": 2007,
+  "trades": 947,
+  "trades_per_day": 0.47,
+  "net_pnl": 10585.8,
+  "mean_trade": 11.18,
+  "win_rate": 0.378,
+  "avg_win": 168.25,
+  "avg_loss": -84.29,
+  "payoff": 2.0,
+  "profit_factor": 1.21,
+  "mean_day": 5.27,
+  "sd_day": 119.93,
+  "sharpe_daily_ann": 0.7,
+  "best_day": 984.24,
+  "worst_day": -387.02,
+  "worst_intraday_low": -387.02,
+  "max_drawdown": -3390.49,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 116,
+  "flattens": 274,
+  "costs_total": 5104.54,
+  "t_stat_daily": 1.97
+}
+```
+
+## HOLDOUT (out-of-sample) — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 250,
+  "trades_per_day": 0.37,
+  "net_pnl": 2685.5,
+  "mean_trade": 10.74,
+  "win_rate": 0.412,
+  "avg_win": 154.97,
+  "avg_loss": -90.31,
+  "payoff": 1.72,
+  "profit_factor": 1.2,
+  "mean_day": 4.0,
+  "sd_day": 96.64,
+  "sharpe_daily_ann": 0.66,
+  "best_day": 653.2,
+  "worst_day": -375.42,
+  "worst_intraday_low": -375.42,
+  "max_drawdown": -1216.68,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 37,
+  "flattens": 82,
+  "costs_total": 503.88,
+  "t_stat_daily": 1.07
+}
+```
+
+## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)
+
+Scale = multiple of the sizing above. P(pass) is the share of bootstrapped
+paths that hit the target before touching the trailing floor (intraday-touch aware).
+
+### MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 42.8% | 23.1% | 232 | drawdown (intraday touch) |
+| 2x | 46.4% | 53.3% | 90 | drawdown (intraday touch) |
+| 3x | 37.8% | 62.1% | 49.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 367, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-107.0)}**  (intraday-low fraction used: 0.219)
+
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 15.9% — anything close to this number is luck, not edge.
+
+## Falsification gates (from the research brief)
+
+- days with intraday low <= -$700: **0** of 2679
+- days with intraday low <= -$1,000: **0**
+- daily t-stat: **2.24** (want > 2 on the holdout, not just in-sample)
+- costs as share of gross: **30%**
+
+
+wrote research/2026-09-09-regime/grid/QQQ-lb10-p50/noise_area_regime_QQQ_alpaca_report.md

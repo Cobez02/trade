@@ -1,0 +1,44 @@
+{
+  "summary": {
+    "sessions": 2679,
+    "trades": 1427,
+    "trades_per_day": 0.53,
+    "net_pnl": 11127.22,
+    "mean_trade": 7.8,
+    "win_rate": 0.369,
+    "avg_win": 167.73,
+    "avg_loss": -85.57,
+    "payoff": 1.96,
+    "profit_factor": 1.14,
+    "mean_day": 4.15,
+    "sd_day": 123.0,
+    "sharpe_daily_ann": 0.54,
+    "best_day": 984.24,
+    "worst_day": -387.02,
+    "worst_intraday_low": -387.02,
+    "max_drawdown": -3205.7,
+    "days_below_-1000": 0,
+    "days_below_-700": 0,
+    "stop_outs": 190,
+    "flattens": 427,
+    "costs_total": 7112.84,
+    "t_stat_daily": 1.75
+  },
+  "prop": {
+    "mffu_core_50k@1x": {
+      "pass": 0.3973333333333333,
+      "fail": 0.36,
+      "median_days": 214.5
+    },
+    "mffu_core_50k@2x": {
+      "pass": 0.4023333333333333,
+      "fail": 0.597,
+      "median_days": 74.0
+    },
+    "mffu_core_50k@3x": {
+      "pass": 0.328,
+      "fail": 0.672,
+      "median_days": 40.0
+    }
+  }
+}

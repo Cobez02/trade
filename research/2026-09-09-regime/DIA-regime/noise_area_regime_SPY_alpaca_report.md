@@ -1,0 +1,131 @@
+# Backtest: noise_area on SPY (alpaca)
+
+`instrument=SPY tick=0.01/$0.1 point=$10.0 rt_cost=$1.24 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT`
+
+## Summary (all sessions)
+```
+{
+  "sessions": 2681,
+  "trades": 1175,
+  "trades_per_day": 0.44,
+  "net_pnl": -19528.03,
+  "mean_trade": -16.62,
+  "win_rate": 0.277,
+  "avg_win": 166.75,
+  "avg_loss": -86.73,
+  "payoff": 1.92,
+  "profit_factor": 0.74,
+  "mean_day": -7.28,
+  "sd_day": 110.33,
+  "sharpe_daily_ann": -1.05,
+  "best_day": 1461.96,
+  "worst_day": -376.48,
+  "worst_intraday_low": -376.48,
+  "max_drawdown": -19936.25,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 176,
+  "flattens": 295,
+  "costs_total": 18544.2,
+  "t_stat_daily": -3.42
+}
+```
+
+## By year
+```
+      days  trades     pnl  mean_day  sd_day  worst    best
+year                                                       
+2016   249     104 -3160.0     -12.7    85.4 -366.0   436.0
+2017   251      22 -1573.0      -6.3    44.2 -363.0   284.0
+2018   251     170    93.0       0.4   173.6 -370.0  1462.0
+2019   252      96 -3604.0     -14.3    71.5 -366.0   319.0
+2020   253     183 -4164.0     -16.5   141.8 -376.0  1007.0
+2021   252      84  -149.0      -0.6    72.6 -317.0   465.0
+2022   251     204 -2632.0     -10.5   179.3 -371.0  1407.0
+2023   250      63 -1779.0      -7.1    73.7 -364.0   471.0
+2024   252      64 -1476.0      -5.9    68.2 -362.0   566.0
+2025   250     113   589.0       2.4   113.7 -364.0   626.0
+2026   170      72 -1675.0      -9.9    86.4 -373.0   357.0
+```
+
+## IN-SAMPLE — 2009 sessions
+```
+{
+  "sessions": 2009,
+  "trades": 926,
+  "trades_per_day": 0.46,
+  "net_pnl": -16966.74,
+  "mean_trade": -18.32,
+  "win_rate": 0.27,
+  "avg_win": 169.13,
+  "avg_loss": -87.65,
+  "payoff": 1.93,
+  "profit_factor": 0.71,
+  "mean_day": -8.45,
+  "sd_day": 115.83,
+  "sharpe_daily_ann": -1.16,
+  "best_day": 1461.96,
+  "worst_day": -376.48,
+  "worst_intraday_low": -376.48,
+  "max_drawdown": -17239.79,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 145,
+  "flattens": 227,
+  "costs_total": 15626.48,
+  "t_stat_daily": -3.27
+}
+```
+
+## HOLDOUT (out-of-sample) — 672 sessions
+```
+{
+  "sessions": 672,
+  "trades": 249,
+  "trades_per_day": 0.37,
+  "net_pnl": -2561.29,
+  "mean_trade": -10.29,
+  "win_rate": 0.301,
+  "avg_win": 158.83,
+  "avg_loss": -83.18,
+  "payoff": 1.91,
+  "profit_factor": 0.82,
+  "mean_day": -3.81,
+  "sd_day": 91.83,
+  "sharpe_daily_ann": -0.66,
+  "best_day": 625.54,
+  "worst_day": -372.88,
+  "worst_intraday_low": -372.88,
+  "max_drawdown": -3149.97,
+  "days_below_-1000": 0,
+  "days_below_-700": 0,
+  "stop_outs": 31,
+  "flattens": 68,
+  "costs_total": 2917.72,
+  "t_stat_daily": -1.08
+}
+```
+
+## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)
+
+Scale = multiple of the sizing above. P(pass) is the share of bootstrapped
+paths that hit the target before touching the trailing floor (intraday-touch aware).
+
+### MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+
+| scale | P(pass) | P(fail) | median days | top fail reason |
+|---|---|---|---|---|
+| 1x | 1.9% | 92.2% | 154 | drawdown (intraday touch) |
+| 2x | 4.3% | 95.5% | 62 | drawdown (intraday touch) |
+| 3x | 5.4% | 94.4% | 37.0 | drawdown (intraday touch) |
+
+This exact history replayed once at 1x: **{'result': 'fail', 'days': 92, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1727.0)}**  (intraday-low fraction used: 0.191)
+
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 14.4% — anything close to this number is luck, not edge.
+
+## Falsification gates (from the research brief)
+
+- days with intraday low <= -$700: **0** of 2681
+- days with intraday low <= -$1,000: **0**
+- daily t-stat: **-3.42** (want > 2 on the holdout, not just in-sample)
+- costs as share of gross: **49%**
