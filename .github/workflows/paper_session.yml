@@ -36,17 +36,20 @@ jobs:
       - run: pip install -r requirements.txt
       - name: self-test
         run: python -m tests.test_core
-      - name: run session (exits immediately on the wrong DST variant or a holiday)
+      - name: run session (exits immediately on the wrong DST variant, a holiday, or after the flatten)
         run: |
-          python - <<'PY'
-          import datetime as dt, sys
+          SKIP=$(python - <<'PY'
+          import datetime as dt
           from data import sessions as S
           now = S.now_ct(); d = now.date()
-          if not S.is_trading_day(d): print("holiday/weekend"); sys.exit(0)
           o, c, f, _ = S.session_bounds(d)
-          if now < o - dt.timedelta(minutes=12): print("wrong DST variant (too early)"); sys.exit(0)
-          if now >= f: print("after flatten"); sys.exit(0)
+          if not S.is_trading_day(d): print("holiday/weekend")
+          elif now < o - dt.timedelta(minutes=12): print("wrong DST variant (too early)")
+          elif now >= f: print("after flatten")
           PY
+          )
+          if [ -n "$SKIP" ]; then echo "skip: $SKIP"; exit 0; fi
+          mkdir -p logs
           python -m live.runner --broker alpaca --symbol SPY --instrument SPY --source alpaca \
             --start $(date -u -d '-45 days' +%F) --end $(date -u +%F) ${SPXF_UNTIL:+--until $SPXF_UNTIL}
       - name: telegram end-of-day summary (optional, uses the existing SPXBOT_TG_* secrets)
@@ -65,5 +68,6 @@ jobs:
           git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
           git add state_futures.json 2>/dev/null || true
           git add days.jsonl 2>/dev/null || true
+          git add logs/ 2>/dev/null || true
           git commit -m "paper session $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
           git push || echo "push skipped"

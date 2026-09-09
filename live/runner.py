@@ -38,8 +38,18 @@ from risk.engine import RiskEngine, DayState, AccountState
 from broker.base import Broker, SimBroker
 
 
+LOG_FILE = None   # set by the runner to logs/<day>.log (committed by the workflow) so sessions can be audited
+
+
 def log(msg: str):
-    print(f"[{S.now_ct().strftime('%H:%M:%S')}] {msg}", flush=True)
+    line = f"[{S.now_ct().strftime('%H:%M:%S')}] {msg}"
+    print(line, flush=True)
+    if LOG_FILE:
+        try:
+            with open(LOG_FILE, "a") as f:
+                f.write(line + "\n")
+        except Exception:
+            pass
 
 
 class Runner:
@@ -279,6 +289,10 @@ def main(argv=None):
     day_idx = hist.index.tz_convert(C.SESSION_TZ).date
     today_bars = hist[day_idx == day]
     lookback = hist[day_idx < day]
+    global LOG_FILE
+    if not args.dry_run:
+        os.makedirs(os.path.join(C.ROOT, "logs"), exist_ok=True)
+        LOG_FILE = os.path.join(C.ROOT, "logs", f"{day}.log")
     r = Runner(broker, strat, risk, args.symbol, inst, lookback, day, dry_run=args.dry_run, until=args.until)
     if args.dry_run:
         if today_bars.empty:
