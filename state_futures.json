@@ -1,21 +1,11 @@
 {
-  "day": "2026-09-08",
+  "day": "2026-09-09",
   "symbol": "SPY",
   "entries": 0,
   "halted": false,
   "halt_reason": "",
   "last_slot": -1,
   "stop_pts": 0.0,
-  "start_day_pnl": 0.0,
-  "updated": "2026-09-08T15:15:27.421117-05:00",
-  "eod": {
-    "day": "2026-09-08",
-    "symbol": "SPY",
-    "day_pnl": 0.0,
-    "entries": 0,
-    "halted": "",
-    "acct_balance": 0.0,
-    "floor": -2000.0,
-    "buffer": 2000.0
-  }
+  "start_day_pnl": null,
+  "updated": "2026-09-09T12:11:42.966107-05:00"
 }
