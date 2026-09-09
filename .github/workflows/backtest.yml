@@ -35,20 +35,27 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: python -m tests.test_core
-      - name: SPY proxy for MES
+      - name: SPY refined (mult 1.5, no entries after 11:00 CT)
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5" }
+        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5", SPXF_NO_ENTRY_AFTER: "11:00" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-lots10/SPY-as-MES; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
-      - name: QQQ proxy for MNQ
+          set -o pipefail; OUT=research/$(date -u +%F)-refined/SPY-as-MES; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --mult 1.5 \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+      - name: QQQ refined, band exit
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_NO_ENTRY_AFTER: "11:00" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-lots10/QQQ-as-MNQ; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -150
+          set -o pipefail; OUT=research/$(date -u +%F)-refined/QQQ-as-MNQ; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --mult 1.5 \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
+      - name: QQQ refined, hold-to-close
+        if: always()
+        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9", SPXF_NO_ENTRY_AFTER: "11:00" }
+        run: |
+          set -o pipefail; OUT=research/$(date -u +%F)-refined/QQQ-as-MNQ-trail-none; mkdir -p "$OUT"
+          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --mult 1.5 --trail none \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 5000 --max-contracts 60 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -60
       - name: show results in the job summary
         if: always()
         run: |
