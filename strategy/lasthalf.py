@@ -23,8 +23,10 @@ Zarattini et al. report Sharpe rising with VIX; our own year table agreed. A
 regime filter is a different animal from a signal-strength filter (which
 failed): it removes whole sessions from dead tape rather than skimming the
 strongest breakouts. Rule: session d is ON if the trailing 14-day mean |daily
-return| is at or above the EXPANDING median of that statistic over all prior
-sessions (no look-ahead; first 60 sessions always ON).
+return| — measured through the PREVIOUS session's close, never d's own — is at
+or above the EXPANDING median of that statistic over all prior sessions (first
+60 sessions always ON). Batch 4 (2026-09-09) shipped with d's own close inside
+the window; that leaked the day's move into the day's flag and was withdrawn.
 """
 from __future__ import annotations
 import datetime as dt
@@ -75,11 +77,13 @@ def vol_regime(contexts: list[SessionContext], lookback: int = 14, min_obs: int 
     its own history (prior sessions only). Also returns the statistic for reporting."""
     days = [c.day for c in contexts]
     closes = np.array([float(c.bars_1m["close"].iloc[-1]) for c in contexts])
-    rets = np.abs(np.diff(closes) / closes[:-1])          # |return| of session i vs i-1, index i-1
+    rets = np.abs(np.diff(closes) / closes[:-1])          # rets[k] = |return INTO session k+1|
     stat = np.full(len(days), np.nan)
     for i in range(len(days)):
-        if i >= lookback:
-            stat[i] = np.mean(rets[i - lookback:i])       # uses sessions < i only
+        # for session i use only returns into sessions <= i-1, i.e. rets[.. i-2]: the last
+        # usable term is rets[i-2]; session i's own close must never enter its own flag
+        if i - 1 >= lookback:
+            stat[i] = np.mean(rets[i - 1 - lookback:i - 1])
     out = {}; hist = []
     for i, d in enumerate(days):
         if np.isnan(stat[i]) or len(hist) < min_obs:

@@ -266,6 +266,12 @@ ctxs_alt = build_sessions(bars2, 30, 14, 1.0)
 m1 = vol_regime(ctxs, lookback=5, min_obs=3); m2 = vol_regime(ctxs_alt, lookback=5, min_obs=3)
 check("regime has no look-ahead: changing the last session cannot change earlier flags",
       all(m1[c.day] == m2[c.day] for c in ctxs[:-1]))
+# the leak that batch 4 had: session i's OWN close must not move session i's flag
+bars3 = bars.copy(); mid = days[18]; mm = bars3.index.tz_convert("America/Chicago").date == mid
+bars3.loc[mm, ["open", "high", "low", "close"]] *= 1.03                       # +3% day, huge |return| into and out of it
+m3 = vol_regime(build_sessions(bars3, 30, 14, 1.0), lookback=5, min_obs=3)
+check("regime: a session's own move cannot change its own flag", m1[mid] == m3[mid], (m1[mid], m3[mid]))
+check("regime: ...but it does change the NEXT sessions' flags (the statistic is alive)", any(m1[c.day] != m3[c.day] for c in ctxs[19:24]))
 
 print("SLEEVE 3 — pair spread")
 from backtest.pair_simulate import PairBacktester

@@ -57,7 +57,7 @@ def run(args) -> dict:
                                   stop_range_mult=args.stop_mult, instrument=inst)
     risk = RiskEngine(inst, args.risk, args.max_contracts, args.kill, args.cap, args.max_dd,
                       max_entries=args.max_entries)
-    flt = vol_regime(ctxs, pct=args.regime_pct) if args.regime else None
+    flt = vol_regime(ctxs, lookback=args.regime_lookback, pct=args.regime_pct) if args.regime else None
     if flt is not None:
         on = sum(1 for c in ctxs if flt.get(c.day, True)); print(f"regime switch: {on}/{len(ctxs)} sessions ON")
     rep = Backtester(strat, risk, inst, args.bar_minutes, verbose=args.verbose).run(ctxs, args.max_dd, session_filter=flt)
@@ -137,6 +137,7 @@ def main(argv=None):
     ap.add_argument("--min-move", type=float, default=0.0005); ap.add_argument("--no-confirm", action="store_true")
     ap.add_argument("--regime", action="store_true", help="volatility-regime switch (trade only when trailing vol >= expanding median)")
     ap.add_argument("--regime-pct", type=float, default=0.5)
+    ap.add_argument("--regime-lookback", type=int, default=14)
     ap.add_argument("--bar-minutes", type=int, default=C.BAR_MINUTES)
     ap.add_argument("--lookback", type=int, default=C.NOISE_LOOKBACK_DAYS)
     ap.add_argument("--mult", type=float, default=C.NOISE_MULT)
