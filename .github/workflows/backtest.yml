@@ -35,111 +35,36 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: python -m tests.test_core
-      - name: S1 QQQ, corrected regime
+      - name: overnight A — IWM as 1 M2K
         if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/QQQ-regime; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: SPY baseline (no switch)
+          set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-A-IWM-M2K; mkdir -p "$OUT"
+          python -u -m backtest.overnight --source alpaca --symbol IWM --notional 12000 --slip-side 0.035 \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: overnight B — DIA as 1 MYM
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/SPY-base; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: SPY + corrected regime
+          set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-B-DIA-MYM; mkdir -p "$OUT"
+          python -u -m backtest.overnight --source alpaca --symbol DIA --notional 23000 --slip-side 0.030 \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: overnight C — QQQ as 1 MNQ (sizing counter-example)
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "4.5" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/SPY-regime; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol SPY --instrument SPY --regime \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: IWM baseline (no switch)
+          set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-C-QQQ-MNQ; mkdir -p "$OUT"
+          python -u -m backtest.overnight --source alpaca --symbol QQQ --notional 50000 --slip-side 0.019 \
+            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
+      - name: portfolios — intraday Nasdaq + overnight micros, TradeDay presets
         if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "3.6" }
         run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/IWM-base; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol IWM --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: IWM + corrected regime
-        if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "3.6" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/IWM-regime; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol IWM --instrument SPY --regime \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: DIA baseline (no switch)
-        if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "6.2" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/DIA-base; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol DIA --instrument SPY \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: DIA + corrected regime
-        if: always()
-        env: { SPXF_INSTRUMENT: SPY, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "6.2" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/DIA-regime; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol DIA --instrument SPY --regime \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 10 pct 0.4
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb10-p40; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 10 --regime-pct 0.4 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 10 pct 0.5
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb10-p50; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 10 --regime-pct 0.5 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 10 pct 0.6
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb10-p60; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 10 --regime-pct 0.6 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 14 pct 0.4
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb14-p40; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 14 --regime-pct 0.4 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 14 pct 0.6
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb14-p60; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 14 --regime-pct 0.6 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 20 pct 0.4
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb20-p40; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 20 --regime-pct 0.4 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 20 pct 0.5
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb20-p50; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 20 --regime-pct 0.5 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
-      - name: grid QQQ lookback 20 pct 0.6
-        if: always()
-        env: { SPXF_INSTRUMENT: QQQ, SPXF_PROXY_SHARES: "10", SPXF_PROXY_SLIP_CENTS: "1.9" }
-        run: |
-          set -o pipefail; OUT=research/$(date -u +%F)-regime/grid/QQQ-lb20-p60; mkdir -p "$OUT"
-          python -u -m scripts.run_backtest --source alpaca --symbol QQQ --instrument QQQ --regime --regime-lookback 20 --regime-pct 0.6 --lookback 14 \
-            --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 3000 --max-contracts 60 --presets mffu_core_50k --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -30
+          set -o pipefail; D=research/$(date -u +%F)-overnight
+          for P in tradeday_50k_static tradeday_100k_static mffu_core_50k; do
+            python -u -m scripts.portfolio --holdout-from "$HOLDOUT" --mc 6000 --preset $P --out "$D/portfolio-$P" \
+              S1=research/2026-09-07-lots10/QQQ-as-MNQ/noise_area_QQQ_alpaca_daily.csv \
+              ONA=$D/ON-A-IWM-M2K/overnight_IWM_alpaca_daily.csv \
+              ONB=$D/ON-B-DIA-MYM/overnight_DIA_alpaca_daily.csv 2>&1 | tail -45
+          done
+          python -u -m scripts.portfolio --holdout-from "$HOLDOUT" --mc 6000 --preset tradeday_100k_static --out "$D/portfolio-overnight-only-100k" \
+            ONA=$D/ON-A-IWM-M2K/overnight_IWM_alpaca_daily.csv ONB=$D/ON-B-DIA-MYM/overnight_DIA_alpaca_daily.csv 2>&1 | tail -30
       - name: show results in the job summary
         if: always()
         run: |

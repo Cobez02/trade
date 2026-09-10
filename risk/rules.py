@@ -66,6 +66,14 @@ PRESETS = {
     "tradeify_growth_50k": RuleSet("Tradeify Growth $50K", 50_000, 3_000, 2_000, "eod", True,
                                    0, False, 0.35, False, 0, 0, 0, 0, 5, "15:59", True,
                                    "bots OK all stages; 35% consistency on sim-funded; VERIFY"),
+    # TradeDay static-drawdown accounts (VERIFY on purchase: target, floor, consistency 30% eval-only,
+    # no daily loss limit, weekday overnight allowed, no weekend, own EAs allowed, news restrictions).
+    "tradeday_50k_static": RuleSet("TradeDay $50K static", 50_000, 3_000, 2_000, "static", True,
+                                   0, False, 0.30, False, 5, 0, 0, 0, 5, "overnight ok", True,
+                                   "static floor; 30% consistency eval only; weekday overnight OK; VERIFY"),
+    "tradeday_100k_static": RuleSet("TradeDay $100K static", 100_000, 6_000, 3_000, "static", True,
+                                    0, False, 0.30, False, 5, 0, 0, 0, 10, "overnight ok", True,
+                                    "static floor; VERIFY"),
     # Apex intraday-trailing variant — here only to show why intraday trailing
     # is brutal; Apex bans bots on funded accounts anyway.
     "apex_intraday_50k": RuleSet("Apex 4.0 $50K intraday-trail", 50_000, 3_000, 2_500, "intraday",
