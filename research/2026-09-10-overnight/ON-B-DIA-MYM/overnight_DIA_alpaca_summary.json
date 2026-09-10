@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "nights": 2145,
+    "net_pnl": 6841.81,
+    "mean_night": 3.19,
+    "sd_night": 150.65,
+    "win_rate": 0.529,
+    "profit_factor": 1.07,
+    "sharpe_ann": 0.34,
+    "t_stat": 0.98,
+    "worst_night": -1572.15,
+    "best_night": 1380.37,
+    "max_drawdown": -3881.26,
+    "nights_below_-700": 5,
+    "nights_below_-1000": 2
+  },
+  "prop": {
+    "tradeday_50k_static": 0.2805,
+    "tradeday_100k_static": 0.04525,
+    "mffu_core_50k": 0.31725
+  }
+}

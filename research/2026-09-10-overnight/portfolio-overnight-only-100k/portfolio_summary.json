@@ -1,0 +1,87 @@
+{
+  "per": {
+    "IN-SAMPLE:ONA": {
+      "sessions": 2011,
+      "net": 1824,
+      "mean_day": 0.91,
+      "sd_day": 89.6,
+      "sharpe": 0.16,
+      "t": 0.45,
+      "worst_day": -878,
+      "best_day": 695
+    },
+    "IN-SAMPLE:ONB": {
+      "sessions": 2011,
+      "net": 5096,
+      "mean_day": 2.53,
+      "sd_day": 142.1,
+      "sharpe": 0.28,
+      "t": 0.8,
+      "worst_day": -1572,
+      "best_day": 1380
+    },
+    "IN-SAMPLE:combined": {
+      "sessions": 2011,
+      "net": 6919,
+      "mean_day": 3.44,
+      "sd_day": 227.4,
+      "sharpe": 0.24,
+      "t": 0.68,
+      "worst_day": -2451,
+      "best_day": 2075
+    },
+    "HOLDOUT:ONA": {
+      "sessions": 672,
+      "net": 1276,
+      "mean_day": 1.9,
+      "sd_day": 93.5,
+      "sharpe": 0.32,
+      "t": 0.53,
+      "worst_day": -572,
+      "best_day": 657
+    },
+    "HOLDOUT:ONB": {
+      "sessions": 672,
+      "net": 1746,
+      "mean_day": 2.6,
+      "sd_day": 109.6,
+      "sharpe": 0.38,
+      "t": 0.61,
+      "worst_day": -604,
+      "best_day": 836
+    },
+    "HOLDOUT:combined": {
+      "sessions": 672,
+      "net": 3022,
+      "mean_day": 4.5,
+      "sd_day": 194.0,
+      "sharpe": 0.37,
+      "t": 0.6,
+      "worst_day": -1176,
+      "best_day": 1327
+    }
+  },
+  "corr": {
+    "ONA": {
+      "ONA": 1.0,
+      "ONB": 0.89
+    },
+    "ONB": {
+      "ONA": 0.89,
+      "ONB": 1.0
+    }
+  },
+  "mc": {
+    "all": 0.20166666666666666,
+    "holdout": 0.2235,
+    "zero_edge": 0.12116666666666667
+  },
+  "gates": {
+    "combined holdout Sharpe >= 1.2": false,
+    "combined holdout t >= 1.5": false,
+    "P(pass) all-years >= 65%": false,
+    "P(pass) holdout >= 55%": false,
+    "zero sessions below -$1,000": false,
+    "max pairwise correlation < 0.5": false
+  }
+}
