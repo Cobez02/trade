@@ -1,0 +1,46 @@
+# Overnight sleeve on Alpaca PAPER: buy QQQM (~$50k, one MNQ-equivalent) at 14:57 CT, sell at 08:31 CT
+# the next session. Weekday nights only. Jobs start hours early and wait (GitHub's cron runs late);
+# separate concurrency group from the intraday session so both run in parallel.
+name: overnight-session
+on:
+  schedule:
+    - cron: "0 16 * * 1-4"    # 11:00 CT CDT / 10:00 CST — buy job, waits until 14:57 CT  (Mon-Thu)
+    - cron: "0 18 * * 1-4"    # 13:00 / 12:00 CT — backup buy job (skips if already bought)
+    - cron: "0 9 * * 2-5"     # 04:00 CT CDT / 03:00 CST — sell job, waits until 08:31 CT (Tue-Fri)
+    - cron: "0 11 * * 2-5"    # 06:00 / 05:00 CT — backup sell job (no-op if nothing held)
+  workflow_dispatch:
+    inputs:
+      action: { default: "sell", description: "buy or sell" }
+permissions:
+  contents: write
+concurrency:
+  group: spxf-overnight
+  cancel-in-progress: false
+jobs:
+  overnight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+      SPXF_ALPACA_FEED: ${{ vars.SPXF_ALPACA_FEED || 'sip' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: buy or sell (decided by the clock, or by the dispatch input)
+        run: |
+          ACTION="${{ github.event.inputs.action }}"
+          if [ -z "$ACTION" ]; then
+            H=$(TZ=America/Chicago date +%H); if [ "$H" -ge 10 ]; then ACTION=buy; else ACTION=sell; fi
+          fi
+          echo "action=$ACTION"
+          python -m live.overnight --action "$ACTION"
+      - name: commit the record
+        if: always()
+        run: |
+          git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
+          git add days_overnight.jsonl state_overnight.json 2>/dev/null || true
+          git commit -m "overnight $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
+          for i in 1 2 3; do git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && break || { git rebase --abort 2>/dev/null; sleep 5; }; done

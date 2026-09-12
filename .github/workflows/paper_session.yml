@@ -1,16 +1,17 @@
-# Alpaca PAPER forward-test of the futures logic on the SPY/QQQ share proxy.
-# Two jobs per day because a full session (6h22m) exceeds the 6h job limit.
-# Crons are listed for BOTH daylight and standard time; the runner checks the
-# exchange clock and exits at once if it started on the wrong variant, so the
-# November switch needs no edit. (This is the bug that would have carried the
-# options bot's positions overnight all winter.)
+# Alpaca PAPER forward-test of the futures logic on the QQQ share proxy (1 lot = 20 shares ~ 1/4 MNQ).
+# GitHub's cron is best-effort and ran the 08:26 CT jobs ~3.5 h late on 9/10 and 9/11, so the lab was
+# awake only after the entry cutoff. Therefore: jobs start HOURS before the open (the runner sleeps
+# until 08:30 CT), each job hands over on ELAPSED RUNTIME (--max-minutes), and the concurrency group
+# chains them: while one runs, the newest scheduled job waits and starts the moment it ends. Whatever
+# the delay, something is awake from the open to the flatten. Times below are UTC; the runner works
+# in the exchange zone, so DST needs no edit.
 name: paper-session
 on:
   schedule:
-    - cron: "26 13 * * 1-5"   # 08:26 CT in CDT  (first half)
-    - cron: "26 14 * * 1-5"   # 08:26 CT in CST
-    - cron: "40 16 * * 1-5"   # 11:40 CT in CDT  (second half)
-    - cron: "40 17 * * 1-5"   # 11:40 CT in CST
+    - cron: "0 10 * * 1-5"    # 05:00 CT (CDT) / 04:00 CT (CST): job 1, sleeps until the open
+    - cron: "0 13 * * 1-5"    # 08:00 / 07:00 CT: pending behind job 1, takes over when it exits
+    - cron: "0 16 * * 1-5"    # 11:00 / 10:00 CT: replaces the pending job so the afternoon is covered
+    - cron: "0 18 * * 1-5"    # 13:00 / 12:00 CT: safety net for a badly delayed morning
   workflow_dispatch:
 permissions:
   contents: write      # the run commits state / reports back; the repo default token is read-only
@@ -44,14 +45,13 @@ jobs:
           now = S.now_ct(); d = now.date()
           o, c, f, _ = S.session_bounds(d)
           if not S.is_trading_day(d): print("holiday/weekend")
-          elif now < o - dt.timedelta(minutes=12): print("wrong DST variant (too early)")
           elif now >= f: print("after flatten")
           PY
           )
           if [ -n "$SKIP" ]; then echo "skip: $SKIP"; exit 0; fi
           mkdir -p logs
-          python -m live.runner --broker alpaca --symbol SPY --instrument SPY --source alpaca \
-            --start $(date -u -d '-45 days' +%F) --end $(date -u +%F) ${SPXF_UNTIL:+--until $SPXF_UNTIL}
+          python -m live.runner --broker alpaca --symbol QQQ --instrument QQQ --source alpaca \
+            --start $(date -u -d '-45 days' +%F) --end $(date -u +%F) --max-minutes 345
       - name: telegram end-of-day summary (optional, uses the existing SPXBOT_TG_* secrets)
         if: always()
         env:

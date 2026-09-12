@@ -56,9 +56,10 @@ class Runner:
     def __init__(self, broker: Broker, strategy, risk: RiskEngine, symbol: str, instrument,
                  history_1m: pd.DataFrame, day: dt.date, state_path: str = C.STATE_PATH,
                  bar_minutes: int = C.BAR_MINUTES, acct: AccountState | None = None,
-                 feed_bars=None, dry_run: bool = False, until: str | None = None):
+                 feed_bars=None, dry_run: bool = False, until: str | None = None, max_minutes: int = 0):
         self.b = broker; self.strat = strategy; self.risk = risk
         self.until = (dt.datetime.combine(day, dt.time(*map(int, until.split(":"))), S.TZ) if until else None)
+        self.deadline = (S.now_ct() + dt.timedelta(minutes=max_minutes)) if max_minutes else None
         self.symbol = symbol; self.inst = instrument
         self.history = history_1m           # prior sessions' 1-min bars (UTC), for the lookback
         self.day = day; self.bar_minutes = bar_minutes
@@ -210,11 +211,11 @@ class Runner:
             now = S.now_ct()
             if now.date() != self.day:
                 log("date rolled; exiting"); return
-            if self.until and now >= self.until:
+            if (self.until and now >= self.until) or (self.deadline and now >= self.deadline):
                 p = self.b.position(self.symbol)
                 self._save_state()
-                log(f"handover at {self.until.strftime('%H:%M')} CT: exiting with position {p.qty:+d} "
-                    f"(resting stop {self.b.resting_stop_qty(self.symbol)}) for the next job")
+                log(f"handover ({'clock' if self.until and now >= self.until else 'runtime limit'}): exiting with "
+                    f"position {p.qty:+d} (resting stop {self.b.resting_stop_qty(self.symbol)}) for the next job")
                 return
             if not self.step(now):
                 return
@@ -273,6 +274,7 @@ def main(argv=None):
     ap.add_argument("--cap", type=float, default=C.DAILY_PROFIT_CAP)
     ap.add_argument("--max-dd", type=float, default=2000.0)
     ap.add_argument("--until", default=None, help="HH:MM CT: exit cleanly (no flatten) for a job handover")
+    ap.add_argument("--max-minutes", type=int, default=0, help="exit cleanly after this many minutes of runtime (job handover)")
     args = ap.parse_args(argv)
 
     inst, strat, risk, broker = build(args)
@@ -293,7 +295,8 @@ def main(argv=None):
     if not args.dry_run:
         os.makedirs(os.path.join(C.ROOT, "logs"), exist_ok=True)
         LOG_FILE = os.path.join(C.ROOT, "logs", f"{day}.log")
-    r = Runner(broker, strat, risk, args.symbol, inst, lookback, day, dry_run=args.dry_run, until=args.until)
+    r = Runner(broker, strat, risk, args.symbol, inst, lookback, day, dry_run=args.dry_run, until=args.until,
+               max_minutes=args.max_minutes)
     if args.dry_run:
         if today_bars.empty:
             raise SystemExit(f"no bars for {day} in the history source")
