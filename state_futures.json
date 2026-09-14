@@ -1,21 +1,11 @@
 {
-  "day": "2026-09-11",
-  "symbol": "SPY",
+  "day": "2026-09-14",
+  "symbol": "QQQ",
+  "start_day_pnl": 0.0,
   "entries": 0,
   "halted": false,
   "halt_reason": "",
-  "last_slot": 11,
+  "last_slot": 5,
   "stop_pts": 0.0,
-  "start_day_pnl": 0.0,
-  "updated": "2026-09-11T14:52:02.054750-05:00",
-  "eod": {
-    "day": "2026-09-11",
-    "symbol": "SPY",
-    "day_pnl": 0.0,
-    "entries": 0,
-    "halted": "",
-    "acct_balance": 0.0,
-    "floor": -2000.0,
-    "buffer": 2000.0
-  }
+  "updated": "2026-09-14T11:30:02.305014-05:00"
 }
