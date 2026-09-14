@@ -1,2 +1,7 @@
 [11:05:31] session 2026-09-14: open 08:30 flatten 14:52 CT | instrument=SPY tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
 [11:30:02] slot 5 close 710.29 band [701.73, 716.48] pos +0 -> +0 (inside noise)
+[13:20:08] session 2026-09-14: open 08:30 flatten 14:52 CT | instrument=SPY tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[13:30:02] slot 9 close 711.91 band [701.66, 716.55] pos +0 -> +0 (inside noise)
+[14:00:02] slot 10 close 711.83 band [701.38, 716.84] pos +0 -> +0 (inside noise)
+[14:30:02] slot 11 close 711.03 band [701.44, 716.78] pos +0 -> +0 (inside noise)
+[14:52:42] END OF DAY {'day': '2026-09-14', 'symbol': 'QQQ', 'day_pnl': 0.0, 'entries': 0, 'halted': '', 'acct_balance': 0.0, 'floor': -2000.0, 'buffer': 2000.0}
