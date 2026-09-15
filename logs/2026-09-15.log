@@ -4,3 +4,13 @@
 [10:01:02] stop 4x @ 702.37 (2.26 pts) -> True OrderStatus.PENDING_NEW
 [10:30:02] slot 3 close 705.66 band [706.37, 711.58] pos +1 -> -1 (reverse to short: close 705.66 < lower 706.37)
 [10:30:02] FLATTEN +4 QQQ: reverse to short: close 705.66 < lower 706.37 -> True closed
+[12:27:44] session 2026-09-15: open 08:30 flatten 14:52 CT | instrument=SPY tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[12:30:02] slot 7 close 704.80 band [706.27, 711.68] pos +0 -> -1 (short: close 704.80 < lower 706.27)
+[12:30:02] ENTER -1x3 QQQ (short: close 704.80 < lower 706.27) -> True OrderStatus.PENDING_NEW
+[12:31:02] stop 3x @ 702.11 (2.70 pts) -> True OrderStatus.PENDING_NEW
+[13:00:02] slot 8 close 705.01 band [706.33, 711.62] pos +1 -> +0 (exit long: close 705.01 < upper 711.62)
+[13:00:02] FLATTEN +3 QQQ: exit long: close 705.01 < upper 711.62 -> True closed
+[13:30:02] slot 9 close 705.39 band [706.52, 711.43] pos +0 -> +0 (inside noise)
+[14:00:02] slot 10 close 704.73 band [706.35, 711.60] pos +0 -> +0 (inside noise)
+[14:30:02] slot 11 close 704.36 band [706.47, 711.49] pos +0 -> +0 (inside noise)
+[14:52:02] END OF DAY {'day': '2026-09-15', 'symbol': 'QQQ', 'day_pnl': -92.06, 'entries': 2, 'halted': '', 'acct_balance': -92.06, 'floor': -2000.0, 'buffer': 1907.94}

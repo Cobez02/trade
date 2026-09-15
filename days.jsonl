@@ -5,3 +5,4 @@
 {"day": "2026-09-10", "symbol": "SPY", "day_pnl": 0.0, "entries": 0, "halted": "", "acct_balance": 0.0, "floor": -2000.0, "buffer": 2000.0}
 {"day": "2026-09-11", "symbol": "SPY", "day_pnl": 0.0, "entries": 0, "halted": "", "acct_balance": 0.0, "floor": -2000.0, "buffer": 2000.0}
 {"day": "2026-09-14", "symbol": "QQQ", "day_pnl": 0.0, "entries": 0, "halted": "", "acct_balance": 0.0, "floor": -2000.0, "buffer": 2000.0}
+{"day": "2026-09-15", "symbol": "QQQ", "day_pnl": -92.06, "entries": 2, "halted": "", "acct_balance": -92.06, "floor": -2000.0, "buffer": 1907.94}
