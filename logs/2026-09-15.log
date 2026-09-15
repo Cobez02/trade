@@ -1,0 +1,6 @@
+[09:35:26] session 2026-09-15: open 08:30 flatten 14:52 CT | instrument=SPY tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:00:02] slot 2 close 704.48 band [706.72, 711.23] pos +0 -> -1 (short: close 704.48 < lower 706.72)
+[10:00:02] ENTER -1x4 QQQ (short: close 704.48 < lower 706.72) -> True OrderStatus.PENDING_NEW
+[10:01:02] stop 4x @ 702.37 (2.26 pts) -> True OrderStatus.PENDING_NEW
+[10:30:02] slot 3 close 705.66 band [706.37, 711.58] pos +1 -> -1 (reverse to short: close 705.66 < lower 706.37)
+[10:30:02] FLATTEN +4 QQQ: reverse to short: close 705.66 < lower 706.37 -> True closed
