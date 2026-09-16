@@ -23,6 +23,13 @@ from broker.base import Broker, Position, OrderResult
 from data import sessions as S
 
 
+def signed_qty(qty, side) -> int:
+    """Alpaca reports SHORT positions with a NEGATIVE qty and side='short'. Negating a
+    negative made shorts look long (paper lab, 2026-09-15). Sign comes from `side` only."""
+    q = abs(int(float(qty)))
+    return q if str(side).lower().endswith("long") else -q
+
+
 class AlpacaProxyBroker(Broker):
     name = "alpaca_proxy"
 
@@ -45,8 +52,8 @@ class AlpacaProxyBroker(Broker):
             p = self.trading.get_open_position(symbol)
         except Exception:
             return Position()
-        q = int(float(p.qty)); q = q if p.side.value == "long" else -q
-        return Position(q // self.k, float(p.avg_entry_price))
+        q = signed_qty(p.qty, getattr(p.side, "value", str(p.side)))
+        return Position(int(q / self.k), float(p.avg_entry_price))
 
     def place_market(self, symbol, side, qty, tag) -> OrderResult:
         from alpaca.trading.requests import MarketOrderRequest

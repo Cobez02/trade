@@ -60,8 +60,9 @@ def main(argv=None):
             nxt += dt.timedelta(days=1)
         if (nxt - day).days > 1:
             log(f"next session is {nxt}: multi-day hold, skipping"); return
-        if st.get("held_from") == str(day):
-            log("already bought today"); return
+        held = b.position(args.symbol)            # ask the broker, not the repo (two buy jobs bought twice on 9/15)
+        if held.qty > 0 or st.get("held_from") == str(day):
+            log(f"already holding {held.qty} {args.symbol}; not buying again"); return
         _, close_ts, _, _ = S.session_bounds(day)
         target = dt.datetime.combine(day, dt.time(*map(int, args.buy_at.split(":"))), S.TZ)
         if now > close_ts:

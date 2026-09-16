@@ -303,5 +303,12 @@ check("portfolio script runs and writes the summary with gates", ok, r.stderr[-4
 if ok:
     j = _json.load(open(f"{tmp}/out/portfolio_summary.json")); check("portfolio: six gates evaluated", len(j["gates"]) == 6, j["gates"])
 
+print("BROKER — Alpaca position sign")
+from broker.alpaca_proxy import signed_qty
+check("short reported as qty -4 / side short -> -4", signed_qty("-4", "short") == -4)
+check("short reported as qty 4 / side short -> -4", signed_qty("4", "PositionSide.SHORT") == -4)
+check("long reported as qty 4 / side long -> +4", signed_qty("4", "long") == 4)
+check("long reported as qty 4.0 / side PositionSide.LONG -> +4", signed_qty("4.0", "PositionSide.LONG") == 4)
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

@@ -28,7 +28,7 @@ jobs:
       ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
       ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
       SPXF_ALPACA_FEED: ${{ vars.SPXF_ALPACA_FEED || 'sip' }}   # set the repo variable to iex if you drop Algo Trader Plus
-      SPXF_INSTRUMENT: SPY
+      SPXF_INSTRUMENT: QQQ
       SPXF_PROXY_SHARES: "20"
     steps:
       - uses: actions/checkout@v4
