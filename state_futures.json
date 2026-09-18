@@ -1,11 +1,11 @@
 {
-  "day": "2026-09-17",
+  "day": "2026-09-18",
   "symbol": "QQQ",
-  "start_day_pnl": 1382.7600000000093,
+  "start_day_pnl": 119.78000000001339,
   "entries": 0,
   "halted": false,
   "halt_reason": "",
-  "last_slot": 8,
+  "last_slot": 7,
   "stop_pts": 0.0,
-  "updated": "2026-09-17T13:00:02.467761-05:00"
+  "updated": "2026-09-18T12:30:02.429229-05:00"
 }
