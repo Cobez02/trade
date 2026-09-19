@@ -37,10 +37,6 @@ jobs:
           fi
           echo "action=$ACTION"
           python -m live.overnight --action "$ACTION"
-      - name: commit the record
+      - name: commit the record (append-only union)
         if: always()
-        run: |
-          git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
-          git add days_overnight.jsonl state_overnight.json 2>/dev/null || true
-          git commit -m "overnight $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
-          for i in 1 2 3; do git fetch -q origin main && git rebase origin/main && git push origin HEAD:main && break || { git rebase --abort 2>/dev/null; sleep 5; }; done
+        run: bash scripts/commit_records.sh "overnight"

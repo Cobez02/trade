@@ -21,7 +21,7 @@ concurrency:
 jobs:
   session:
     runs-on: ubuntu-latest
-    timeout-minutes: 215
+    timeout-minutes: 358
     env:
       # first-half crons hand over at 11:50 CT (clean exit, position + resting stop carried to job 2)
       SPXF_UNTIL: ${{ contains(fromJSON('["26 13 * * 1-5","26 14 * * 1-5"]'), github.event.schedule) && '11:50' || '' }}
@@ -62,12 +62,6 @@ jobs:
             curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
               -d chat_id="${TG_CHAT}" --data-urlencode text="spxf paper: $(tail -n1 days.jsonl)" >/dev/null || true
           fi
-      - name: commit state
+      - name: commit records (append-only union; never drops a line)
         if: always()
-        run: |
-          git config user.name spxf-bot; git config user.email bot@users.noreply.github.com
-          git add state_futures.json 2>/dev/null || true
-          git add days.jsonl 2>/dev/null || true
-          git add logs/ 2>/dev/null || true
-          git commit -m "paper session $(date -u +%FT%H:%MZ)" || echo "nothing to commit"
-          git push || echo "push skipped"
+        run: bash scripts/commit_records.sh "paper session"
