@@ -29,11 +29,19 @@ def log(msg):
     print(f"[{S.now_ct().strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def wait_until(target: dt.datetime, max_wait_min: int):
-    deadline = S.now_ct() + dt.timedelta(minutes=max_wait_min)
+def wait_until(target: dt.datetime, max_wait_min: int, late_grace_min: int = 25):
+    """Wait until `target`. If we start AFTER it, proceed anyway while still inside
+    the grace window (a late job should still trade, not silently do nothing)."""
+    now = S.now_ct()
+    if now >= target:
+        late = (now - target).total_seconds() / 60
+        log(f"started {late:.0f} min after {target.strftime('%H:%M')} CT"
+            + (" — proceeding" if late <= late_grace_min else " — past the grace window"))
+        return late <= late_grace_min
+    deadline = now + dt.timedelta(minutes=max_wait_min)
     while S.now_ct() < target:
         if S.now_ct() > deadline:
-            return False
+            log("gave up waiting (runtime limit)"); return False
         time.sleep(min(30, max(1, (target - S.now_ct()).total_seconds())))
     return True
 
@@ -67,6 +75,7 @@ def main(argv=None):
         target = dt.datetime.combine(day, dt.time(*map(int, args.buy_at.split(":"))), S.TZ)
         if now > close_ts:
             log("started after the close; skipping"); return
+        log(f"buy job: waiting until {args.buy_at} CT to buy ~${args.notional:,.0f} of {args.symbol}")
         if not wait_until(target, args.max_wait_min):
             log("gave up waiting"); return
         px = b.last_price(args.symbol); qty = int(args.notional // px)
@@ -80,8 +89,8 @@ def main(argv=None):
     else:
         p = b.position(args.symbol)
         if not p.qty:
-            log("nothing held; nothing to sell")
-            return
+            log("nothing held; nothing to sell"); return
+        log(f"sell job: holding {p.qty} {args.symbol}, waiting until {args.sell_at} CT")
         _, _, _, _ = S.session_bounds(day)
         open_ts, _, _, _ = S.session_bounds(day)
         target = dt.datetime.combine(day, dt.time(*map(int, args.sell_at.split(":"))), S.TZ)
