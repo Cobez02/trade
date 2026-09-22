@@ -1,11 +1,21 @@
 {
-  "day": "2026-09-18",
+  "day": "2026-09-22",
   "symbol": "QQQ",
-  "start_day_pnl": 119.78000000001339,
-  "entries": 0,
+  "start_day_pnl": 0.0,
+  "entries": 2,
   "halted": false,
   "halt_reason": "",
-  "last_slot": 7,
-  "stop_pts": 0.0,
-  "updated": "2026-09-18T12:30:02.429229-05:00"
+  "last_slot": 11,
+  "stop_pts": 3.42,
+  "updated": "2026-09-22T14:52:02.504664-05:00",
+  "eod": {
+    "day": "2026-09-22",
+    "symbol": "QQQ",
+    "day_pnl": 16.35,
+    "entries": 2,
+    "halted": "",
+    "acct_balance": 16.35,
+    "floor": -1983.65,
+    "buffer": 2000.0
+  }
 }
