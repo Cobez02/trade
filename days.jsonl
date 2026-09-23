@@ -8,3 +8,4 @@
 {"day": "2026-09-15", "symbol": "QQQ", "day_pnl": -92.06, "entries": 2, "halted": "", "acct_balance": -92.06, "floor": -2000.0, "buffer": 1907.94}
 {"day": "2026-09-21", "symbol": "QQQ", "day_pnl": 63.8, "entries": 1, "halted": "", "acct_balance": 63.8, "floor": -1936.2, "buffer": 2000.0}
 {"day": "2026-09-22", "symbol": "QQQ", "day_pnl": 16.35, "entries": 2, "halted": "", "acct_balance": 16.35, "floor": -1983.65, "buffer": 2000.0}
+{"day": "2026-09-23", "symbol": "QQQ", "day_pnl": 133.14, "entries": 1, "halted": "", "acct_balance": 133.14, "floor": -1866.86, "buffer": 2000.0}

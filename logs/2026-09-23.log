@@ -1,0 +1,15 @@
+[09:35:41] session 2026-09-23: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:00:02] slot 2 close 742.51 band [744.18, 750.25] pos +0 -> -1 (short: close 742.51 < lower 744.18)
+[10:00:02] ENTER -1x3 QQQ (short: close 742.51 < lower 744.18) -> True OrderStatus.PENDING_NEW
+[10:01:02] stop 3x @ 745.50 (3.03 pts) -> True OrderStatus.PENDING_NEW
+[10:30:02] slot 3 close 741.35 band [743.73, 750.71] pos -1 -> -1 (hold short)
+[11:00:02] slot 4 close 740.71 band [743.67, 750.76] pos -1 -> -1 (hold short)
+[11:30:02] slot 5 close 740.16 band [743.70, 750.73] pos -1 -> -1 (hold short)
+[12:00:02] slot 6 close 739.26 band [743.56, 750.87] pos -1 -> -1 (hold short)
+[12:30:02] slot 7 close 739.05 band [743.50, 750.93] pos -1 -> -1 (hold short)
+[13:00:02] slot 8 close 741.28 band [743.30, 751.14] pos -1 -> -1 (hold short)
+[13:30:02] slot 9 close 740.94 band [743.43, 751.00] pos -1 -> -1 (hold short)
+[14:00:02] slot 10 close 741.02 band [743.28, 751.15] pos -1 -> -1 (hold short)
+[14:30:02] slot 11 close 740.79 band [743.04, 751.40] pos -1 -> -1 (hold short)
+[14:52:02] FLATTEN -3 QQQ: session flatten -> False {"available":"0","code":40310000,"existing_qty":"60","held_for_orders":"60","message":"insufficient qty available for order (requested: 60, available: 0)","symbol":"QQQ"}
+[14:52:02] END OF DAY {'day': '2026-09-23', 'symbol': 'QQQ', 'day_pnl': 133.14, 'entries': 1, 'halted': '', 'acct_balance': 133.14, 'floor': -1866.86, 'buffer': 2000.0}
