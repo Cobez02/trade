@@ -29,6 +29,7 @@ jobs:
       ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
       SPXF_ALPACA_FEED: ${{ vars.SPXF_ALPACA_FEED || 'sip' }}   # set the repo variable to iex if you drop Algo Trader Plus
       SPXF_INSTRUMENT: QQQ
+      SPXF_OVERNIGHT_SYMBOL: QQQM     # the intraday runner sells the overnight sleeve at 08:31 CT
       SPXF_PROXY_SHARES: "20"
     steps:
       - uses: actions/checkout@v4

@@ -108,19 +108,41 @@ class Runner:
 
     # ---- orders -------------------------------------------------------------
     def _day_pnl(self) -> float:
+        # Scoped to THIS symbol when the broker can do it, so a second sleeve in the same
+        # account (the overnight QQQM hold) never moves the intraday kill switch or records.
+        if hasattr(self.b, "symbol_day_pnl"):
+            try:
+                return float(self.b.symbol_day_pnl(self.symbol))
+            except Exception as e:
+                log(f"symbol P&L unavailable ({str(e)[:80]}); using the account delta")
         a = self.b.account()
         if self.start_day_pnl is None:
             self.start_day_pnl = a["day_pnl"] if self.b.name != "sim" else 0.0
             self.state["start_day_pnl"] = self.start_day_pnl; self._save_state()
         return a["day_pnl"] - (self.start_day_pnl or 0.0)
 
-    def _flatten(self, why: str):
+    def _flatten(self, why: str) -> bool:
         p = self.b.position(self.symbol); q = p.qty
         if q:
             r = self.b.flatten(self.symbol)
             log(f"FLATTEN {q:+d} {self.symbol}: {why} -> {r.ok} {r.detail}")
-        else:
-            self.b.cancel_all(self.symbol)
+            if not r.ok:
+                log(f"!!! FLATTEN FAILED for {self.symbol}: position still open -- retrying")
+            return r.ok
+        self.b.cancel_all(self.symbol)
+        return True
+
+    def _flatten_until_flat(self, why: str, attempts: int = 8) -> bool:
+        """The session flatten is the one order that must not fail: an overnight carry breaks a
+        day-only rulebook. Keep trying until the broker confirms flat or the close arrives."""
+        for i in range(attempts):
+            if self._flatten(why if i == 0 else f"{why} (retry {i})"):
+                return True
+            if S.now_ct() >= self.c + dt.timedelta(minutes=1):
+                break
+            time.sleep(8)
+        log(f"!!! {self.symbol} NOT FLAT AT THE CLOSE -- it will be flattened at the next open")
+        return False
 
     def _enter(self, side: int, stop_pts: float, why: str):
         self.dayst.realized = self._day_pnl(); self.dayst.unrealized = 0.0
@@ -144,11 +166,49 @@ class Runner:
             return                                   # floor is in place; do nothing
         self.b.cancel_all(self.symbol)               # stale / partial / missing -> rebuild
         side = -1 if p.qty > 0 else 1
-        pts = self.entry_stop_pts or self.inst.min_stop_pts
         ref = p.avg_px or self.b.last_price(self.symbol)
+        # An adopted position with no remembered stop (a restart, or a carry) used to get the
+        # instrument's minimum -- 20 cents on QQQ, i.e. no protection at all. Use 0.5% of price.
+        pts = self.entry_stop_pts or max(self.inst.min_stop_pts, 0.005 * (ref or 0))
         stop_px = round((ref - (1 if p.qty > 0 else -1) * pts) / self.inst.tick_size) * self.inst.tick_size
         r = self.b.place_stop(self.symbol, side, abs(p.qty), stop_px, self.strat.name)
         log(f"stop {abs(p.qty)}x @ {stop_px:.2f} ({pts:.2f} pts) -> {r.ok} {r.detail}")
+
+    def _overnight_exit(self, now: dt.datetime):
+        """Sell the overnight sleeve at 08:31 CT. The overnight workflow's own sell jobs start up to
+        five hours late on GitHub's scheduler and gave up, so QQQM was held from 9/22 onward. This
+        process is already awake at the open, so it owns the exit; the workflow stays a backup."""
+        sym = os.environ.get("SPXF_OVERNIGHT_SYMBOL")
+        if not sym or self.dry or self.state.get("overnight_exit_done") or not hasattr(self.b, "_raw_qty"):
+            return
+        if now < self.o + dt.timedelta(minutes=1):
+            return
+        try:
+            q = self.b._raw_qty(sym)
+            if q == 0:
+                self.state["overnight_exit_done"] = True; self._save_state(); return
+            px = self.b.last_price(sym)
+            entry = 0.0
+            try:
+                entry = float(self.b.trading.get_open_position(sym).avg_entry_price)
+            except Exception:
+                pass
+            r = self.b.flatten(sym)
+            log(f"OVERNIGHT EXIT {q} {sym} @ ~{px:.2f} (entry {entry:.2f}) -> {r.ok} {r.detail}")
+            if r.ok:
+                self.state["overnight_exit_done"] = True; self._save_state()
+                rec = {"day": str(self.day), "action": "sell", "symbol": sym, "qty": q, "entry_px": entry,
+                       "exit_px_est": px, "pnl_est": round((px - entry) * q, 2) if entry else None,
+                       "by": "intraday-runner", "ok": True}
+                if not self.dry:
+                    with open(os.path.join(C.ROOT, "days_overnight.jsonl"), "a") as f:
+                        f.write(json.dumps(rec) + "\n")
+                    try:
+                        json.dump({}, open(os.path.join(C.ROOT, "state_overnight.json"), "w"))
+                    except Exception:
+                        pass
+        except Exception as e:
+            log(f"overnight exit error: {str(e)[:120]}")
 
     # ---- one minute -----------------------------------------------------------
     def step(self, now: dt.datetime) -> bool:
@@ -159,14 +219,24 @@ class Runner:
         p = self.b.position(self.symbol)
         day_pnl = self._day_pnl()
         self.dayst.realized = day_pnl; self.dayst.unrealized = 0.0
+        # A day-only strategy never starts a session holding something. If the broker shows a
+        # position before this session has entered anything, it was carried (9/23 -> 9/24):
+        # close it at the open instead of letting a band exit decide hours later.
+        if p.qty and self.dayst.entries == 0 and not self.state.get("carry_closed"):
+            log(f"!!! position {p.qty:+d} {self.symbol} carried from a previous session -- closing at the open")
+            if self._flatten("carried position"):
+                self.state["carry_closed"] = True; self._save_state()
+            p = self.b.position(self.symbol)
+        # the overnight sleeve's morning exit, owned by the process that is reliably awake at the open
+        self._overnight_exit(now)
         # kill-switch
         if p.qty and day_pnl <= -self.risk.daily_kill:
             self._flatten(f"daily kill: {day_pnl:+.0f}")
             self.dayst.halted = True; self.dayst.halt_reason = "daily kill"; self._save_state()
         # flatten time
         if now >= self.flat:
-            self._flatten("session flatten")
-            self._end_of_day(day_pnl)
+            self._flatten_until_flat("session flatten")
+            self._end_of_day(self._day_pnl())
             return False
         # watchdog
         if p.qty:

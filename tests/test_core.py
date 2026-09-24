@@ -310,5 +310,13 @@ check("short reported as qty 4 / side short -> -4", signed_qty("4", "PositionSid
 check("long reported as qty 4 / side long -> +4", signed_qty("4", "long") == 4)
 check("long reported as qty 4.0 / side PositionSide.LONG -> +4", signed_qty("4.0", "PositionSide.LONG") == 4)
 
+print("BROKER — symbol-scoped P&L")
+from broker.alpaca_proxy import symbol_pnl
+check("round trip today: bought 60 @100, sold 60 @101 -> +60", abs(symbol_pnl([(60,100.0),(-60,101.0)],0,0,0)-60)<1e-9)
+check("open long: bought 60 @100, marked 102 -> +120", abs(symbol_pnl([(60,100.0)],60,102.0,0)-120)<1e-9)
+check("carried short covered today: -60 carried (prev close 742.5), bought 60 @735.85 -> +399",
+      abs(symbol_pnl([(60,735.85)],0,0,742.5)-399)<0.01, symbol_pnl([(60,735.85)],0,0,742.5))
+check("another symbol's move is invisible (no fills, flat) -> 0", symbol_pnl([],0,0,0)==0)
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

@@ -94,8 +94,12 @@ def main(argv=None):
         _, _, _, _ = S.session_bounds(day)
         open_ts, _, _, _ = S.session_bounds(day)
         target = dt.datetime.combine(day, dt.time(*map(int, args.sell_at.split(":"))), S.TZ)
-        if not wait_until(target, args.max_wait_min):
-            log("gave up waiting"); return
+        _, close_ts, _, _ = S.session_bounds(day)
+        # A late sell is still a sell. The 25-minute grace is for BUYING near the close; applied to
+        # selling it meant every late GitHub start "gave up" and QQQM was held from 9/22 onward.
+        late_ok = int(max(0, (close_ts - dt.timedelta(minutes=5) - target).total_seconds() // 60))
+        if not S.is_trading_day(day) or not wait_until(target, args.max_wait_min, late_grace_min=late_ok):
+            log("not selling now (outside the session)"); return
         px_before = b.last_price(args.symbol)
         r = b.flatten(args.symbol)
         log(f"SELL {p.qty} {args.symbol} @ ~{px_before:.2f} -> {r.ok} {r.detail}")
