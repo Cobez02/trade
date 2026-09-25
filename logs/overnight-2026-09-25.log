@@ -3,3 +3,4 @@
 [09:27:09] SELL 162 QQQM @ ~305.35 -> True closed (attempt 1)
 [09:27:14] recorded: {'day': '2026-09-25', 'action': 'sell', 'symbol': 'QQQM', 'qty': 162, 'entry_px': 307.75, 'exit_px_est': 305.35, 'pnl_est': -388.8, 'held_from': None, 'ok': True}
 [11:38:46] nothing held; nothing to sell
+[13:05:23] nothing held; nothing to sell
