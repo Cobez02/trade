@@ -1,0 +1,4 @@
+[09:27:07] sell job: holding 162 QQQM, waiting until 08:31 CT
+[09:27:07] started 56 min after 08:31 CT — proceeding
+[09:27:09] SELL 162 QQQM @ ~305.35 -> True closed (attempt 1)
+[09:27:14] recorded: {'day': '2026-09-25', 'action': 'sell', 'symbol': 'QQQM', 'qty': 162, 'entry_px': 307.75, 'exit_px_est': 305.35, 'pnl_est': -388.8, 'held_from': None, 'ok': True}
