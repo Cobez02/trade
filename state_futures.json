@@ -1,5 +1,5 @@
 {
-  "day": "2026-09-29",
+  "day": "2026-09-28",
   "symbol": "QQQ",
   "overnight_exit_done": true,
   "entries": 0,
@@ -8,9 +8,9 @@
   "last_slot": 11,
   "stop_pts": 0.0,
   "start_day_pnl": null,
-  "updated": "2026-09-29T14:52:02.537102-05:00",
+  "updated": "2026-09-28T14:52:02.355646-05:00",
   "eod": {
-    "day": "2026-09-29",
+    "day": "2026-09-28",
     "symbol": "QQQ",
     "day_pnl": 0.0,
     "entries": 0,
