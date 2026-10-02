@@ -41,6 +41,18 @@ from broker.base import Broker, SimBroker
 LOG_FILE = None   # set by the runner to logs/<day>.log (committed by the workflow) so sessions can be audited
 
 
+def plan_deadline(now: dt.datetime, max_minutes: int, flat: dt.datetime, close: dt.datetime):
+    """When a job must hand over to its successor. A handover costs ~2 minutes of blindness
+    (job end, next job's checkout and history load), so it must never land in the close window:
+    if the runtime limit would expire within 25 minutes of the flatten, run to the end instead."""
+    if not max_minutes:
+        return None
+    deadline = now + dt.timedelta(minutes=max_minutes)
+    if flat - dt.timedelta(minutes=25) <= deadline <= close + dt.timedelta(minutes=10):
+        return None
+    return deadline
+
+
 def log(msg: str):
     line = f"[{S.now_ct().strftime('%H:%M:%S')}] {msg}"
     print(line, flush=True)
@@ -58,16 +70,16 @@ class Runner:
                  bar_minutes: int = C.BAR_MINUTES, acct: AccountState | None = None,
                  feed_bars=None, dry_run: bool = False, until: str | None = None, max_minutes: int = 0):
         self.b = broker; self.strat = strategy; self.risk = risk
-        self.until = (dt.datetime.combine(day, dt.time(*map(int, until.split(":"))), S.TZ) if until else None)
-        self.deadline = (S.now_ct() + dt.timedelta(minutes=max_minutes)) if max_minutes else None
         self.symbol = symbol; self.inst = instrument
         self.history = history_1m           # prior sessions' 1-min bars (UTC), for the lookback
         self.day = day; self.bar_minutes = bar_minutes
         self.state_path = state_path
-        self.acct = acct or RiskEngine.fresh_account(risk.max_drawdown)
+        self.o, self.c, self.flat, self.noent = S.session_bounds(day)
+        self.until = (dt.datetime.combine(day, dt.time(*map(int, until.split(":"))), S.TZ) if until else None)
+        self.deadline = plan_deadline(S.now_ct(), max_minutes, self.flat, self.c)
+        self.acct = acct or self._load_account(risk.max_drawdown)
         self.feed_bars = feed_bars           # optional callable -> today's 1m bars (UTC)
         self.dry = dry_run
-        self.o, self.c, self.flat, self.noent = S.session_bounds(day)
         self.state = self._load_state()
         self.dayst = DayState(entries=self.state.get("entries", 0), halted=self.state.get("halted", False),
                               halt_reason=self.state.get("halt_reason", ""))
@@ -84,6 +96,28 @@ class Runner:
         except Exception:
             pass
         return {"day": str(self.day), "symbol": self.symbol}
+
+    # ---- the evaluation account (balance / peak / trailing floor) survives across days ------
+    @staticmethod
+    def _account_path():
+        return os.path.join(C.ROOT, "account_futures.json")
+
+    def _load_account(self, max_dd: float) -> AccountState:
+        try:
+            a = json.load(open(self._account_path()))
+            return AccountState(float(a["balance"]), float(a["peak"]), float(a["floor"]))
+        except Exception:
+            return RiskEngine.fresh_account(max_dd)
+
+    def _save_account(self):
+        if self.dry:
+            return
+        try:
+            json.dump({"balance": round(self.acct.balance, 2), "peak": round(self.acct.peak, 2),
+                       "floor": round(self.acct.floor, 2), "updated": str(self.day)},
+                      open(self._account_path(), "w"), indent=2)
+        except Exception:
+            pass
 
     def _save_state(self):
         self.state.update({"day": str(self.day), "symbol": self.symbol, "entries": self.dayst.entries,
@@ -210,6 +244,49 @@ class Runner:
         except Exception as e:
             log(f"overnight exit error: {str(e)[:120]}")
 
+    def _overnight_entry(self, now: dt.datetime) -> bool:
+        """Buy the overnight sleeve just before the close (weekday nights only). Returns True while
+        there is still something to wait for, False when the session is finished."""
+        sym = os.environ.get("SPXF_OVERNIGHT_SYMBOL")
+        notional = float(os.environ.get("SPXF_OVERNIGHT_NOTIONAL", "50000"))
+        if not sym or self.dry or not hasattr(self.b, "place_market_shares"):
+            return False
+        if self.state.get("overnight_entry_done"):
+            return False
+        if self.day.weekday() >= 4:                      # no Friday -> Monday hold
+            self.state["overnight_entry_done"] = True; self._save_state(); return False
+        nxt = self.day + dt.timedelta(days=1)
+        if not S.is_trading_day(nxt):                     # holiday tomorrow: no multi-day hold
+            self.state["overnight_entry_done"] = True; self._save_state(); return False
+        buy_at = dt.datetime.combine(self.day, dt.time(14, 57), S.TZ)
+        if self.c <= dt.datetime.combine(self.day, dt.time(14, 0), S.TZ):   # early close: skip
+            self.state["overnight_entry_done"] = True; self._save_state(); return False
+        if now < buy_at:
+            return True
+        if now >= self.c:
+            log("overnight entry window missed (after the close)")
+            self.state["overnight_entry_done"] = True; self._save_state(); return False
+        try:
+            held = self.b._raw_qty(sym)
+            if held > 0:
+                log(f"overnight: already holding {held} {sym}")
+            else:
+                px = self.b.last_price(sym); shares = int(notional // px)
+                r = self.b.place_market_shares(sym, +1, shares, "overnight-buy")
+                log(f"OVERNIGHT BUY {shares} {sym} @ ~{px:.2f} (${shares * px:,.0f}) -> {r.ok} {r.detail}")
+                time.sleep(4)
+                held = self.b._raw_qty(sym)
+                rec = {"day": str(self.day), "action": "buy", "symbol": sym, "qty": held, "avg_px": px,
+                       "by": "intraday-runner", "ok": r.ok}
+                with open(os.path.join(C.ROOT, "days_overnight.jsonl"), "a") as f:
+                    f.write(json.dumps(rec) + "\n")
+                json.dump({"held_from": str(self.day), "qty": held, "avg_px": px},
+                          open(os.path.join(C.ROOT, "state_overnight.json"), "w"), indent=2)
+        except Exception as e:
+            log(f"overnight entry error: {str(e)[:120]}")
+        self.state["overnight_entry_done"] = True; self._save_state()
+        return False
+
     # ---- one minute -----------------------------------------------------------
     def step(self, now: dt.datetime) -> bool:
         """Returns False when the session is over."""
@@ -235,9 +312,12 @@ class Runner:
             self.dayst.halted = True; self.dayst.halt_reason = "daily kill"; self._save_state()
         # flatten time
         if now >= self.flat:
-            self._flatten_until_flat("session flatten")
-            self._end_of_day(self._day_pnl())
-            return False
+            if not self.state.get("eod_done"):
+                self._flatten_until_flat("session flatten")
+                self._end_of_day(self._day_pnl())
+                self.state["eod_done"] = True; self._save_state()
+            # stay alive for the overnight sleeve's entry at 14:57 CT, then leave
+            return self._overnight_entry(now)
         # watchdog
         if p.qty:
             self._ensure_stop()
@@ -269,7 +349,7 @@ class Runner:
                 "acct_balance": round(self.acct.balance, 2), "floor": round(self.acct.floor, 2),
                 "buffer": round(self.acct.buffer, 2)}
         log(f"END OF DAY {summ}")
-        self.state["eod"] = summ; self._save_state()
+        self.state["eod"] = summ; self._save_state(); self._save_account()
         if not self.dry:
             with open(os.path.join(C.ROOT, "days.jsonl"), "a") as f:
                 f.write(json.dumps(summ) + "\n")

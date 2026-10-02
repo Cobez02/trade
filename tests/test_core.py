@@ -318,5 +318,14 @@ check("carried short covered today: -60 carried (prev close 742.5), bought 60 @7
       abs(symbol_pnl([(60,735.85)],0,0,742.5)-399)<0.01, symbol_pnl([(60,735.85)],0,0,742.5))
 check("another symbol's move is invisible (no fills, flat) -> 0", symbol_pnl([],0,0,0)==0)
 
+print("RUNNER — handover planning")
+from live.runner import plan_deadline
+flat_t = dt.datetime(2026, 10, 2, 14, 52, tzinfo=S.TZ); close_t = dt.datetime(2026, 10, 2, 15, 0, tzinfo=S.TZ)
+check("a limit expiring mid-morning hands over normally",
+      plan_deadline(dt.datetime(2026, 10, 2, 5, 0, tzinfo=S.TZ), 300, flat_t, close_t) == dt.datetime(2026, 10, 2, 10, 0, tzinfo=S.TZ))
+check("a limit expiring inside the close window is dropped (run to the end)",
+      plan_deadline(dt.datetime(2026, 10, 2, 9, 40, tzinfo=S.TZ), 310, flat_t, close_t) is None)
+check("no limit -> no deadline", plan_deadline(dt.datetime(2026, 10, 2, 9, 0, tzinfo=S.TZ), 0, flat_t, close_t) is None)
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)

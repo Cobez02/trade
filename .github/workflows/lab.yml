@@ -1,0 +1,81 @@
+# The paper lab as a self-chaining daemon.
+#
+# GitHub's cron scheduler started our jobs 4-8 hours late in late September. A workflow_dispatch,
+# by contrast, starts within seconds. So: each link of the chain runs the session for up to ~5h40m,
+# then dispatches its own successor (allowed with GITHUB_TOKEN for workflow_dispatch). The
+# concurrency group makes the successor wait until this link exits, then start at once -- a gap of
+# about two minutes, never inside the close window (the runner plans its handovers around it).
+# The cron entries are only watchdogs that start the morning chain; they are at odd minutes
+# because GitHub's delays cluster at the top of the hour. Whichever fires first starts the day.
+#
+# One runner process owns everything: the intraday QQQ sleeve, the overnight QQQM exit at 08:31 CT
+# and its entry at 14:57 CT. The separate overnight workflow is gone.
+name: lab
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "13 8 * * 1-5"    # 03:13 CT CDT / 02:13 CST
+    - cron: "41 9 * * 1-5"    # 04:41 / 03:41
+    - cron: "7 11 * * 1-5"    # 06:07 / 05:07
+    - cron: "33 12 * * 1-5"   # 07:33 / 06:33
+    - cron: "19 14 * * 1-5"   # 09:19 / 08:19
+    - cron: "51 15 * * 1-5"   # 10:51 / 09:51
+    - cron: "27 18 * * 1-5"   # 13:27 / 12:27  (last watchdog; the chain covers the close)
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: spxf-lab
+  cancel-in-progress: false
+jobs:
+  link:
+    runs-on: ubuntu-latest
+    timeout-minutes: 358
+    env:
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+      SPXF_ALPACA_FEED: ${{ vars.SPXF_ALPACA_FEED || 'sip' }}
+      SPXF_INSTRUMENT: QQQ
+      SPXF_PROXY_SHARES: "20"
+      SPXF_OVERNIGHT_SYMBOL: QQQM
+      SPXF_OVERNIGHT_NOTIONAL: "50000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - name: self-test
+        run: python -m tests.test_core | tail -1
+      - name: run the session (one link of the chain)
+        id: session
+        run: |
+          mkdir -p logs
+          SKIP=$(python - <<'PY'
+          import datetime as dt
+          from data import sessions as S
+          now = S.now_ct(); d = now.date()
+          o, c, f, _ = S.session_bounds(d)
+          if not S.is_trading_day(d): print("holiday/weekend")
+          elif now >= c + dt.timedelta(minutes=3): print("after the close")
+          PY
+          )
+          if [ -n "$SKIP" ]; then echo "skip: $SKIP"; echo "next=no" >> "$GITHUB_OUTPUT"; exit 0; fi
+          python -m live.runner --broker alpaca --symbol QQQ --instrument QQQ --source alpaca \
+            --start $(date -u -d '-45 days' +%F) --end $(date -u +%F) --max-minutes 340 || true
+          # decide whether the chain continues: only if the session is not finished
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import datetime as dt
+          from data import sessions as S
+          now = S.now_ct(); d = now.date(); o, c, f, _ = S.session_bounds(d)
+          print("next=" + ("yes" if (S.is_trading_day(d) and now < c) else "no"))
+          PY
+      - name: commit records (append-only union)
+        if: always()
+        run: bash scripts/commit_records.sh "lab link"
+      - name: dispatch the next link
+        if: always() && steps.session.outputs.next == 'yes'
+        run: |
+          curl -sS -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/lab.yml/dispatches" \
+            -d '{"ref":"main"}' && echo "next link dispatched"

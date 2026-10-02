@@ -81,6 +81,16 @@ class AlpacaProxyBroker(Broker):
         o = self.trading.submit_order(req)
         return OrderResult(str(o.id), True, str(o.status))
 
+    def place_market_shares(self, symbol, side, shares, tag) -> OrderResult:
+        """Market order in SHARES (not contracts) for the overnight sleeve."""
+        from alpaca.trading.requests import MarketOrderRequest
+        from alpaca.trading.enums import OrderSide, TimeInForce
+        req = MarketOrderRequest(symbol=symbol, qty=int(shares), side=OrderSide.BUY if side > 0 else OrderSide.SELL,
+                                 time_in_force=TimeInForce.DAY,
+                                 client_order_id=f"SPXF-{tag}-{int(dt.datetime.now().timestamp())}"[:48])
+        o = self.trading.submit_order(req)
+        return OrderResult(str(o.id), True, str(o.status))
+
     def place_stop(self, symbol, side, qty, stop_px, tag) -> OrderResult:
         from alpaca.trading.requests import StopOrderRequest
         from alpaca.trading.enums import OrderSide, TimeInForce
