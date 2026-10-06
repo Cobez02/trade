@@ -67,7 +67,7 @@ jobs:
           import datetime as dt
           from data import sessions as S
           now = S.now_ct(); d = now.date(); o, c, f, _ = S.session_bounds(d)
-          print("next=" + ("yes" if (S.is_trading_day(d) and now < c) else "no"))
+          print("next=" + ("yes" if (S.is_trading_day(d) and now < f) else "no"))   # not after the flatten: 10/2 looped 12 links in 8 min
           PY
       - name: commit records (append-only union)
         if: always()

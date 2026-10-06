@@ -367,6 +367,8 @@ class Runner:
                 log(f"handover ({'clock' if self.until and now >= self.until else 'runtime limit'}): exiting with "
                     f"position {p.qty:+d} (resting stop {self.b.resting_stop_qty(self.symbol)}) for the next job")
                 return
+            if now < self.o and (now.minute % 30 == 0 and now.second < 5):
+                log(f"waiting for the open ({(self.o - now).total_seconds() / 60:.0f} min)")
             if not self.step(now):
                 return
             # sleep to 2 s past the next minute boundary
