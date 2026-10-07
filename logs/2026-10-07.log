@@ -10,3 +10,4 @@
 [14:30:02] slot 11 close 756.87 band [750.02, 763.42] pos +0 -> +0 (inside noise)
 [14:52:02] END OF DAY {'day': '2026-10-07', 'symbol': 'QQQ', 'day_pnl': 0.0, 'entries': 0, 'halted': '', 'acct_balance': 43.95, 'floor': -1956.05, 'buffer': 2000.0}
 [14:57:02] OVERNIGHT BUY 160 QQQM @ ~312.16 ($49,946) -> True OrderStatus.PENDING_NEW
+[14:57:49] session 2026-10-07: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
