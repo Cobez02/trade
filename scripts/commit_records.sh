@@ -17,9 +17,13 @@ for f in days.jsonl days_overnight.jsonl; do
 done
 mkdir -p logs
 for f in "$TMP"/logs/*.log; do [ -f "$f" ] || continue; b=$(basename "$f"); touch "logs/$b"; grep -vxFf "logs/$b" "$f" >> "logs/$b" 2>/dev/null || true; done
+# belt and braces: every link also files its own copy, so a union mistake can never lose a morning again
+mkdir -p logs/links
+for f in "$TMP"/logs/*.log; do [ -f "$f" ] && cp "$f" "logs/links/$(basename "$f" .log)-$(date -u +%H%M)-${GITHUB_RUN_ID:-local}.log"; done
 # snapshots: this job's version wins
 for f in state_futures.json state_overnight.json account_futures.json; do [ -f "$TMP/$f" ] && cp "$TMP/$f" "$f"; done
 git add days.jsonl days_overnight.jsonl state_futures.json state_overnight.json account_futures.json logs/ 2>/dev/null || true
+git status --short | head -20
 git commit -q -m "${1:-records} $(date -u +%FT%H:%MZ)" || { echo "nothing to commit"; exit 0; }
 for i in 1 2 3 4; do
   git push -q origin main:main && { echo "PUSHED $(git rev-parse --short HEAD)"; exit 0; }
