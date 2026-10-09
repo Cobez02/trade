@@ -5,10 +5,10 @@
   "entries": 0,
   "halted": false,
   "halt_reason": "",
-  "last_slot": 11,
+  "last_slot": -1,
   "stop_pts": 0.0,
   "start_day_pnl": null,
-  "updated": "2026-10-09T14:52:02.567253-05:00",
+  "updated": "2026-10-09T14:52:42.504756-05:00",
   "eod": {
     "day": "2026-10-09",
     "symbol": "QQQ",
