@@ -1,0 +1,12 @@
+[09:54:09] session 2026-09-25: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:00:02] slot 2 close 742.96 band [738.18, 745.75] pos +0 -> +0 (inside noise)
+[10:30:02] slot 3 close 742.69 band [738.14, 745.79] pos +0 -> +0 (inside noise)
+[11:00:02] slot 4 close 743.73 band [737.96, 745.96] pos +0 -> +0 (inside noise)
+[11:30:02] slot 5 close 745.31 band [737.57, 746.36] pos +0 -> +0 (inside noise)
+[12:00:02] slot 6 close 744.24 band [737.26, 746.67] pos +0 -> +0 (inside noise)
+[12:30:02] slot 7 close 745.19 band [737.23, 746.69] pos +0 -> +0 (inside noise)
+[13:00:02] slot 8 close 745.02 band [737.34, 746.59] pos +0 -> +0 (inside noise)
+[13:30:02] slot 9 close 744.52 band [737.43, 746.50] pos +0 -> +0 (inside noise)
+[14:00:02] slot 10 close 743.95 band [737.19, 746.74] pos +0 -> +0 (inside noise)
+[14:30:02] slot 11 close 743.87 band [736.96, 746.97] pos +0 -> +0 (inside noise)
+[14:52:02] END OF DAY {'day': '2026-09-25', 'symbol': 'QQQ', 'day_pnl': 0.0, 'entries': 0, 'halted': '', 'acct_balance': 0.0, 'floor': -2000.0, 'buffer': 2000.0}
