@@ -1,0 +1,16 @@
+[10:34:16] session 2026-10-08: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:34:19] OVERNIGHT EXIT 160 QQQM @ ~310.30 (entry 312.14) -> True closed (attempt 1)
+[11:00:02] slot 4 close 752.91 band [750.41, 761.29] pos +0 -> +0 (inside noise)
+[11:30:02] slot 5 close 754.08 band [750.27, 761.43] pos +0 -> +0 (inside noise)
+[12:00:02] slot 6 close 748.29 band [749.77, 761.93] pos +0 -> -1 (short: close 748.29 < lower 749.77)
+[12:00:02] ENTER -1x1 QQQ (short: close 748.29 < lower 749.77) -> True OrderStatus.PENDING_NEW
+[12:01:02] stop 1x @ 753.95 (6.00 pts) -> True OrderStatus.PENDING_NEW
+[12:30:02] slot 7 close 744.39 band [750.13, 761.56] pos -1 -> -1 (hold short)
+[13:00:02] slot 8 close 745.84 band [750.18, 761.52] pos -1 -> -1 (hold short)
+[13:30:03] slot 9 close 748.22 band [750.08, 761.62] pos -1 -> -1 (hold short)
+[14:00:03] slot 10 close 746.65 band [750.18, 761.52] pos -1 -> -1 (hold short)
+[14:30:03] slot 11 close 746.66 band [750.01, 761.69] pos -1 -> -1 (hold short)
+[14:52:05] FLATTEN -1 QQQ: session flatten -> True closed (attempt 1)
+[14:52:05] END OF DAY {'day': '2026-10-08', 'symbol': 'QQQ', 'day_pnl': 21.88, 'entries': 1, 'halted': '', 'acct_balance': 65.83, 'floor': -1934.17, 'buffer': 2000.0}
+[14:57:02] OVERNIGHT BUY 162 QQQM @ ~307.75 ($49,856) -> True OrderStatus.PENDING_NEW
+[14:57:45] session 2026-10-08: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
