@@ -1,0 +1,12 @@
+[09:30:22] session 2026-09-16: open 08:30 flatten 14:52 CT | instrument=SPY tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[09:30:24] slot 1 close 709.58 band [702.94, 709.66] pos +0 -> +0 (inside noise)
+[10:00:02] slot 2 close 710.66 band [702.33, 710.27] pos +0 -> +1 (long: close 710.66 > upper 710.27)
+[10:00:02] ENTER +1x2 QQQ (long: close 710.66 > upper 710.27) -> True OrderStatus.PENDING_NEW
+[10:01:02] stop 2x @ 706.74 (3.97 pts) -> True OrderStatus.PENDING_NEW
+[10:30:02] slot 3 close 710.88 band [702.00, 710.60] pos +1 -> +1 (hold long)
+[11:00:02] slot 4 close 710.63 band [702.05, 710.55] pos +1 -> +1 (hold long)
+[11:30:02] slot 5 close 710.34 band [702.32, 710.29] pos +1 -> +1 (hold long)
+[12:00:02] slot 6 close 709.97 band [702.12, 710.48] pos +1 -> +0 (exit long: close 709.97 < upper 710.48)
+[12:00:02] FLATTEN +2 QQQ: exit long: close 709.97 < upper 710.48 -> True closed
+[12:30:02] slot 7 close 709.69 band [701.93, 710.68] pos +0 -> +0 (inside noise)
+[13:00:02] slot 8 close 710.19 band [702.00, 710.61] pos +0 -> +0 (inside noise)
