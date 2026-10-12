@@ -47,6 +47,30 @@ def symbol_pnl(fills, qty, mark, prev_close) -> float:
     return cash + qty * mark - carried * (prev_close or mark)
 
 
+SETTLED = {"filled", "canceled", "cancelled", "expired", "rejected", "done_for_day", "replaced", "stopped", "suspended"}
+
+
+def wait_for_fill(get_order, order_id: str, timeout_s: float = 90.0, poll: float = 1.0, sleep=time.sleep):
+    """Poll an order until it SETTLES (filled / cancelled / rejected ...) or the timeout passes.
+
+    Returns (filled_qty, filled_avg_price, status). 2026-10-12: the overnight buy was read back after a
+    fixed 4 s sleep while 125 of 162 QQQM had filled; the record and state said 125, the broker held
+    162. A partial fill is not a terminal state: keep polling until the status says the order is done.
+    """
+    fq, fpx, st = 0, 0.0, ""
+    deadline = time.monotonic() + timeout_s
+    while True:
+        try:
+            o = get_order(order_id)
+            st = str(getattr(o.status, "value", o.status)).lower().split(".")[-1]
+            fq = int(float(o.filled_qty or 0)); fpx = float(o.filled_avg_price or 0)
+        except Exception:
+            pass
+        if st in SETTLED or time.monotonic() >= deadline:
+            return fq, fpx, st
+        sleep(poll)
+
+
 class AlpacaProxyBroker(Broker):
     name = "alpaca_proxy"
 
@@ -90,6 +114,10 @@ class AlpacaProxyBroker(Broker):
                                  client_order_id=f"SPXF-{tag}-{int(dt.datetime.now().timestamp())}"[:48])
         o = self.trading.submit_order(req)
         return OrderResult(str(o.id), True, str(o.status))
+
+    def wait_filled(self, order_id: str, timeout_s: float = 90.0) -> tuple[int, float, str]:
+        """(filled_qty, filled_avg_price, status) once the order has settled; see wait_for_fill."""
+        return wait_for_fill(self.trading.get_order_by_id, order_id, timeout_s)
 
     def place_stop(self, symbol, side, qty, stop_px, tag) -> OrderResult:
         from alpaca.trading.requests import StopOrderRequest

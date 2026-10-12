@@ -45,4 +45,4 @@ from scratch. The short version:
 - Secrets live in `~/.spxf.env` (Mac) or repo Actions secrets; never in files, commits, or chat.
 
 ## Tests
-`./venv/bin/python -m tests.test_core` -> 73 passed. Run before every commit.
+`./venv/bin/python -m tests.test_core` -> 77 passed. Run before every commit.

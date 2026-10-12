@@ -318,6 +318,26 @@ check("carried short covered today: -60 carried (prev close 742.5), bought 60 @7
       abs(symbol_pnl([(60,735.85)],0,0,742.5)-399)<0.01, symbol_pnl([(60,735.85)],0,0,742.5))
 check("another symbol's move is invisible (no fills, flat) -> 0", symbol_pnl([],0,0,0)==0)
 
+print("BROKER — overnight order settles before it is recorded")
+from broker.alpaca_proxy import wait_for_fill
+class _O:
+    def __init__(self, status, fq, fpx): self.status, self.filled_qty, self.filled_avg_price = status, fq, fpx
+_seq = [_O("partially_filled", "125", "307.10"), _O("partially_filled", "125", "307.10"), _O("filled", "162", "307.11")]
+_calls = []
+def _get(oid): _calls.append(oid); return _seq[min(len(_calls) - 1, len(_seq) - 1)]
+fq, fpx, st = wait_for_fill(_get, "abc", timeout_s=30, poll=0, sleep=lambda s: None)
+check("partial fill (125 of 162) is not terminal: polls until filled -> 162 @ 307.11", (fq, fpx, st) == (162, 307.11, "filled"), (fq, fpx, st))
+check("polled three times, not once", len(_calls) == 3, len(_calls))
+_calls.clear(); _seq[:] = [_O("OrderStatus.CANCELED", "0", None)]
+check("a cancelled order settles at 0 with status canceled", wait_for_fill(_get, "x", 30, 0, lambda s: None) == (0, 0.0, "canceled"))
+_calls.clear(); _seq[:] = [_O("partially_filled", "125", "307.10")]
+import time as _t; _clock = [0.0]
+_real = _t.monotonic; _t.monotonic = lambda: _clock.__setitem__(0, _clock[0] + 10) or _clock[0]
+try:
+    check("a stuck partial fill gives up at the timeout and reports what filled", wait_for_fill(_get, "y", 30, 0, lambda s: None) == (125, 307.10, "partially_filled"))
+finally:
+    _t.monotonic = _real
+
 print("RUNNER — handover planning")
 from live.runner import plan_deadline
 flat_t = dt.datetime(2026, 10, 2, 14, 52, tzinfo=S.TZ); close_t = dt.datetime(2026, 10, 2, 15, 0, tzinfo=S.TZ)

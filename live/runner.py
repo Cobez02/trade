@@ -274,13 +274,19 @@ class Runner:
                 px = self.b.last_price(sym); shares = int(notional // px)
                 r = self.b.place_market_shares(sym, +1, shares, "overnight-buy")
                 log(f"OVERNIGHT BUY {shares} {sym} @ ~{px:.2f} (${shares * px:,.0f}) -> {r.ok} {r.detail}")
-                time.sleep(4)
+                # wait for the order to SETTLE, not for a fixed delay: a partial fill read back after
+                # 4 s recorded 125 of 162 shares on 2026-10-12. Then the broker's position is the record.
+                fq, fpx, st = (0, 0.0, "")
+                if hasattr(self.b, "wait_filled") and r.order_id:
+                    fq, fpx, st = self.b.wait_filled(r.order_id, timeout_s=90)
                 held = self.b._raw_qty(sym)
-                rec = {"day": str(self.day), "action": "buy", "symbol": sym, "qty": held, "avg_px": px,
-                       "by": "intraday-runner", "ok": r.ok}
+                if st != "filled" or held != shares:
+                    log(f"overnight: order {st or 'unknown'}, filled {fq} of {shares}, broker holds {held}")
+                rec = {"day": str(self.day), "action": "buy", "symbol": sym, "qty": held, "avg_px": fpx or px,
+                       "by": "intraday-runner", "ok": r.ok and held == shares}
                 with open(os.path.join(C.ROOT, "days_overnight.jsonl"), "a") as f:
                     f.write(json.dumps(rec) + "\n")
-                json.dump({"held_from": str(self.day), "qty": held, "avg_px": px},
+                json.dump({"held_from": str(self.day), "qty": held, "avg_px": fpx or px},
                           open(os.path.join(C.ROOT, "state_overnight.json"), "w"), indent=2)
         except Exception as e:
             log(f"overnight entry error: {str(e)[:120]}")
