@@ -1,0 +1,11 @@
+# PREREG <id> — <one-line hypothesis>   (write ALL of this before running anything)
+- Mechanism (who pays, why): 
+- Source (paper / structural fact): 
+- Venue constraints it respects (prop single-session / own-capital multi-day): 
+- Data (≤ 2023-12-31 only; holdout untouched): 
+- Rule, exactly (entry, exit, stop, sizing): 
+- Parameters and the pre-declared grid (if any; PBO will be reported): 
+- Cost model: fixed (see PROGRAM.md §0)
+- Predictions: trades/year, Sharpe range, worst day, correlation with existing sleeves
+- Pass criteria (PROGRAM.md §1 gate): 
+- What would make me distrust a pass: 
