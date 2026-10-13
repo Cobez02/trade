@@ -5,3 +5,8 @@ __pycache__/
 *.pyc
 venv/
 logs/session.pid
+.DS_Store
+logs/mac.log
+logs/launchd.log
+logs/links/mac-*.log
+logs/links/launchd-*.log
