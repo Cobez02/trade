@@ -15,3 +15,4 @@
 {"day": "2026-10-08", "action": "buy", "symbol": "QQQM", "qty": 162, "avg_px": 307.75, "by": "intraday-runner", "ok": true}
 {"day": "2026-10-09", "action": "sell", "symbol": "QQQM", "qty": 162, "entry_px": 307.75, "exit_px_est": 308.72, "pnl_est": 157.14, "by": "intraday-runner", "ok": true}
 {"day": "2026-10-12", "action": "buy", "symbol": "QQQM", "qty": 125, "avg_px": 307.12, "by": "intraday-runner", "ok": true}
+{"day": "2026-10-13", "action": "sell", "symbol": "QQQM", "qty": 162, "entry_px": 307.112284, "exit_px_est": 304.74, "pnl_est": -384.31, "by": "intraday-runner", "ok": true}
