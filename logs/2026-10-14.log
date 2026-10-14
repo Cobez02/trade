@@ -1,0 +1,14 @@
+[04:38:47] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[05:00:02] waiting for the open (210 min)
+[05:30:02] waiting for the open (180 min)
+[06:00:02] waiting for the open (150 min)
+[06:30:02] waiting for the open (120 min)
+[07:00:02] waiting for the open (90 min)
+[08:00:02] waiting for the open (30 min)
+[09:09:12] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[09:57:01] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:34:22] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[11:12:39] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[11:51:00] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[12:30:25] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[13:08:09] session 2026-10-14: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
