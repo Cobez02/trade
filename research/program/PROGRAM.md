@@ -91,3 +91,15 @@ Before the first download, run `python -m research.program.data` to print the fu
 Survivors: 3–8 sleeves. Combined holdout Sharpe: 1.2–1.6 at 10–12% unlevered volatility. Probability of finding any
 standalone sleeve with holdout Sharpe > 2: well under 10%. If the combined number lands below 1.0 after 120 tests,
 the program failed and the September conclusion stands.
+
+## 0b. Cost rule in basis points (Connor, 2026-10-14)
+From 2026-10-14 costs are evaluated in BASIS POINTS of contract notional at the October 2026 index level and held constant for
+the rest of the program (a fixed $ cost against a 2010 index level is a cost model for 2010, not for the account that will trade
+this). Round-trip costs: MES 1.4 bp, MNQ 0.6 bp (both as set by Connor; the mid-October-2026 one-month average levels, ES ~7,765
+and NQ ~30,556, imply 1.16 and 0.49 bp, so the stated figures are ~20% conservative and are used as stated), M2K 2.1 bp
+($3.00 / (5 x RTY 2,848)), MYM 1.2 bp ($3.00 / (0.5 x YM 51,830)); full-size ZN 3.4 bp, ZB 6.4 bp, GC 0.6 bp, CL 2.6 bp (same
+construction from the one-month average levels to 2026-10-14, Yahoo continuous front month).
+The scoreboard carries both: the original $-cost columns (never edited) and a new last column "bp-rule" =
+Sharpe / PF / cost share / DSR p / verdict, where net bp per night = gross bp with the pre-registered stop applied - cost bp, and
+cost share = cost bp / mean no-stop gross bp. Lines 1-31 were re-scored under this rule on 2026-10-14 from the cached tables
+without re-running any test; the trial count N is unchanged by a re-score. The §1 gate thresholds are unchanged.

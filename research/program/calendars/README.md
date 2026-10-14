@@ -10,3 +10,6 @@ Releases are 07:30 CT (CPI, NFP) and 13:00 CT (FOMC; 13:15 before 2013), i.e. CP
 - vix_daily.csv, vix3m_daily.csv — CBOE daily OHLC for VIX and VIX3M (cdn.cboe.com/api/global/us_indices/daily_prices/
   {VIX,VIX3M}_History.csv), fetched 2026-10-14, truncated to <= 2023-12-31 so no holdout-period values sit in the repo.
   The 15:15 CT close is known before the 17:02 entry.
+- eia_wpsr.csv — EIA Weekly Petroleum Status Report release days, RULE-BASED (Wednesday; Thursday when a US federal holiday
+  falls Mon-Wed of that week, pandas USFederalHolidayCalendar), 2010-06..2023-12. Built 2026-10-14 for 3A-11; validated against
+  the published EIA schedule only where it could be fetched (see prereg/3A-11.md outcome).

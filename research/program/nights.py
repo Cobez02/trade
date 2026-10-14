@@ -26,6 +26,8 @@ MICRO = {"ES": "MES", "NQ": "MNQ", "RTY": "M2K", "YM": "MYM", "ZN": "ZN", "ZB": 
 POINT = {"MES": 5, "MNQ": 2, "M2K": 5, "MYM": 0.5, "ZN": 1000, "ZB": 1000, "GC": 100, "CL": 1000}
 COST_SIDE = {"MES": 1.00 + 1.25, "MNQ": 1.00 + 0.50, "M2K": 1.00 + 0.50, "MYM": 1.00 + 0.50,
              "ZN": 2.00 + 15.625, "ZB": 2.00 + 31.25, "GC": 2.50 + 10.00, "CL": 2.50 + 10.00}
+# PROGRAM.md §0b: round-trip cost in bp of notional at the Oct-2026 level, held constant
+COST_BP = {"MES": 1.4, "MNQ": 0.6, "M2K": 2.1, "MYM": 1.2, "ZN": 3.4, "ZB": 6.4, "GC": 0.6, "CL": 2.6}
 START, END = "2010-06-06", "2023-12-31"
 _CACHE = {}
 
@@ -83,10 +85,25 @@ def nights(root: str) -> pd.DataFrame:
     return out
 
 
+def cost_bp(root: str) -> float:
+    return COST_BP[MICRO[root]]
+
+
+def bp_series(sub: pd.DataFrame, root: str, stop: float = 0.01):
+    """(gross_bp no stop, stopped_bp gross with the stop) per night, in bp of entry notional."""
+    pt, rt = POINT[MICRO[root]], round_trip_cost(root)
+    gross_bp = sub["ret"].values * 1e4
+    stopped_bp = (sub[f"net_{stop}"].values + rt) / (pt * sub["entry"].values) * 1e4
+    return gross_bp, stopped_bp
+
+
 def summarize(sub: pd.DataFrame, root: str, stop: float = 0.01) -> dict:
     """What run_test.score needs, plus the ratio that matters: gross $/night vs the micro round trip."""
     rt = round_trip_cost(root)
-    daily = pd.Series(sub[f"net_{stop}"].values, index=sub["d1"].dt.strftime("%Y-%m-%d").values).sort_index()
+    sub = sub.sort_values("d1")
+    daily = pd.Series(sub[f"net_{stop}"].values, index=sub["d1"].dt.strftime("%Y-%m-%d").values)
     gross = float(sub["gross"].sum())
+    g_bp, s_bp = bp_series(sub, root, stop)
     return {"daily": daily, "trades": int(len(sub)), "gross": gross, "costs": len(sub) * rt,
-            "gross_per_night": gross / max(len(sub), 1), "rt_cost": rt, "bp_per_night": float(sub["ret"].mean() * 1e4)}
+            "gross_per_night": gross / max(len(sub), 1), "rt_cost": rt, "bp_per_night": float(sub["ret"].mean() * 1e4),
+            "root": root, "gross_bp": g_bp, "stopped_bp": s_bp, "cost_bp": cost_bp(root)}

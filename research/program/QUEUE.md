@@ -15,4 +15,14 @@
 - [done 2026-10-14, FAIL x4: held nights 5.5 bp ($6.27 vs $4.50) vs -0.3 bp stood aside; filter works, dollars too thin at 2010-23 levels; see prereg/3A-14.md] 3A-14 vol-state switch
 - [done 2026-10-14, FAIL by gate (63 nights) but 2016-23 ES 21.8 bp, $39.78 vs $4.50, t 3.3, all 4 symbols; 2010-15 weak (distrust flag); holdout overlay candidate; see prereg/3A-5.md] 3A-5 pre-FOMC night
 - [done 2026-10-14, FAIL x3: ZN/ZB -0.1 bp, GC -1.0 bp; equity-only confirmed; $47.70 spent, ledger $105.86] 3A-10 overnight drift in ZN/ZB/GC
-- 3A-11 CL inventory-report (Wed 09:30 CT) drift — needs CL ($17.10, exhausts the credit; approved by Connor 2026-10-14 if 3A-11 is next)
+- [done 2026-10-14, FAIL: -0.3 bp into the release, reaction symmetric; CL bought $17.10, ledger $122.96 of $125 — credit exhausted] 3A-11 CL EIA-day drift
+- [done 2026-10-14, FAIL x4: TOM 4.1 vs 3.0 bp; pre-turn window is the strongest (distrust flag)] 3A-7 turn-of-month nights
+- [done 2026-10-14, FAIL x4, sign wrong: opex week continues, no pinning] 3A-8 opex-week last-30-min fade
+- [done 2026-10-14, FAIL x4 by gate; mechanism confirmed: high-state follow +2.8 bp vs low -0.1 (ES), NQ net +2.0 bp PF 1.16] 3A-9 last-30-min momentum in high vol state
+- [done 2026-10-14, FAIL x2: NQ ORB-5 +2.5 bp gross, 77% stop-outs, PF 1.11; ES flat] 3A-12 opening-range breakout
+- [done 2026-10-14, FAIL x2: no lead-lag at the futures level] 3A-13 ES overnight -> RTY/YM open
+# Phase 1 catalog (3A-1..3A-14) is COMPLETE as of 2026-10-14: 48 scoreboard lines, 0 passes under either cost rule.
+# Databento credit exhausted ($122.96 of $125); the loader refuses all further requests. Next is Connor's call:
+#   (a) Phase 3 on the three surviving facts (vol-state overnight 3A-14, pre-FOMC night 3A-5, high-state last-30-min 3A-9):
+#       red-team per REDTEAM.md, correlation matrix, then the ONE-SHOT holdout (needs 2024-2026 data = new Databento spend), or
+#   (b) Phase 2 own-capital sleeves (3B) on Alpaca equity data (free with the account) — no futures data needed.

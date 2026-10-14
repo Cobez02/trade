@@ -35,6 +35,23 @@ def trial_count() -> int:
         return 0
 
 
+def bp_rule_cell(res: dict, n_trials: int, ppy: float) -> str:
+    """PROGRAM.md §0b: Sharpe / PF / cost share / DSR p / verdict with costs in bp at the Oct-2026 level."""
+    if "stopped_bp" not in res:
+        return "n/a"
+    g = np.asarray(res["gross_bp"], float); st = np.asarray(res["stopped_bp"], float); c = float(res["cost_bp"])
+    net = st - c
+    if len(net) < 2 or net.std(ddof=0) == 0:
+        return "n/a"
+    sr_d = float(net.mean() / net.std(ddof=0)); T = len(net)
+    sk = float(((net - net.mean()) ** 3).mean() / (net.std(ddof=0) ** 3 + 1e-12)); ku = float(((net - net.mean()) ** 4).mean() / (net.std(ddof=0) ** 4 + 1e-12))
+    dsr = deflated_sharpe(sr_d, T, n_trials, sk, ku)
+    pf = float(net[net > 0].sum() / -net[net < 0].sum()) if (net < 0).any() else float("inf")
+    cs = c / g.mean() if g.mean() > 0 else float("nan")
+    gate = (dsr >= 0.95) and (pf >= 1.15) and (not (cs == cs) or cs < 0.40)
+    return f"Sharpe {sharpe_ann(net, ppy):.2f} / PF {pf:.2f} / cost {cs:.0%} / DSR {dsr:.3f} / {'PASS->phase3' if gate else 'fail'} (net {net.mean():.1f} bp)"
+
+
 def score(test_id: str, hypothesis: str, data_desc: str, res: dict, notes: str = ""):
     d = res["daily"].astype(float)
     n = trial_count() + 1
@@ -51,8 +68,9 @@ def score(test_id: str, hypothesis: str, data_desc: str, res: dict, notes: str =
     pb = pbo(res["params_grid"], 10)["pbo"] if isinstance(res.get("params_grid"), np.ndarray) else float("nan")
     gate = (dsr >= 0.95) and (pf >= 1.15) and (not (cost_share == cost_share) or cost_share < 0.40)
     verdict = "PASS->phase3" if gate else "fail"
+    bp_cell = bp_rule_cell(res, n, ppy)
     line = (f"| {n} | {test_id} | {dt.date.today()} | {hypothesis} | {data_desc} | {sharpe_ann(d.values, ppy):.2f} | {pf:.2f} | "
-            f"{cost_share:.0%} | {dsr:.3f} | {verdict} | trades {res.get('trades','?')}, worst day {d.min():.0f}, PBO {round(pb, 2) if pb == pb else 'n/a'}; {notes} |\n")
+            f"{cost_share:.0%} | {dsr:.3f} | {verdict} | trades {res.get('trades','?')}, worst day {d.min():.0f}, PBO {round(pb, 2) if pb == pb else 'n/a'}; {notes} | {bp_cell} |\n")
     with open(SCORE, "a") as f:
         f.write(line)
     print(line)
@@ -117,7 +135,7 @@ def _grid(all_nights: pd.DataFrame, variants: dict, stop=0.01) -> np.ndarray:
 
 
 def _pack(sub, root, all_nights, variants, extra=""):
-    r = NI.summarize(sub, root); r["params_grid"] = _grid(all_nights, variants); r["notes"] = extra
+    r = NI.summarize(sub, root); r["params_grid"] = _grid(all_nights, variants); r["notes"] = extra; r["sub"] = sub
     return r
 
 
@@ -280,15 +298,176 @@ def test_3A_10() -> dict:
     return out
 
 
+# ------------------------------------------------------------------ intraday tests (day-session table)
+from research.program import days as DY
+
+
+def _grid_series(series: list) -> np.ndarray:
+    idx = sorted(set().union(*[set(s.index) for s in series]))
+    return np.column_stack([s.groupby(level=0).sum().reindex(idx).fillna(0.0).values for s in series])
+
+
+def _pack2(primary: dict, variants: dict, extra: str = "") -> dict:
+    primary["params_grid"] = _grid_series([v["daily"] for v in variants.values()]); primary["notes"] = extra
+    return primary
+
+
+def _note(name: str, r: dict) -> str:
+    return f"{name}: n {r['trades']}, gross/trade ${r['gross_per_night']:.2f}, {r['bp_per_night']:.1f} bp, net sum ${r['daily'].sum():.0f}"
+
+
+def test_3A_11() -> dict:
+    """CL long 08:00->09:29 CT into the EIA Weekly Petroleum Status Report on regular Wednesday release days."""
+    cal = pd.read_csv(os.path.join(CAL, "eia_wpsr.csv"), parse_dates=["release_date"])
+    wed = set(cal[~cal["shifted"]]["release_date"].dt.normalize()); thu = set(cal[cal["shifted"]]["release_date"].dt.normalize())
+    d = DY.days("CL"); is_w, is_t = d["d"].isin(wed), d["d"].isin(thu)
+    pre = lambda sub: DY.trade_result(sub, "CL", "o_0800", "o_0929")
+    variants = {"eia_wed_pre": pre(d[is_w]), "non_eia_pre": pre(d[~is_w & ~is_t]), "eia_wed_reaction_0930_1030": DY.trade_result(d[is_w], "CL", "o_0930", "o_1030"),
+                "eia_wed_full_0800_1329": DY.trade_result(d[is_w], "CL", "o_0800", "c_1329"), "all_days_pre": pre(d), "shifted_thu_0800_0959": DY.trade_result(d[is_t], "CL", "o_0800", "o_1000")}
+    prim = variants["eia_wed_pre"]; sub = prim["sub"]
+    early = sub["d"] < "2017-01-01"; ex2004 = ~sub["d"].dt.strftime("%Y-%m").eq("2020-04")
+    r = sub["o_0929"] / sub["o_0800"] - 1
+    notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "eia_wed_pre")
+    notes += "; eia_wed_pre 2010-16 %.1f bp, 2017-23 %.1f bp, ex-2020-04 %.1f bp; reaction |move| mean %.1f bp vs non-EIA 09:30-10:30 |move| %.1f bp" % (
+        r[early].mean() * 1e4, r[~early].mean() * 1e4, r[ex2004].mean() * 1e4,
+        (d[is_w]["o_1030"] / d[is_w]["o_0930"] - 1).abs().mean() * 1e4, (d[~is_w & ~is_t]["o_1030"] / d[~is_w & ~is_t]["o_0930"] - 1).abs().mean() * 1e4)
+    return {"CL": _pack2(prim, variants, notes)}
+
+
+def _tom_flags(dates: pd.Series):
+    """Turn-of-month per McConnell-Xu: T = last trading day of the month, TOM = {T, T+1, T+2, T+3}; pre = {T-4..T-1}."""
+    ds = pd.Series(sorted(dates.unique())); ym = ds.dt.to_period("M")
+    last = ds[ym != ym.shift(-1)]                       # last trading day of each month
+    pos = {d: i for i, d in enumerate(ds)}; tom, pre = set(), set()
+    for T in last:
+        i = pos[T]
+        tom.update(ds.iloc[i:i + 4]); pre.update(ds.iloc[max(i - 4, 0):i])
+    return tom, pre
+
+
+def test_3A_7() -> dict:
+    """Turn-of-month nights (exit date in {T, T+1, T+2, T+3}): month-end rebalancing / dash-for-cash reversal."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); dy = DY.days(root); tom, pre = _tom_flags(dy["d"])
+        is_tom, is_pre = n["d1"].isin(tom), n["d1"].isin(pre)
+        dtom = dy[dy["d"].isin(tom)]
+        variants = {"tom_nights": NI.summarize(n[is_tom], root), "non_tom_nights": NI.summarize(n[~is_tom], root), "pre_T4_T1_nights": NI.summarize(n[is_pre], root),
+                    "tom_day_0830_1459": DY.trade_result(dtom, root, "o_0830", "c_1459"), "tom_last_hour_1400_1459": DY.trade_result(dtom, root, "o_1400", "c_1459"), "all_nights": NI.summarize(n, root)}
+        prim = variants["tom_nights"]; prim["sub"] = n[is_tom]
+        byday = {}
+        for k, off in enumerate(range(4)):
+            pass
+        notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "tom_nights")
+        early = n["d1"] < "2017-01-01"
+        notes += "; tom 2010-16 %.1f bp / 2017-23 %.1f bp; non-tom %.1f / %.1f" % (n[is_tom & early]["ret"].mean() * 1e4, n[is_tom & ~early]["ret"].mean() * 1e4, n[~is_tom & early]["ret"].mean() * 1e4, n[~is_tom & ~early]["ret"].mean() * 1e4)
+        out[root] = _pack2(prim, variants, notes)
+    return out
+
+
+def _opex_week(dates: pd.Series) -> pd.Series:
+    """True when the date falls Mon-Fri of the week containing the month's third Friday."""
+    d = pd.to_datetime(dates)
+    first = d.dt.to_period("M").dt.start_time
+    third_fri = first + pd.to_timedelta(((4 - first.dt.weekday) % 7) + 14, unit="D")
+    monday = third_fri - pd.Timedelta(days=4)
+    return (d >= monday) & (d <= third_fri)
+
+
+def _last30(sub: pd.DataFrame, root: str, side: np.ndarray) -> dict:
+    s = sub.copy(); s["side"] = side
+    return DY.trade_result(s, root, "o_1430", "c_1459", side_col="side")
+
+
+def test_3A_8() -> dict:
+    """Opex-week last-30-min REVERSAL: fade the 08:30->14:30 move from 14:30 to 14:59 in the third-Friday week (gamma pinning)."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        dy = DY.days(root).dropna(subset=["o_0830", "o_1430", "c_1459"]); m = np.sign(dy["o_1430"] / dy["o_0830"] - 1).values
+        opex = _opex_week(dy["d"]).values; post = _opex_week(dy["d"] - pd.Timedelta(days=7)).values
+        qtr = opex & dy["d"].dt.month.isin([3, 6, 9, 12]).values
+        variants = {"opex_fade": _last30(dy[opex], root, -m[opex]), "opex_follow": _last30(dy[opex], root, m[opex]), "post_opex_follow": _last30(dy[post], root, m[post]),
+                    "other_weeks_fade": _last30(dy[~opex & ~post], root, -m[~opex & ~post]), "all_follow": _last30(dy, root, m), "quarterly_roll_week_fade": _last30(dy[qtr], root, -m[qtr])}
+        prim = variants["opex_fade"]
+        notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "opex_fade")
+        notes += "; mean |last30| %.1f bp" % ((dy["c_1459"] / dy["o_1430"] - 1).abs().mean() * 1e4)
+        out[root] = _pack2(prim, variants, notes)
+    return out
+
+
+def test_3A_9() -> dict:
+    """Last-30-min MOMENTUM (follow the 08:30->14:30 sign, 14:30->14:59) only in the high vol state (VIX/VIX3M >= expanding median at the prior close)."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        dy = DY.days(root).dropna(subset=["o_0830", "o_1430", "c_1459"]).reset_index(drop=True)
+        st = _vix_state(dy["d"] - pd.Timedelta(days=1))            # state from closes strictly before the trading day
+        hi = (st["r"] >= st["thr_0.5"]).fillna(False).values; lo = (st["r"] < st["thr_0.5"]).fillna(False).values
+        m = np.sign(dy["o_1430"] / dy["o_0830"] - 1).values; big = (dy["o_1430"] / dy["o_0830"] - 1).abs().values > 0.005
+        variants = {"high_follow": _last30(dy[hi], root, m[hi]), "low_follow": _last30(dy[lo], root, m[lo]), "high_fade": _last30(dy[hi], root, -m[hi]),
+                    "all_follow": _last30(dy, root, m), "high_big_follow": _last30(dy[hi & big], root, m[hi & big])}
+        prim = variants["high_follow"]
+        notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "high_follow")
+        notes += "; high-state share %.0f%%, state nan %d" % (hi.mean() * 100, int(st["r"].isna().sum()))
+        out[root] = _pack2(prim, variants, notes)
+    return out
+
+
+def _orb(dy: pd.DataFrame, root: str, n: int, long_only=False) -> dict:
+    s = dy[dy[f"orb{n}_dir"] != 0].copy()
+    if long_only: s = s[s[f"orb{n}_dir"] > 0]
+    s["side"] = s[f"orb{n}_dir"].astype(float)
+    return DY.trade_result(s, root, f"orb{n}_entry", f"orb{n}_exit", side_col="side")
+
+
+def test_3A_12() -> dict:
+    """Opening-range breakout on MNQ (Zarattini-Aziz, un-leveraged): first 5-min candle's direction, enter 08:35, stop at the range's far side, exit 14:59."""
+    out = {}
+    for root in ("NQ", "ES"):
+        dy = DY.days(root)
+        variants = {"orb5": _orb(dy, root, 5), "orb15": _orb(dy, root, 15), "orb5_long_only": _orb(dy, root, 5, True),
+                    "orb5_other": _orb(DY.days("ES" if root == "NQ" else "NQ"), "ES" if root == "NQ" else "NQ", 5)}
+        prim = variants["orb5"]; sub = prim["sub"]
+        stopped = ((sub["orb5_dir"] > 0) & (sub["orb5_exit"] <= sub["l_0834"])) | ((sub["orb5_dir"] < 0) & (sub["orb5_exit"] >= sub["h_0834"]))
+        rng = ((sub["h_0834"] - sub["l_0834"]) / sub["o_0830"]).mean() * 1e4
+        notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "orb5")
+        yr = sub.assign(r=sub["orb5_dir"] * (sub["orb5_exit"] / sub["orb5_entry"] - 1)).groupby(sub["d"].dt.year)["r"].mean() * 1e4
+        notes += "; stop-out rate %.0f%%, mean 5-min range %.1f bp; by year bp %s" % (stopped.mean() * 100, rng, {int(k): round(float(v), 1) for k, v in yr.items()})
+        out[root] = _pack2(prim, variants, notes)
+    return out
+
+
+def test_3A_13() -> dict:
+    """ES overnight sign -> trade RTY (M2K) in that direction 08:30->09:00 (small-cap catch-up at the open)."""
+    es = NI.nights("ES")[["d1", "ret"]].rename(columns={"d1": "d", "ret": "es_on"})
+    out = {}
+    for root in ("RTY", "YM"):
+        dy = DY.days(root).merge(es, on="d", how="inner"); sgn = np.sign(dy["es_on"]).values; big = dy["es_on"].abs().values > 0.003
+        def tr(sub, exit_col, side): s = sub.copy(); s["side"] = side; return DY.trade_result(s, root, "o_0830", exit_col, side_col="side")
+        variants = {"follow_0900": tr(dy, "o_0900", sgn), "follow_0845": tr(dy, "o_0845", sgn), "follow_0930": tr(dy, "o_0930", sgn), "follow_1000": tr(dy, "o_1000", sgn),
+                    "follow_0900_big": tr(dy[big], "o_0900", sgn[big]), "fade_0900": tr(dy, "o_0900", -sgn)}
+        prim = variants["follow_0900"]
+        notes = "; ".join(_note(k, v) for k, v in variants.items() if k != "follow_0900")
+        notes += "; days with ES signal %d, |es_on| > 30bp share %.0f%%" % (len(dy), big.mean() * 100)
+        out[root] = _pack2(prim, variants, notes)
+    return out
+
+
 TESTS = {"3A-1": test_3A_1, "3A-6": test_3A_6, "3A-4": test_3A_4, "3A-2": test_3A_2, "3A-3": test_3A_3,
-         "3A-14": test_3A_14, "3A-5": test_3A_5, "3A-10": test_3A_10}
+         "3A-14": test_3A_14, "3A-5": test_3A_5, "3A-10": test_3A_10,
+         "3A-11": test_3A_11, "3A-7": test_3A_7, "3A-8": test_3A_8, "3A-9": test_3A_9, "3A-12": test_3A_12, "3A-13": test_3A_13}
 HYP = {"3A-6": "macro nights (CPI/NFP/FOMC-into), 17:02->08:30, 1% stop",
        "3A-4": "FOMC-cycle even weeks (CMVJ), 17:02->08:30, 1% stop",
        "3A-2": "after down day session, 17:02->08:30, 1% stop",
        "3A-3": "VIX>=VIX3M (backwardation) nights, 17:02->08:30, 1% stop",
        "3A-14": "vol-state switch: hold iff VIX/VIX3M >= expanding p33, 1% stop",
        "3A-5": "pre-FOMC night 2016-2023 (decisive), 1% stop",
-       "3A-10": "Globex overnight 17:02->08:30, 1% stop, full-size"}
+       "3A-10": "Globex overnight 17:02->08:30, 1% stop, full-size",
+       "3A-11": "CL long 08:00->09:29 into EIA report (regular Wednesdays), no stop",
+       "3A-7": "turn-of-month nights (T..T+3), 17:02->08:30, 1% stop",
+       "3A-8": "opex-week last-30-min fade of the day's move, 14:30->14:59",
+       "3A-9": "last-30-min follow in high vol state (VIX/VIX3M >= expanding median), 14:30->14:59",
+       "3A-12": "opening-range breakout 5-min, range stop, exit 14:59",
+       "3A-13": "follow ES overnight sign, 08:30->09:00"}
 
 
 def main(argv=None):
@@ -307,7 +486,7 @@ def main(argv=None):
                   r, notes=f"Sharpe by stop {r['by_stop']}")
     else:
         for root, r in res.items():
-            score(f"{tid}/{root}", HYP.get(tid, TESTS[tid].__doc__.splitlines()[0]), "Databento GLBX 1m 2010-2023" if tid == "3A-10" else "cached GLBX 1m 2010-2023 nights", r, notes=r.get("notes", ""))
+            score(f"{tid}/{root}", HYP.get(tid, TESTS[tid].__doc__.splitlines()[0]), "Databento GLBX 1m 2010-2023" if tid in ("3A-10", "3A-11") else "cached GLBX 1m 2010-2023 days" if tid in ("3A-8", "3A-9", "3A-12", "3A-13") else "cached GLBX 1m 2010-2023 nights", r, notes=r.get("notes", ""))
 
 
 if __name__ == "__main__":
