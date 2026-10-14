@@ -38,6 +38,10 @@ def trial_count() -> int:
 def score(test_id: str, hypothesis: str, data_desc: str, res: dict, notes: str = ""):
     d = res["daily"].astype(float)
     n = trial_count() + 1
+    years = max((pd.to_datetime(d.index[-1]) - pd.to_datetime(d.index[0])).days / 365.25, 0.5) if len(d) > 1 else 1.0
+    ppy = res.get("ppy") or len(d) / years                       # a subset held 32 nights/yr is annualised by 32, not 252
+    if "gross_per_night" in res:
+        notes = f"gross/night ${res['gross_per_night']:.2f} vs RT ${res['rt_cost']:.2f} ({res['gross_per_night']/res['rt_cost']:.2f}x), {res.get('bp_per_night', float('nan')):.1f} bp, {ppy:.0f} nights/yr; " + notes
     sr_d = float(d.mean() / d.std(ddof=0)) if d.std(ddof=0) > 0 else 0.0
     T = len(d); sk = float(((d - d.mean()) ** 3).mean() / (d.std(ddof=0) ** 3 + 1e-12)); ku = float(((d - d.mean()) ** 4).mean() / (d.std(ddof=0) ** 4 + 1e-12))
     dsr = deflated_sharpe(sr_d, T, n, sk, ku)
@@ -47,8 +51,8 @@ def score(test_id: str, hypothesis: str, data_desc: str, res: dict, notes: str =
     pb = pbo(res["params_grid"], 10)["pbo"] if isinstance(res.get("params_grid"), np.ndarray) else float("nan")
     gate = (dsr >= 0.95) and (pf >= 1.15) and (not (cost_share == cost_share) or cost_share < 0.40)
     verdict = "PASS->phase3" if gate else "fail"
-    line = (f"| {n} | {test_id} | {dt.date.today()} | {hypothesis} | {data_desc} | {sharpe_ann(d.values):.2f} | {pf:.2f} | "
-            f"{cost_share:.0%} | {dsr:.3f} | {verdict} | trades {res.get('trades','?')}, worst day {d.min():.0f}, PBO {pb if pb == pb else 'n/a'}; {notes} |\n")
+    line = (f"| {n} | {test_id} | {dt.date.today()} | {hypothesis} | {data_desc} | {sharpe_ann(d.values, ppy):.2f} | {pf:.2f} | "
+            f"{cost_share:.0%} | {dsr:.3f} | {verdict} | trades {res.get('trades','?')}, worst day {d.min():.0f}, PBO {round(pb, 2) if pb == pb else 'n/a'}; {notes} |\n")
     with open(SCORE, "a") as f:
         f.write(line)
     print(line)
@@ -94,7 +98,130 @@ def test_3A_1(symbols=("ES", "NQ", "RTY", "YM"), stop_frac=0.01, start="2010-06-
     return out
 
 
-TESTS = {"3A-1": test_3A_1}
+# ------------------------------------------------------------------ 3A subset tests (all on the cached nights table)
+from research.program import nights as NI
+CAL = os.path.join(HERE, "calendars")
+
+
+def _cal(name, col):
+    return set(pd.to_datetime(pd.read_csv(os.path.join(CAL, name))[col]).dt.normalize())
+
+
+def _grid(all_nights: pd.DataFrame, variants: dict, stop=0.01) -> np.ndarray:
+    idx = all_nights["d1"].values
+    cols = []
+    for v in variants.values():
+        ser = pd.Series(v[f"net_{stop}"].values, index=v["d1"].values).reindex(idx).fillna(0.0)
+        cols.append(ser.values)
+    return np.column_stack(cols)
+
+
+def _pack(sub, root, all_nights, variants, extra=""):
+    r = NI.summarize(sub, root); r["params_grid"] = _grid(all_nights, variants); r["notes"] = extra
+    return r
+
+
+def _complement_note(name, sub, root):
+    s = NI.summarize(sub, root)
+    return f"{name}: n {s['trades']}, gross/night ${s['gross_per_night']:.2f}, {s['bp_per_night']:.1f} bp, net sum ${s['daily'].sum():.0f}"
+
+
+def test_3A_6() -> dict:
+    """Scheduled-macro nights (exit date = CPI/NFP/FOMC decision date): hold INTO the release; premium concentrates there."""
+    cpi, nfp = _cal("cpi.csv", "release_date"), _cal("nfp.csv", "release_date")
+    fomc = set(pd.to_datetime(pd.read_csv(os.path.join(CAL, "fomc.csv")).query("kind == 'scheduled'")["decision_date"]).dt.normalize())
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root)
+        is_cpi, is_nfp, is_fomc = n["d1"].isin(cpi), n["d1"].isin(nfp), n["d1"].isin(fomc)
+        post_fomc = n["d0"].isin(fomc)
+        ev = is_cpi | is_nfp | is_fomc
+        variants = {"event": n[ev], "non_event": n[~ev], "cpi": n[is_cpi], "nfp": n[is_nfp], "fomc_into": n[is_fomc],
+                    "post_fomc": n[post_fomc], "all": n}
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "event")
+        out[root] = _pack(n[ev], root, n, variants, notes)
+    return out
+
+
+def _fomc_week(d1: pd.Series) -> pd.Series:
+    """CMVJ cycle week of each date: t = weekdays since the last scheduled announcement (t=0 on it), t=-1 the weekday before
+    the next one; week = floor((t+1)/5)."""
+    sched = np.array(sorted(pd.to_datetime(pd.read_csv(os.path.join(CAL, "fomc.csv")).query("kind == 'scheduled'")["decision_date"]).dt.normalize()), dtype="datetime64[D]")
+    d = d1.values.astype("datetime64[D]")
+    pos = np.searchsorted(sched, d, side="right")            # sched[pos-1] <= d < sched[pos]
+    prev = sched[np.clip(pos - 1, 0, len(sched) - 1)]; nxt = sched[np.clip(pos, 0, len(sched) - 1)]
+    t = np.busday_count(prev, d).astype(int)
+    before_next = (pos < len(sched)) & (np.busday_count(d, nxt) == 1)
+    t = np.where(before_next, -1, t)
+    t = np.where(pos == 0, 99, t)                            # before the first announcement in the calendar: unknown
+    return pd.Series(np.floor((t + 1) / 5).astype(int), index=d1.index)
+
+
+def test_3A_4() -> dict:
+    """FOMC-cycle even weeks (CMVJ 2019): hold the night only when its exit date is in cycle week 0, 2, 4 or 6."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); wk = _fomc_week(n["d1"])
+        even = wk.isin([0, 2, 4, 6]); odd = wk.isin([1, 3, 5, 7])
+        variants = {"even": n[even], "odd": n[odd], "week0": n[wk == 0], "week2": n[wk == 2], "week4": n[wk == 4], "week6": n[wk == 6], "all": n}
+        early = n["d1"] < "2017-01-01"
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "even")
+        notes += "; 2010-16 even/odd bp %.1f/%.1f, 2017-23 %.1f/%.1f" % (n[even & early]["ret"].mean() * 1e4, n[odd & early]["ret"].mean() * 1e4,
+                                                                     n[even & ~early]["ret"].mean() * 1e4, n[odd & ~early]["ret"].mean() * 1e4)
+        out[root] = _pack(n[even], root, n, variants, notes)
+    return out
+
+
+def test_3A_2() -> dict:
+    """Overnight after DOWN day sessions (day_ret < 0; Lou-Polk-Skouras tug of war / end-of-day flow reversal)."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); dr = n["day_ret"]
+        down, up = dr < 0, dr >= 0
+        terc = pd.qcut(dr, 3, labels=["bottom", "middle", "top"])
+        variants = {"down": n[down], "up": n[up], "bottom": n[terc == "bottom"], "middle": n[terc == "middle"], "top": n[terc == "top"], "all": n}
+        early = n["d1"] < "2017-01-01"; no2003 = ~n["d1"].dt.strftime("%Y-%m").eq("2020-03")
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "down")
+        notes += "; nan day_ret %d; 2010-16 down/up bp %.1f/%.1f, 2017-23 %.1f/%.1f; down ex-2020-03 %.1f bp" % (
+            dr.isna().sum(), n[down & early]["ret"].mean() * 1e4, n[up & early]["ret"].mean() * 1e4,
+            n[down & ~early]["ret"].mean() * 1e4, n[up & ~early]["ret"].mean() * 1e4, n[down & no2003]["ret"].mean() * 1e4)
+        out[root] = _pack(n[down], root, n, variants, notes)
+    return out
+
+
+def _vix_ratio(d0: pd.Series) -> pd.Series:
+    v = pd.read_csv(os.path.join(CAL, "vix_daily.csv"), parse_dates=["date"]).set_index("date")["close"]
+    v3 = pd.read_csv(os.path.join(CAL, "vix3m_daily.csv"), parse_dates=["date"]).set_index("date")["close"]
+    r = (v / v3).dropna().sort_index()
+    # last close dated <= d0 (Friday's for Sunday nights); never a later date
+    idx = r.index.values.astype("datetime64[D]"); d = d0.values.astype("datetime64[D]")
+    pos = np.searchsorted(idx, d, side="right") - 1
+    out = np.where(pos >= 0, r.values[np.clip(pos, 0, None)], np.nan)
+    stale = (d - idx[np.clip(pos, 0, None)]).astype(int) > 4
+    return pd.Series(np.where(stale, np.nan, out), index=d0.index)
+
+
+def test_3A_3() -> dict:
+    """Overnight only when the VIX term structure is flat/inverted (VIX/VIX3M >= 1 at the prior close)."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); r = _vix_ratio(n["d0"])
+        back, cont = r >= 1.0, r < 1.0
+        terc = pd.qcut(r, 3, labels=["low", "mid", "high"])
+        variants = {"backwardation": n[back], "contango": n[cont], "r_low": n[terc == "low"], "r_mid": n[terc == "mid"], "r_high": n[terc == "high"], "all": n}
+        no2020 = ~n["d1"].between("2020-03-01", "2020-05-31")
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "backwardation")
+        notes += "; nan ratio %d; backwardation share %.1f%%; back ex-2020-03..05: n %d, %.1f bp" % (
+            r.isna().sum(), back.mean() * 100, (back & no2020).sum(), n[back & no2020]["ret"].mean() * 1e4)
+        out[root] = _pack(n[back], root, n, variants, notes)
+    return out
+
+
+TESTS = {"3A-1": test_3A_1, "3A-6": test_3A_6, "3A-4": test_3A_4, "3A-2": test_3A_2, "3A-3": test_3A_3}
+HYP = {"3A-6": "macro nights (CPI/NFP/FOMC-into), 17:02->08:30, 1% stop",
+       "3A-4": "FOMC-cycle even weeks (CMVJ), 17:02->08:30, 1% stop",
+       "3A-2": "after down day session, 17:02->08:30, 1% stop",
+       "3A-3": "VIX>=VIX3M (backwardation) nights, 17:02->08:30, 1% stop"}
 
 
 def main(argv=None):
@@ -112,7 +239,8 @@ def main(argv=None):
             score(f"{tid}/{root}", "Globex overnight 17:02->08:30 CT, 1% stop", "Databento GLBX 1m 2010-2023",
                   r, notes=f"Sharpe by stop {r['by_stop']}")
     else:
-        score(tid, TESTS[tid].__doc__.splitlines()[0], "see prereg", res)
+        for root, r in res.items():
+            score(f"{tid}/{root}", HYP.get(tid, TESTS[tid].__doc__.splitlines()[0]), "cached GLBX 1m 2010-2023 nights", r, notes=r.get("notes", ""))
 
 
 if __name__ == "__main__":
