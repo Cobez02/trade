@@ -46,3 +46,15 @@ from scratch. The short version:
 
 ## Tests
 `./venv/bin/python -m tests.test_core` -> 77 passed. Run before every commit.
+
+## Research program (added 2026-10-14)
+`research/program/PROGRAM.md` is the 500-hour plan; `QUEUE.md` is the next work; `SCOREBOARD.md` is the ledger of every
+test ever run. Phase 0 code exists: `data.py` (budgeted, holdout-sealed Databento loader), `stats.py` (deflated Sharpe,
+PBO, purged folds), `run_test.py` (harness; anchor test 3A-1 registered). DATABENTO_API_KEY is in ~/.spxf.env.
+CREDIT RULE: stop and report when the loader refuses a request for budget; never raise the budget yourself.
+
+Kickoff prompt for the first session:
+  Read HANDOFF.md, research/program/PROGRAM.md and QUEUE.md. Load ~/.spxf.env. Run `python -m research.program.data`
+  and report the Phase 0 cost estimate. If it is under $125, write research/program/prereg/3A-1.md from the template
+  (predictions before data), then `python -m research.program.run_test 3A-1`. Commit the prereg, the ledger and the
+  scoreboard line. If the loader refuses for budget at any point, stop, commit the ledger, and report.
