@@ -24,6 +24,13 @@ converges on the most convincing accident (see the 9/9 regime leak), so the refe
   human input the program needs. Credits: a session is ~2–4 hours of agent time; 500 hours ≈ 150 sessions ≈ 5 months
   at one session a day, or faster in parallel.
 
+## 0a. The credit rule (Connor, 2026-10-14)
+Phase 0 runs on the Databento signup credit ($125). `research/program/data.py` estimates every request with the free
+metadata endpoint, keeps a spend ledger, and REFUSES any request that would pass the budget. When that happens the
+session stops, commits the ledger, and reports: what was downloaded, what it cost, what remains, what the next
+request would cost. It does not continue, raise the budget, or find a workaround until Connor says so.
+Before the first download, run `python -m research.program.data` to print the full Phase 0 estimate.
+
 ## 1. Statistics that gate everything (implemented once, Phase 0)
 - Walk-forward / combinatorial purged cross-validation (López de Prado) on ≤2023 data for every candidate.
 - Deflated Sharpe ratio (Bailey & López de Prado) using the running trial count N from the scoreboard.

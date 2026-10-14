@@ -347,5 +347,25 @@ check("a limit expiring inside the close window is dropped (run to the end)",
       plan_deadline(dt.datetime(2026, 10, 2, 9, 40, tzinfo=S.TZ), 310, flat_t, close_t) is None)
 check("no limit -> no deadline", plan_deadline(dt.datetime(2026, 10, 2, 9, 0, tzinfo=S.TZ), 0, flat_t, close_t) is None)
 
+print("RESEARCH PROGRAM — the referee")
+from research.program.stats import deflated_sharpe, pbo, purged_folds
+from research.program.data import fetch_cme_minutes, HoldoutViolation
+import numpy as _np, math as _m
+_T=2520; _sr=1.0/_m.sqrt(252)
+check("deflated Sharpe falls as the trial count rises", deflated_sharpe(_sr,_T,1) > deflated_sharpe(_sr,_T,100) > deflated_sharpe(_sr,_T,1000))
+check("a Sharpe-1 track over 10 years: >99% after 1 trial, ~70% after 100 (the correction bites)",
+      deflated_sharpe(_sr,_T,1) > 0.99 and 0.6 < deflated_sharpe(_sr,_T,100) < 0.85, (deflated_sharpe(_sr,_T,1), deflated_sharpe(_sr,_T,100)))
+_pbos=[pbo(_np.random.default_rng(i).normal(0,1,(2000,16)),10)["pbo"] for i in range(20)]
+check("PBO on pure noise averages ~0.5-0.6 across seeds (slightly conservative is acceptable for a referee)", 0.4 < sum(_pbos)/20 < 0.7, round(sum(_pbos)/20,3))
+_rng=_np.random.default_rng(1); _noise=_rng.normal(0,1,(1600,16)); _g=_noise.copy(); _g[:,2]+=0.2
+check("PBO drops when one variant has a real edge", pbo(_g,8)["pbo"] < 0.2, pbo(_g,8)["pbo"])
+check("purged folds leave an embargo gap", all((te[0]-tr[tr<te[0]].max() if (tr<te[0]).any() else 99) > 5 for tr,te in purged_folds(500,5,5)))
+try:
+    fetch_cme_minutes("ES.v.0","2010-01-01","2024-06-30"); check("sealed holdout: development request into 2024 is refused", False)
+except HoldoutViolation:
+    check("sealed holdout: development request into 2024 is refused", True)
+except Exception as e:
+    check("sealed holdout: development request into 2024 is refused", False, str(e)[:80])
+
 print(f"\n{PASS} passed, {FAIL} failed")
 sys.exit(1 if FAIL else 0)
