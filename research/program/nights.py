@@ -21,9 +21,11 @@ import numpy as np, pandas as pd
 from research.program import data as D
 
 STOPS = (0.0, 0.0075, 0.01, 0.015, 0.02)
-MICRO = {"ES": "MES", "NQ": "MNQ", "RTY": "M2K", "YM": "MYM"}
-POINT = {"MES": 5, "MNQ": 2, "M2K": 5, "MYM": 0.5}
-COST_SIDE = {"MES": 1.00 + 1.25, "MNQ": 1.00 + 0.50, "M2K": 1.00 + 0.50, "MYM": 1.00 + 0.50}   # PROGRAM.md §0: commission + 1 tick
+# traded contract per data root, $/point, cost per side (PROGRAM.md §0: commission + 1 tick). Index roots trade the micro.
+MICRO = {"ES": "MES", "NQ": "MNQ", "RTY": "M2K", "YM": "MYM", "ZN": "ZN", "ZB": "ZB", "GC": "GC", "CL": "CL"}
+POINT = {"MES": 5, "MNQ": 2, "M2K": 5, "MYM": 0.5, "ZN": 1000, "ZB": 1000, "GC": 100, "CL": 1000}
+COST_SIDE = {"MES": 1.00 + 1.25, "MNQ": 1.00 + 0.50, "M2K": 1.00 + 0.50, "MYM": 1.00 + 0.50,
+             "ZN": 2.00 + 15.625, "ZB": 2.00 + 31.25, "GC": 2.50 + 10.00, "CL": 2.50 + 10.00}
 START, END = "2010-06-06", "2023-12-31"
 _CACHE = {}
 

@@ -1,5 +1,5 @@
 {
-  "spent": 58.1761,
+  "spent": 105.8648,
   "requests": [
     {
       "when": "2026-10-14T09:34:32",
@@ -39,6 +39,36 @@
       "end": "2023-12-31",
       "cost": 16.566,
       "rows": 4537643,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T11:12:50",
+      "symbol": "ZN.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 15.8269,
+      "rows": 4335199,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T11:16:08",
+      "symbol": "ZB.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 14.7263,
+      "rows": 4033749,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T11:26:17",
+      "symbol": "GC.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 17.1355,
+      "rows": 4693639,
       "verdict": false
     }
   ]

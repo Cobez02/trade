@@ -217,11 +217,78 @@ def test_3A_3() -> dict:
     return out
 
 
-TESTS = {"3A-1": test_3A_1, "3A-6": test_3A_6, "3A-4": test_3A_4, "3A-2": test_3A_2, "3A-3": test_3A_3}
+def _vix_state(d0: pd.Series, qs=(0.20, 0.33, 0.50, 0.67), min_obs=250) -> pd.DataFrame:
+    """r_t and expanding-window percentile thresholds thr_q(t) computed on CBOE dates strictly before t (shift(1))."""
+    v = pd.read_csv(os.path.join(CAL, "vix_daily.csv"), parse_dates=["date"]).set_index("date")["close"]
+    v3 = pd.read_csv(os.path.join(CAL, "vix3m_daily.csv"), parse_dates=["date"]).set_index("date")["close"]
+    r = (v / v3).dropna().sort_index()
+    tab = pd.DataFrame({"r": r})
+    for q in qs:
+        tab[f"thr_{q}"] = r.expanding(min_periods=min_obs).quantile(q).shift(1)      # strictly-prior dates only
+    idx = tab.index.values.astype("datetime64[D]"); d = d0.values.astype("datetime64[D]")
+    pos = np.searchsorted(idx, d, side="right") - 1
+    ok = (pos >= 0) & ((d - idx[np.clip(pos, 0, None)]).astype(int) <= 4)
+    out = tab.iloc[np.clip(pos, 0, None)].reset_index(drop=True); out.index = d0.index
+    out.loc[~ok, :] = np.nan
+    return out
+
+
+def test_3A_14() -> dict:
+    """Vol-state switch: hold the night iff VIX/VIX3M >= its expanding 33rd percentile (prior dates only); size 1 or 0."""
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); st = _vix_state(n["d0"])
+        elig = st["thr_0.33"].notna()
+        hold = {q: elig & (st["r"] >= st[f"thr_{q}"]) for q in (0.20, 0.33, 0.50, 0.67)}
+        variants = {"q33": n[hold[0.33]], "q20": n[hold[0.20]], "q50": n[hold[0.50]], "q67": n[hold[0.67]], "uncond": n[elig]}
+        aside = n[elig & ~hold[0.33]]
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "q33")
+        notes += "; stood aside: " + _complement_note("aside", aside, root).split(": ", 1)[1]
+        notes += "; eligible %d of %d nights, held share %.0f%%, first held %s" % (elig.sum(), len(n), hold[0.33].sum() / max(elig.sum(), 1) * 100, n[hold[0.33]]["d1"].min().date())
+        out[root] = _pack(n[hold[0.33]], root, n, variants, notes)
+    return out
+
+
+def test_3A_5() -> dict:
+    """Pre-FOMC night (exit date = scheduled decision), decisive sub-period 2016-2023; full sample is context."""
+    fomc = set(pd.to_datetime(pd.read_csv(os.path.join(CAL, "fomc.csv")).query("kind == 'scheduled'")["decision_date"]).dt.normalize())
+    out = {}
+    for root in ("ES", "NQ", "RTY", "YM"):
+        n = NI.nights(root); into, post = n["d1"].isin(fomc), n["d0"].isin(fomc)
+        late = n["d1"] >= "2016-01-01"; no2020 = ~n["d1"].between("2020-03-01", "2020-05-31")
+        variants = {"into_2016_23": n[into & late], "into_2010_15": n[into & ~late], "into_full": n[into], "post_2016_23": n[post & late], "all_2016_23": n[late]}
+        sub = n[into & late]; t = sub["ret"].mean() / sub["ret"].std() * np.sqrt(len(sub)) if len(sub) > 2 else float("nan")
+        notes = "; ".join(_complement_note(k, v, root) for k, v in variants.items() if k != "into_2016_23")
+        notes += "; 2016-23 t-stat of mean %.2f; 2016-23 ex-2020-03..05 %.1f bp (n %d); MIN TRACK NOT MET (reported, not gated)" % (
+            t, n[into & late & no2020]["ret"].mean() * 1e4, (into & late & no2020).sum())
+        out[root] = _pack(sub, root, n, variants, notes)
+    return out
+
+
+def test_3A_10() -> dict:
+    """Overnight drift in ZN/ZB/GC, same 17:02->08:30 window, 1% stop, full-size contracts; grid over stops."""
+    out = {}
+    for root in ("ZN", "ZB", "GC"):
+        n = NI.nights(root)
+        r = NI.summarize(n, root)
+        r["params_grid"] = np.column_stack([n[f"net_{s}"].values for s in NI.STOPS])
+        susp = n["maxstep"] > 0.004
+        r["notes"] = "Sharpe by stop " + str({s: round(sharpe_ann(n[f"net_{s}"].values), 2) for s in NI.STOPS}) + \
+            "; big-jump nights (>40bp/min, rolls+crashes) %d, their gross $%.0f; by year bp %s" % (
+            susp.sum(), n[susp]["gross"].sum(), {y: round(v * 1e4, 1) for y, v in n.groupby(n["d1"].dt.year)["ret"].mean().items()})
+        out[root] = r
+    return out
+
+
+TESTS = {"3A-1": test_3A_1, "3A-6": test_3A_6, "3A-4": test_3A_4, "3A-2": test_3A_2, "3A-3": test_3A_3,
+         "3A-14": test_3A_14, "3A-5": test_3A_5, "3A-10": test_3A_10}
 HYP = {"3A-6": "macro nights (CPI/NFP/FOMC-into), 17:02->08:30, 1% stop",
        "3A-4": "FOMC-cycle even weeks (CMVJ), 17:02->08:30, 1% stop",
        "3A-2": "after down day session, 17:02->08:30, 1% stop",
-       "3A-3": "VIX>=VIX3M (backwardation) nights, 17:02->08:30, 1% stop"}
+       "3A-3": "VIX>=VIX3M (backwardation) nights, 17:02->08:30, 1% stop",
+       "3A-14": "vol-state switch: hold iff VIX/VIX3M >= expanding p33, 1% stop",
+       "3A-5": "pre-FOMC night 2016-2023 (decisive), 1% stop",
+       "3A-10": "Globex overnight 17:02->08:30, 1% stop, full-size"}
 
 
 def main(argv=None):
@@ -240,7 +307,7 @@ def main(argv=None):
                   r, notes=f"Sharpe by stop {r['by_stop']}")
     else:
         for root, r in res.items():
-            score(f"{tid}/{root}", HYP.get(tid, TESTS[tid].__doc__.splitlines()[0]), "cached GLBX 1m 2010-2023 nights", r, notes=r.get("notes", ""))
+            score(f"{tid}/{root}", HYP.get(tid, TESTS[tid].__doc__.splitlines()[0]), "Databento GLBX 1m 2010-2023" if tid == "3A-10" else "cached GLBX 1m 2010-2023 nights", r, notes=r.get("notes", ""))
 
 
 if __name__ == "__main__":
