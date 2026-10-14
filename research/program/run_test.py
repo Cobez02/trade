@@ -56,7 +56,7 @@ def score(test_id: str, hypothesis: str, data_desc: str, res: dict, notes: str =
 
 
 # ------------------------------------------------------------------ registered tests
-def test_3A_1(symbols=("ES", "NQ", "RTY", "YM"), stop_frac=0.01, start="2010-01-01", end="2023-12-31") -> dict:
+def test_3A_1(symbols=("ES", "NQ", "RTY", "YM"), stop_frac=0.01, start="2010-06-06", end="2023-12-31") -> dict:
     """Globex overnight drift: buy at the 17:00 CT reopen, 1% stop, sell at 08:30 CT. Per-contract P&L in the MICRO.
     Development data only (<= 2023). One result line per symbol is logged by the caller; this returns the ES one
     plus a params_grid over stop levels for PBO."""

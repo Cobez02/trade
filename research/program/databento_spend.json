@@ -1,0 +1,45 @@
+{
+  "spent": 58.1761,
+  "requests": [
+    {
+      "when": "2026-10-14T09:34:32",
+      "symbol": "ES.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 17.2744,
+      "rows": 4731698,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T09:37:21",
+      "symbol": "NQ.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 16.6361,
+      "rows": 4556846,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T09:49:04",
+      "symbol": "RTY.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 7.6996,
+      "rows": 2109014,
+      "verdict": false
+    },
+    {
+      "when": "2026-10-14T10:32:54",
+      "symbol": "YM.v.0",
+      "schema": "ohlcv-1m",
+      "start": "2010-06-06",
+      "end": "2023-12-31",
+      "cost": 16.566,
+      "rows": 4537643,
+      "verdict": false
+    }
+  ]
+}

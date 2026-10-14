@@ -1,7 +1,7 @@
 """
 Phase 0 data layer for the research program.
 
-- Databento CME full-session minute bars (GLBX.MDP3, ohlcv-1m, continuous front month by volume).
+- Databento CME full-session minute bars (GLBX.MDP3, ohlcv-1m, continuous front month by volume). Dataset starts 2010-06-06.
 - A SPEND LEDGER with a hard budget: every request is cost-estimated with the FREE metadata endpoint first,
   the cumulative spend is kept in research/program/databento_spend.json, and any request that would push the
   total past the budget is REFUSED with a clear message. Default budget = the $125 signup credit. Raising it
@@ -88,7 +88,7 @@ def fetch_cme_minutes(symbol: str, start: str, end: str, verdict: bool = False,
 
 
 def estimate_phase0(symbols=("ES.v.0", "NQ.v.0", "RTY.v.0", "YM.v.0", "ZN.v.0", "ZB.v.0", "GC.v.0", "CL.v.0"),
-                    start="2010-01-01", end="2023-12-31") -> float:
+                    start="2010-06-06", end="2023-12-31") -> float:
     """FREE: total estimated cost of the Phase 0 development download, before buying anything."""
     import databento as db
     client = db.Historical(os.environ["DATABENTO_API_KEY"])
