@@ -1,7 +1,7 @@
 """
 Broker adapters. One interface, four implementations:
 
-  SimBroker        in-memory, deterministic — the dry-run and integration tests
+  SimBroker        in-memory, deterministic - the dry-run and integration tests
   AlpacaProxyBroker Alpaca PAPER trading SPY/QQQ shares as a stand-in for MES/MNQ
                    (Alpaca has no futures; this is the free forward-test lab)
   TradovateBroker  MyFundedFutures / Tradeify / Take Profit Trader accounts     [UNTESTED]

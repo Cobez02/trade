@@ -1,4 +1,4 @@
-# SCOREBOARD — every test ever run, pass or fail. N (trial count) feeds the deflated Sharpe. Never delete a line.
+# SCOREBOARD - every test ever run, pass or fail. N (trial count) feeds the deflated Sharpe. Never delete a line.
 | N | id | date | hypothesis | data | in-sample Sharpe | PF | cost share | DSR p | verdict | notes | bp-rule (Oct-2026 costs, PROGRAM.md §0b) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | 3A-1/ES | 2026-10-14 | Globex overnight 17:02->08:30 CT, 1% stop | Databento GLBX 1m 2010-2023 | -0.37 | 0.93 | 136% | 0.085 | fail | trades 3468, worst day -240, PBO 0.20634920634920634; Sharpe by stop {0.0: -0.22, 0.0075: -0.53, 0.01: -0.37, 0.015: -0.31, 0.02: -0.27} | Sharpe 0.37 / PF 1.07 / cost 44% / DSR 0.915 / fail (net 1.3 bp) |

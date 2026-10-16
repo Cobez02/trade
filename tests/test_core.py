@@ -246,7 +246,7 @@ check("...and the cumulative loss is well past a $2,000 floor (so the freeze wou
 
 
 # ---------------------------------------------------------------------------
-print("SLEEVE 2 — last half hour")
+print("SLEEVE 2 - last half hour")
 from strategy.lasthalf import LastHalfHourStrategy, vol_regime
 lh = LastHalfHourStrategy(min_move=0.0005, confirm=True, instrument=C.MES)
 ctxL = ctxs[20]
@@ -273,7 +273,7 @@ m3 = vol_regime(build_sessions(bars3, 30, 14, 1.0), lookback=5, min_obs=3)
 check("regime: a session's own move cannot change its own flag", m1[mid] == m3[mid], (m1[mid], m3[mid]))
 check("regime: ...but it does change the NEXT sessions' flags (the statistic is alive)", any(m1[c.day] != m3[c.day] for c in ctxs[19:24]))
 
-print("SLEEVE 3 — pair spread")
+print("SLEEVE 3 - pair spread")
 from backtest.pair_simulate import PairBacktester
 # leg B = an independent random walk (so the spread has a real sigma) with a 1% divergence on the last day that reverts
 bars_b = synth_days(days, seed=7)
@@ -303,14 +303,14 @@ check("portfolio script runs and writes the summary with gates", ok, r.stderr[-4
 if ok:
     j = _json.load(open(f"{tmp}/out/portfolio_summary.json")); check("portfolio: six gates evaluated", len(j["gates"]) == 6, j["gates"])
 
-print("BROKER — Alpaca position sign")
+print("BROKER - Alpaca position sign")
 from broker.alpaca_proxy import signed_qty
 check("short reported as qty -4 / side short -> -4", signed_qty("-4", "short") == -4)
 check("short reported as qty 4 / side short -> -4", signed_qty("4", "PositionSide.SHORT") == -4)
 check("long reported as qty 4 / side long -> +4", signed_qty("4", "long") == 4)
 check("long reported as qty 4.0 / side PositionSide.LONG -> +4", signed_qty("4.0", "PositionSide.LONG") == 4)
 
-print("BROKER — symbol-scoped P&L")
+print("BROKER - symbol-scoped P&L")
 from broker.alpaca_proxy import symbol_pnl
 check("round trip today: bought 60 @100, sold 60 @101 -> +60", abs(symbol_pnl([(60,100.0),(-60,101.0)],0,0,0)-60)<1e-9)
 check("open long: bought 60 @100, marked 102 -> +120", abs(symbol_pnl([(60,100.0)],60,102.0,0)-120)<1e-9)
@@ -318,7 +318,7 @@ check("carried short covered today: -60 carried (prev close 742.5), bought 60 @7
       abs(symbol_pnl([(60,735.85)],0,0,742.5)-399)<0.01, symbol_pnl([(60,735.85)],0,0,742.5))
 check("another symbol's move is invisible (no fills, flat) -> 0", symbol_pnl([],0,0,0)==0)
 
-print("BROKER — overnight order settles before it is recorded")
+print("BROKER - overnight order settles before it is recorded")
 from broker.alpaca_proxy import wait_for_fill
 class _O:
     def __init__(self, status, fq, fpx): self.status, self.filled_qty, self.filled_avg_price = status, fq, fpx
@@ -338,7 +338,7 @@ try:
 finally:
     _t.monotonic = _real
 
-print("RUNNER — handover planning")
+print("RUNNER - handover planning")
 from live.runner import plan_deadline
 flat_t = dt.datetime(2026, 10, 2, 14, 52, tzinfo=S.TZ); close_t = dt.datetime(2026, 10, 2, 15, 0, tzinfo=S.TZ)
 check("a limit expiring mid-morning hands over normally",
@@ -347,7 +347,7 @@ check("a limit expiring inside the close window is dropped (run to the end)",
       plan_deadline(dt.datetime(2026, 10, 2, 9, 40, tzinfo=S.TZ), 310, flat_t, close_t) is None)
 check("no limit -> no deadline", plan_deadline(dt.datetime(2026, 10, 2, 9, 0, tzinfo=S.TZ), 0, flat_t, close_t) is None)
 
-print("RESEARCH PROGRAM — the referee")
+print("RESEARCH PROGRAM - the referee")
 from research.program.stats import deflated_sharpe, pbo, purged_folds
 from research.program.data import fetch_cme_minutes, HoldoutViolation
 import numpy as _np, math as _m

@@ -1,4 +1,4 @@
-# Pre-registration — overnight sleeve + portfolio with the intraday Nasdaq sleeve (2026-09-10, before the run)
+# Pre-registration - overnight sleeve + portfolio with the intraday Nasdaq sleeve (2026-09-10, before the run)
 
 ## Why this and not more intraday work
 28 backtests say the day-only index space has one small Nasdaq effect (Sharpe ~0.5) and nothing else.
@@ -14,7 +14,7 @@ Worst weekday nights 2016-2026 are -6.7% to -7.2%. Against a $2,000 floor only M
 at 1 contract (-$860); MYM (-$1,550) survives a $3,000 floor; MES/MNQ do not at 1 contract. So:
   overnight-A: 1 M2K (IWM proxy, notional 12,000, slip 3.5c/share/side)
   overnight-B: 1 MYM (DIA proxy, notional 23,000, slip 3.0c/share/side)
-  overnight-C: 1 MNQ (QQQ proxy, notional 50,000, slip 1.9c) — reported to show WHY it is too big.
+  overnight-C: 1 MNQ (QQQ proxy, notional 50,000, slip 1.9c) - reported to show WHY it is too big.
 Weekday nights only (no Friday->Monday: firms forbid weekend holds). No overnight stop modelled.
 
 ## Predictions

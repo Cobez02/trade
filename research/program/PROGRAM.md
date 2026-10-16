@@ -1,7 +1,7 @@
-# The 500-hour research program — raising the portfolio Sharpe by disciplined search
+# The 500-hour research program - raising the portfolio Sharpe by disciplined search
 
 Written 2026-10-13. Target: a portfolio of independent, mechanism-grounded sleeves whose COMBINED out-of-sample
-Sharpe is as high as the data allows — honestly expected 1.2–1.6 after costs, from ~1.0 today. The program's
+Sharpe is as high as the data allows - honestly expected 1.2–1.6 after costs, from ~1.0 today. The program's
 value is as much in what it rejects as in what it finds: a tireless researcher without a tireless referee
 converges on the most convincing accident (see the 9/9 regime leak), so the referee is built into the process.
 
@@ -20,7 +20,7 @@ converges on the most convincing accident (see the 9/9 regime leak), so the refe
   equities 1c/share + any borrow. Costs are never tuned to make a result pass.
 - **Red-team before verdict**: a separate session reviews the code for look-ahead, survivorship and label leakage
   before any candidate touches the holdout. The regime-switch leak would have been caught here.
-- **Human cadence**: 20 minutes a week — read SCOREBOARD.md, approve the next week's QUEUE.md. That is the only
+- **Human cadence**: 20 minutes a week - read SCOREBOARD.md, approve the next week's QUEUE.md. That is the only
   human input the program needs. Credits: a session is ~2–4 hours of agent time; 500 hours ≈ 150 sessions ≈ 5 months
   at one session a day, or faster in parallel.
 
@@ -51,31 +51,31 @@ Before the first download, run `python -m research.program.data` to print the fu
 
 ## 3. Hypothesis catalog (each line = one or two tests; the mechanism is the entry ticket)
 ### 3A. Prop-compatible (flat by 15:10 CT; Globex single-session holds allowed)
-1. Globex overnight drift, MES/MNQ/M2K/MYM, 1% stop — DONE on 2 years; redo on 2010-2026 minute data (the anchor sleeve).
+1. Globex overnight drift, MES/MNQ/M2K/MYM, 1% stop - DONE on 2 years; redo on 2010-2026 minute data (the anchor sleeve).
 2. Overnight drift conditioned on the prior day's intraday move (Lou-Polk-Skouras tug-of-war: overnight continuation after intraday reversal).
-3. Overnight drift conditioned on VIX term structure (contango/backwardation) — risk premium is paid when hedging demand is high.
-4. FOMC-cycle effect (Cieslak-Morse-Vissing-Jorgensen): returns concentrate in even weeks of the FOMC cycle — hold overnight only in those weeks.
-5. Pre-FOMC drift post-2015 (Lucca-Moench, decayed per Kurov-Wolfe-Gilbert) — expect FAIL; test once to close it.
-6. Macro-release nights: hold through / avoid CPI, NFP, FOMC nights — does the premium pay for the gap, or not?
-7. Turn-of-month and month-end rebalancing flows in ES (pension/target-date rebalancing, documented) — intraday last-hour positioning on T-1..T+1.
-8. Opex-week and quarterly-roll-week behaviour in ES/NQ (dealer gamma unwinds) — last-30-min continuation/reversal by week type.
+3. Overnight drift conditioned on VIX term structure (contango/backwardation) - risk premium is paid when hedging demand is high.
+4. FOMC-cycle effect (Cieslak-Morse-Vissing-Jorgensen): returns concentrate in even weeks of the FOMC cycle - hold overnight only in those weeks.
+5. Pre-FOMC drift post-2015 (Lucca-Moench, decayed per Kurov-Wolfe-Gilbert) - expect FAIL; test once to close it.
+6. Macro-release nights: hold through / avoid CPI, NFP, FOMC nights - does the premium pay for the gap, or not?
+7. Turn-of-month and month-end rebalancing flows in ES (pension/target-date rebalancing, documented) - intraday last-hour positioning on T-1..T+1.
+8. Opex-week and quarterly-roll-week behaviour in ES/NQ (dealer gamma unwinds) - last-30-min continuation/reversal by week type.
 9. Last-30-minute momentum conditioned on dealer gamma proxy (Baltussen mechanism): sign of the day's move × a vol-regime proxy. (Unconditional version FAILED in Sept.)
 10. Overnight drift in Treasury futures (ZN/ZB) and gold (GC): is the night premium an equity-only phenomenon?
-11. Crude (CL) inventory-report (Wed 09:30 CT) drift and the EIA-day intraday pattern — event-driven, mechanism = scheduled information release.
-12. Opening-range breakout on MNQ, un-leveraged (Zarattini-Aziz) — expect thin; close it properly on 15 years.
-13. Cross-market lead-lag: ES overnight move → RTY/YM catch-up at the open (small-cap lag) — single-session, both legs allowed.
-14. Volatility-regime switch for the overnight sleeve (corrected, no look-ahead) — size 1 vs 0 by trailing realized vol.
+11. Crude (CL) inventory-report (Wed 09:30 CT) drift and the EIA-day intraday pattern - event-driven, mechanism = scheduled information release.
+12. Opening-range breakout on MNQ, un-leveraged (Zarattini-Aziz) - expect thin; close it properly on 15 years.
+13. Cross-market lead-lag: ES overnight move → RTY/YM catch-up at the open (small-cap lag) - single-session, both legs allowed.
+14. Volatility-regime switch for the overnight sleeve (corrected, no look-ahead) - size 1 vs 0 by trailing realized vol.
 ### 3B. Own-capital (multi-day holds, broad universe)
 15. Time-series momentum across 20+ CME futures, 1–12-month lookbacks, weekly rebalance (Moskowitz-Ooi-Pedersen 2012; AQR/Baltas-Kosowski replications). The deepest-documented futures premium; Sharpe ~0.8–1 diversified.
-16. Carry across futures (roll yield / term-structure slope) — Koijen et al. "Carry".
-17. Cross-sectional 12-1 momentum, monthly, top/bottom decile on the Alpaca universe (point-in-time universe needed — Norgate/Sharadar).
-18. Short-term reversal (1-week/1-month) in small caps — liquidity provision; capacity-limited = retail-sized.
+16. Carry across futures (roll yield / term-structure slope) - Koijen et al. "Carry".
+17. Cross-sectional 12-1 momentum, monthly, top/bottom decile on the Alpaca universe (point-in-time universe needed - Norgate/Sharadar).
+18. Short-term reversal (1-week/1-month) in small caps - liquidity provision; capacity-limited = retail-sized.
 19. Overnight-vs-intraday cross-sectional (Lou-Polk-Skouras): long high-overnight-return stocks held overnight only.
 20. Post-earnings-announcement drift (PEAD) using EDGAR 8-K timing + Alpaca prices.
 21. Same-month seasonality (Heston-Sadka) and January/December tax-loss effects in small caps.
-22. Low-volatility / betting-against-beta long-short (Frazzini-Pedersen) — needs shorting; check borrow.
-23. Index-rebalancing and inclusion/deletion flows (Russell reconstitution in June) — forced flow, dates public.
-24. Dividend-capture and ex-date behaviour in ETFs — small, mechanism-grounded, check costs.
+22. Low-volatility / betting-against-beta long-short (Frazzini-Pedersen) - needs shorting; check borrow.
+23. Index-rebalancing and inclusion/deletion flows (Russell reconstitution in June) - forced flow, dates public.
+24. Dividend-capture and ex-date behaviour in ETFs - small, mechanism-grounded, check costs.
 ### 3C. Explicitly excluded (and why)
 - Price-only machine learning on bars (no mechanism; decades of out-of-sample failure).
 - Anything requiring sub-second execution or order-book data (we pay that spread; we don't earn it).

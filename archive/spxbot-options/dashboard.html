@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPX-Beater — options paper trading</title>
+<title>SPX-Beater - options paper trading</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -98,12 +98,12 @@
   </div>
 
   <div class="card">
-    <h2>Strategy sleeves — which method is winning</h2>
+    <h2>Strategy sleeves - which method is winning</h2>
     <table>
       <tr><th>Sleeve</th><th style="text-align:right">Open</th><th style="text-align:right">Realized P&amp;L</th>
       <th style="text-align:right">Return</th><th style="text-align:right">Trades</th><th style="text-align:right">Win %</th></tr>
       <tr>
-          <td class="lbl">Reddit / WSB sentiment <span style="color:#898781;font-size:11px" title="retired — entry signal replaced by the crowd veto">· retired</span></td>
+          <td class="lbl">Reddit / WSB sentiment <span style="color:#898781;font-size:11px" title="retired - entry signal replaced by the crowd veto">· retired</span></td>
           <td class="num">0</td>
           <td class="num" style="color:#0ca30c">$157</td>
           <td class="num" style="color:#0ca30c">+6.28%</td>
@@ -124,7 +124,7 @@
           <td class="num">61</td>
           <td class="num">59%</td>
         </tr><tr>
-          <td class="lbl">Options-flow copy <span style="color:#898781;font-size:11px" title="retired — OI skew is unsigned; no signal without open/close data">· retired</span></td>
+          <td class="lbl">Options-flow copy <span style="color:#898781;font-size:11px" title="retired - OI skew is unsigned; no signal without open/close data">· retired</span></td>
           <td class="num">0</td>
           <td class="num" style="color:#d03b3b">$-47.00</td>
           <td class="num" style="color:#d03b3b">-1.88%</td>
@@ -135,8 +135,8 @@
   </div>
 
   <div class="card">
-    <h2>Recursive learning — what's working, what's gated</h2>
-    <div style="color:#c3c2b7;font-size:12px;margin-bottom:10px">103 settled trades over 24 session(s) — effective sample 103.0. Sizing is active.</div>
+    <h2>Recursive learning - what's working, what's gated</h2>
+    <div style="color:#c3c2b7;font-size:12px;margin-bottom:10px">103 settled trades over 24 session(s) - effective sample 103.0. Sizing is active.</div>
       <div class="wbars"><div class="wbar">
           <div class="wbar-lbl">Reddit / WSB sentiment <span style="color:#898781">(5 · n<sub>eff</sub> 4.7)</span></div>
           <div class="wbar-track"><div class="wbar-fill" style="width:80%;background:#898781"></div><div class="wbar-tick"></div></div>
@@ -156,7 +156,7 @@
         </div></div>
       <div style="color:#898781;font-size:11px;margin-top:8px">Scale: 0.25× floor → 1.25× ceiling, tick at neutral. The floor is not zero: nothing is ever blocked, because a blocked setup can never generate the evidence that would clear it. Currently 1 setup(s) sized down.</div>
       <div style="color:#898781;font-size:11px;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.06em">Lessons learned</div>
-      <ul class="notes"><li>&#x27;wsb&#x27;: 60% win, avg +8% over 5 trades (n_eff 4.7) — size unchanged, evidence too thin to move it. Honest confidence needs ~196 trades; there are 5.</li><li>&#x27;tech&#x27; sized ×1.086: avg +8% shrinks to +7.1% against the pooled mean at n_eff 61.0. Honest confidence needs ~34 trades; there are 61.</li><li>&#x27;news&#x27;: 42% win, avg +1% over 36 trades (n_eff 20.2) — size unchanged, evidence too thin to move it. Honest confidence needs ~8,987 trades; there are 36.</li><li>&#x27;flow&#x27;: 0% win, avg -54% over 1 trades (n_eff 1.0) — size unchanged, evidence too thin to move it.</li><li>DISCOURAGED call (direction) — sized ×0.927 at 43% confidence, not blocked. 48% win over 69 (n_eff 69.0). It keeps trading at reduced size so the evidence can keep accruing; a hard block would have made this permanent.</li><li>Testing 16 buckets at once: an uncorrected rule of this size fires on noise with probability 0.9986. One honest decision needs n ≈ 61 (130 corrected). No bucket has been blocked.</li></ul>
+      <ul class="notes"><li>&#x27;wsb&#x27;: 60% win, avg +8% over 5 trades (n_eff 4.7) - size unchanged, evidence too thin to move it. Honest confidence needs ~196 trades; there are 5.</li><li>&#x27;tech&#x27; sized ×1.086: avg +8% shrinks to +7.1% against the pooled mean at n_eff 61.0. Honest confidence needs ~34 trades; there are 61.</li><li>&#x27;news&#x27;: 42% win, avg +1% over 36 trades (n_eff 20.2) - size unchanged, evidence too thin to move it. Honest confidence needs ~8,987 trades; there are 36.</li><li>&#x27;flow&#x27;: 0% win, avg -54% over 1 trades (n_eff 1.0) - size unchanged, evidence too thin to move it.</li><li>DISCOURAGED call (direction) - sized ×0.927 at 43% confidence, not blocked. 48% win over 69 (n_eff 69.0). It keeps trading at reduced size so the evidence can keep accruing; a hard block would have made this permanent.</li><li>Testing 16 buckets at once: an uncorrected rule of this size fires on noise with probability 0.9986. One honest decision needs n ≈ 61 (130 corrected). No bucket has been blocked.</li></ul>
   </div>
 
   <div class="card">
@@ -250,11 +250,11 @@
 
   <div class="card">
     <h2>Last run activity</h2>
-    <ul class="notes"><li>Learner: 103 settled trades | wsb=w1.0 · news=w1.0 · tech=w1.086 · flow=w1.0</li><li>Market closed — signals recorded, no orders placed this run.</li></ul>
+    <ul class="notes"><li>Learner: 103 settled trades | wsb=w1.0 · news=w1.0 · tech=w1.086 · flow=w1.0</li><li>Market closed - signals recorded, no orders placed this run.</li></ul>
   </div>
 
   <div class="disc">Experimental / educational paper-trading system. Trades are simulated on an Alpaca
   paper account with no real money. Signals are generated autonomously from public sentiment, news
-  keywords, technical indicators, and options open-interest — none of this is investment advice, and
+  keywords, technical indicators, and options open-interest - none of this is investment advice, and
   paper-trading results do not reflect real-world fills, slippage, or liquidity.</div>
 </div></body></html>

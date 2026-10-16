@@ -1,7 +1,7 @@
 """DISCLOSED POST-HOC sensitivity for the insider study. The pre-registered
 run (insider_result.json) stands as the primary result; these cells exist to
 separate 'the signal is dead' from 'the market's friction makes it untradeable'.
-Cell D books both sides at MID with no fees — a diagnostic ceiling, NOT a
+Cell D books both sides at MID with no fees - a diagnostic ceiling, NOT a
 tradeable configuration, and it is labeled that way in the report."""
 import json
 from collections import Counter

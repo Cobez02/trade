@@ -1,5 +1,5 @@
 """
-Watcher test harness — replays quote paths through the real decision path with a
+Watcher test harness - replays quote paths through the real decision path with a
 fake broker. Places NO orders. Run: python3 test_watcher.py
 
 What is actually being tested here is not "does the arithmetic work" (exitrules
@@ -11,7 +11,7 @@ wired to a live socket and a live account:
   * the sequence guard, without which a fast decision loop satisfies the
     confirmation requirement by reading one cached quote repeatedly
   * the double-sell guards, because selling a long option twice does not close
-    the position — it opens a short one
+    the position - it opens a short one
 """
 from __future__ import annotations
 import sys, time, types, datetime as dt
@@ -24,7 +24,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 # --------------------------------------------------------------------------
@@ -140,12 +140,12 @@ def sells(w):
 
 # --------------------------------------------------------------------------
 print("=" * 74)
-print("1. Confirmation window — a single bad print must not sell")
+print("1. Confirmation window - a single bad print must not sell")
 print("=" * 74)
 # The test contract's expiry is computed, not hardcoded: a fixed date once
 # rolled inside TIME_STOP_DTE when the calendar caught up with it (02:37 UTC
 # on 2026-07-30, a 260731 expiry became 1 DTE), and the time-stop then fired
-# on every quote — masking the recovery-reset behaviour under test.
+# on every quote - masking the recovery-reset behaviour under test.
 import datetime as _dt
 _exp = (_dt.date.today() + _dt.timedelta(days=30)).strftime("%y%m%d")
 sym = f"AAA{_exp}C00100000"
@@ -174,7 +174,7 @@ check("breach sustained past the time floor DOES sell", len(sells(w)) == 1)
 
 print()
 print("=" * 74)
-print("2. Sequence guard — a cached quote must not confirm itself")
+print("2. Sequence guard - a cached quote must not confirm itself")
 print("=" * 74)
 w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
 w.entries[sym], w.qtys[sym] = 1.00, 5
@@ -203,7 +203,7 @@ check("post-recovery breach must re-earn confirmation", len(sells(w)) == 0)
 
 print()
 print("=" * 74)
-print("4. Panic margin — a collapse skips the debounce")
+print("4. Panic margin - a collapse skips the debounce")
 print("=" * 74)
 w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
 w.entries[sym], w.qtys[sym] = 1.00, 5
@@ -219,7 +219,7 @@ print("=" * 74)
 STALE = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=120)
 BAD = {
     # each case supplies six DISTINCT quotes, so the sequence guard cannot be
-    # the thing preventing the sale — the quote rejection has to be
+    # the thing preventing the sale - the quote rejection has to be
     "zero bid":        [(0.0, 0.40 + i * 0.01, None) for i in range(6)],
     "crossed market":  [(0.80, 0.40 + i * 0.01, None) for i in range(6)],
     "stale (120s)":    [(0.50 - i * 0.01, 0.54, STALE) for i in range(6)],
@@ -342,11 +342,11 @@ check("1-DTE contract is time-stopped even while winning", len(sells(w)) == 1,
 
 print()
 print("=" * 74)
-print("11. _stop_prices — trigger below the noise band, limit below the trigger")
+print("11. _stop_prices - trigger below the noise band, limit below the trigger")
 print("=" * 74)
 # The regression this section exists to prevent: the first stop-limit version
-# priced the limit off the BID, so a stop deep below the market — the normal
-# state of a fresh hard-stop — got limit=None and silently fell back to the
+# priced the limit off the BID, so a stop deep below the market - the normal
+# state of a fresh hard-stop - got limit=None and silently fell back to the
 # stop-market the rework was supposed to eliminate.
 w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
 w.entries[sym], w.qtys[sym] = 1.00, 5
@@ -428,7 +428,7 @@ check(f"91-point sweep: trigger<=desired, limit<=trigger, limit>=$0.01, "
 
 print()
 print("=" * 74)
-print("12. ensure_broker_stop — stop-limit resting orders, end to end")
+print("12. ensure_broker_stop - stop-limit resting orders, end to end")
 print("=" * 74)
 w = mkwatcher(positions={sym: FakePosition(sym, 5, 1.00)})
 w.entries[sym], w.qtys[sym] = 1.00, 5
@@ -502,7 +502,7 @@ check("no quote -> plain stop-market rests", "submit-stop" in kinds and
 
 print()
 print("=" * 74)
-print("13. Stop adoption — a new watcher job inherits existing resting stops")
+print("13. Stop adoption - a new watcher job inherits existing resting stops")
 print("=" * 74)
 # The production shape: watch.yml runs as two consecutive jobs (6h cap vs a
 # 6.5h session), and the hourly cron arms floors of its own. Job 2 boots with
@@ -565,7 +565,7 @@ print("=" * 74)
 print("13b. Clock reads: a failed API call is UNKNOWN, never 'closed'")
 print("=" * 74)
 # Live incident: a transient clock failure at 14:58 UTC read as None, the run
-# loop said "market closed — watcher exiting" and shut down mid-session with
+# loop said "market closed - watcher exiting" and shut down mid-session with
 # the workflow still green. The contract is now three-way and the two negative
 # states are impossible to confuse.
 w = mkwatcher(minutes_left=120.0)
@@ -585,7 +585,7 @@ check("clock API failure -> ('unknown', None), NOT 'closed'",
 
 print()
 print("=" * 74)
-print("14. SKIP paths release the in-flight claim — no frozen symbols")
+print("14. SKIP paths release the in-flight claim - no frozen symbols")
 print("=" * 74)
 # evaluate() refuses any symbol in `inflight`, so a SKIP that kept the claim
 # would permanently end management of a still-open position.
@@ -611,7 +611,7 @@ print()
 
 print()
 print("=" * 74)
-print("15. Spread packages — exemptions hold, exits are package-level")
+print("15. Spread packages - exemptions hold, exits are package-level")
 print("=" * 74)
 import datetime as _dt2
 _sexp = (_dt2.date.today() + _dt2.timedelta(days=8)).strftime("%y%m%d")
@@ -632,7 +632,7 @@ check("ensure_broker_stop refuses BOTH spread legs (no stop orders placed)",
       str(w.trading.calls))
 
 # flatten path: evaluate() runs only over singles (refresh already excluded
-# members) — prove a flatten pass leaves the legs untouched while the single
+# members) - prove a flatten pass leaves the legs untouched while the single
 # still exits.
 w.entries[sym], w.qtys[sym] = 1.00, 5
 w.put_quote(sym, 0.90, 0.94, None, "ws")

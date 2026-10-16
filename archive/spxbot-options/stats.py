@@ -472,11 +472,11 @@ def gate_decision(shrunk_mean: float, n_eff: float, pooled: float = 0.0,
     # the exact false-certainty this module exists to prevent. Refuse it.
     if not (act > 0) or not math.isfinite(act):
         return {"mult": 1.0, "confidence": 0.0,
-                "reason": f"invalid activation threshold {act:g} — "
+                "reason": f"invalid activation threshold {act:g} - "
                           f"trading at full size"}
     if ne < act:
         return {"mult": 1.0, "confidence": 0.0,
-                "reason": f"n_eff {ne:.1f} < activation {act:g} — "
+                "reason": f"n_eff {ne:.1f} < activation {act:g} - "
                           f"no evidence yet, trading at full size"}
 
     # Confidence saturates at 4x the activation threshold.

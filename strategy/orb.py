@@ -1,5 +1,5 @@
 """
-Opening-range breakout — the secondary strategy (Zarattini & Aziz 2023,
+Opening-range breakout - the secondary strategy (Zarattini & Aziz 2023,
 "Can Day Trading Really Be Profitable?", QQQ 2016-2023).
 
 Published rule: if the first 5-minute bar closes up, buy at the open of the

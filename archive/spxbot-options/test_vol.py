@@ -28,7 +28,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 def banner(title):
@@ -39,7 +39,7 @@ def banner(title):
 
 
 # --------------------------------------------------------------------------
-# generators — the true volatility is an input, so bias is measurable
+# generators - the true volatility is an input, so bias is measurable
 # --------------------------------------------------------------------------
 def ohlc_from_variance(daily_var, gap_share=0.0, steps=390, seed=11, s0=100.0):
     """Daily OHLC bars from a known DAILY VARIANCE path.
@@ -48,13 +48,13 @@ def ohlc_from_variance(daily_var, gap_share=0.0, steps=390, seed=11, s0=100.0):
     overnight jump between yesterday's close and today's open; the remaining
     (1 - gap_share) is a `steps`-point GBM path inside the session. So true
     full-day vol is sqrt(252*v) regardless of gap_share, while true
-    OPEN-TO-CLOSE vol is that times sqrt(1-gap_share) — which is the ceiling
+    OPEN-TO-CLOSE vol is that times sqrt(1-gap_share) - which is the ceiling
     on what a gap-blind estimator can possibly report.
 
     steps=390 is one price per minute, the realistic count for a liquid name.
     The high and low of a 390-point sample understate the continuous extremes,
     which is a real and documented downward bias in every range estimator
-    (note 08 §11.3) — section 1 measures it and then shows it away.
+    (note 08 §11.3) - section 1 measures it and then shows it away.
     """
     rng = np.random.default_rng(seed)
     path_var = np.asarray(daily_var, dtype=float)
@@ -117,8 +117,8 @@ banner("1. Range estimators recover a known sigma (GBM, no overnight gap)")
 # close-to-close estimate to about 0.4 points.
 #
 # TOLERANCES, and why they differ:
-#   close_to_close  0.5 pts — it is unbiased, so only sampling error remains.
-#   range estimators 1.5 pts — plus a genuine DOWNWARD bias, because the high
+#   close_to_close  0.5 pts - it is unbiased, so only sampling error remains.
+#   range estimators 1.5 pts - plus a genuine DOWNWARD bias, because the high
 #     and low of 390 discrete observations understate the continuous supremum
 #     and infimum the estimators' scaling constants assume. Note 08 §11.3 puts
 #     this at 0.7-0.9 points at a 20 vol level; measured here it is 0.9-1.3.
@@ -165,7 +165,7 @@ with warnings.catch_warnings(record=True) as caught:
 
 
 # --------------------------------------------------------------------------
-banner("2. GAP-BLINDNESS — the reason yang_zhang is the default")
+banner("2. GAP-BLINDNESS - the reason yang_zhang is the default")
 # Same true full-day vol as section 1, but now 25% of each day's variance
 # arrives as an overnight jump. Nothing about the full-day risk of an
 # overnight options position has changed. Parkinson/GK/RS cannot see the jump,
@@ -188,7 +188,7 @@ for name in ("parkinson", "garman_klass"):
     shortfall = 100 * (TRUE_SIGMA - measured[name])
     check(f"{name} materially UNDER-reports full-day vol",
           shortfall >= 2.0,
-          f"reports {measured[name]:.4f} vs true {TRUE_SIGMA:.4f} — a "
+          f"reports {measured[name]:.4f} vs true {TRUE_SIGMA:.4f} - a "
           f"{shortfall:.2f} vol point shortfall, i.e. a phantom {shortfall:.2f} "
           f"point variance risk premium handed to any IV comparison")
 
@@ -236,7 +236,7 @@ check("yang_zhang reports ~zero premium on a fairly-priced option",
 
 
 # --------------------------------------------------------------------------
-banner("4. Bad input returns None — never NaN, never an exception")
+banner("4. Bad input returns None - never NaN, never an exception")
 good = gbm_ohlc(n_days=200, sigma=0.20, seed=5)
 BAD = {
     "insufficient rows (10 bars, window 21)": good.iloc[:10],
@@ -332,7 +332,7 @@ if model:
     check("Jensen correction raises the forecast above exp(mu)",
           V.har_forecast(model, rv, 1) > V.har_forecast(flat, rv, 1),
           f"with {V.har_forecast(model, rv, 1):.4f} vs without "
-          f"{V.har_forecast(flat, rv, 1):.4f} — omitting it under-forecasts by "
+          f"{V.har_forecast(flat, rv, 1):.4f} - omitting it under-forecasts by "
           f"{100*(V.har_forecast(model, rv, 1) - V.har_forecast(flat, rv, 1)):.2f} pts")
 
 check("har_features returns d/w/m spanning 1/5/22 days",
@@ -368,7 +368,7 @@ ref_neff = {10: 259, 21: 122, 42: 60, 63: 40, 126: 19, 252: 9}
 got_neff = {w: r["n_eff"] for w, r in
             V.vol_cone(df_cone, windows=tuple(ref_neff)).items()}
 check("n_eff reproduces the note's §11.2 table exactly", got_neff == ref_neff,
-      f"{got_neff} — 2348 nominal 252-day observations are 9 independent ones")
+      f"{got_neff} - 2348 nominal 252-day observations are 9 independent ones")
 print(f"  {'win':>4} {'p10':>8} {'p25':>8} {'p50':>8} {'p75':>8} {'p90':>8} "
       f"{'n_obs':>7} {'n_eff':>6}")
 for w, rec in sorted(cone.items()):
@@ -417,12 +417,12 @@ for w in sorted(cone):
     check(f"window {w}: cone_ci brackets its own point estimate",
           lo_w < cone[w]["p90"] < hi_w)
     check(f"window {w}: p90 CI is at least 1 vol point wide", ci_w[w] >= 1.0,
-          f"{ci_w[w]:.2f} pts — an edge smaller than this is not measurable here")
+          f"{ci_w[w]:.2f} pts - an edge smaller than this is not measurable here")
 
 check("21-day p90 CI reproduces the note's 2.18 vol points (+/-0.4)",
       abs(ci_w[21] - 2.18) <= 0.4,
       f"{ci_w[21]:.2f} pts wide on {cone[21]['n_obs']} nominal observations "
-      f"(n_eff {cone[21]['n_eff']}) — the signal sits inside its own error bar")
+      f"(n_eff {cone[21]['n_eff']}) - the signal sits inside its own error bar")
 check("the CI is a bigger fraction of the cone as n_eff falls",
       ci_ratio[63] > ci_ratio[5],
       f"63d CI is {100*ci_ratio[63]:.1f}% of the cone's p10-p90 spread vs "
@@ -485,7 +485,7 @@ for m, want in EXPECT.items():
 check("the 1-minute penalty exceeds the 5-minute one by >2 vol points",
       100 * (V.iex_noise_bias(390, NOISE_STD) - V.iex_noise_bias(78, NOISE_STD)) > 2.0,
       f"{100*(V.iex_noise_bias(390, NOISE_STD)-V.iex_noise_bias(78, NOISE_STD)):.2f} "
-      f"pts — larger than any edge documented in the research")
+      f"pts - larger than any edge documented in the research")
 check("bias grows linearly in variance, i.e. as sqrt(M) in vol",
       abs(V.iex_noise_bias(4 * 78, NOISE_STD) / V.iex_noise_bias(78, NOISE_STD) - 2.0) < 1e-9)
 check("zero noise -> zero bias", V.iex_noise_bias(390, 0.0) == 0.0)
@@ -520,7 +520,7 @@ print()
 
 print()
 print("=" * 74)
-print("EXTRA. daily_variance + forecast_vol — the HAR wiring (live 2026-07-31)")
+print("EXTRA. daily_variance + forecast_vol - the HAR wiring (live 2026-07-31)")
 print("=" * 74)
 import numpy as _np, pandas as _pd
 _rng = _np.random.default_rng(11)

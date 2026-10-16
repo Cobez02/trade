@@ -1,5 +1,5 @@
 """
-Session runner — runs ONE trading session then exits. A scheduler (launchd,
+Session runner - runs ONE trading session then exits. A scheduler (launchd,
 cron, systemd timer, or the GitHub Actions research workflow) starts it each
 morning; the exchange clock, not the scheduler, decides when things happen.
 

@@ -1,11 +1,11 @@
 """
-execution.py — pre-trade execution quality: timing, cost, ticks, and stop safety.
+execution.py - pre-trade execution quality: timing, cost, ticks, and stop safety.
 
 WHY THIS MODULE EXISTS
 The entry logic already decides *what* to buy. Two research findings say that *how* and
 *when* the order is sent is worth more than the signal itself.
 
-FINDING 1 — execution timing is worth half the spread.
+FINDING 1 - execution timing is worth half the spread.
   Muravyev & Pearson, "Options Trading Costs Are Lower Than You Think," RFS 33(11):
   4973-5014 (2020): 20.4M option trades on the 39 highest-option-volume US names, 882
   trading days, April 2003 - October 2006, Nanex tick data on BOTH options and underlyings.
@@ -15,14 +15,14 @@ FINDING 1 — execution timing is worth half the spread.
       timing-adjusted, subset that times   1.3c   0.76%
   Mechanism, one line of arithmetic: price the option off the LIVE underlying and its own
   recent implied vol, compare to the quoted mid, cross only when the BSM value is on YOUR
-  side. Option quotes lag the underlying — regressing the next minute's mid change on that
+  side. Option quotes lag the underlying - regressing the next minute's mid change on that
   gap gives R^2 = 22% at one minute (10% at ten, 3% at an hour), coefficient averaging
   0.54: "in just one minute the option price moves more than half the distance required to
   converge to the implied price." For a SPY-scale name that halves the effective half-
   spread (2.5% -> 1.25% of premium) and drops the required apparent edge from ~5.0 to ~2.5
   annualized vol points at a 30-vol level (note 08 §12.5). Note 07 §A.2 is the mirror-image
   warning: for NON-timers, M&P's adjusted spread EQUALS their conventional spread (6.2c =
-  6.2c) — submit on signal without looking at the quote and you get ZERO of this discount.
+  6.2c) - submit on signal without looking at the quote and you get ZERO of this discount.
   There is no partial credit.
   Caveats: 2003-06 is pre-penny and pre-HFT-saturation; the 39 names are the most
   option-active in the market; M&P read ~40% of trades as institutional algos and note that
@@ -31,7 +31,7 @@ FINDING 1 — execution timing is worth half the spread.
   free option feed is INDICATIVE, not OPRA (note 07 §I.3), so the mid itself is approximate.
   `timing_edge` removes obviously-bad moments. It is a filter, not a cost estimate.
 
-FINDING 2 — Alpaca stop-market orders on options are a loss-manufacturing device.
+FINDING 2 - Alpaca stop-market orders on options are a loss-manufacturing device.
   Alpaca's own docs (https://docs.alpaca.markets/docs/orders-at-alpaca), verbatim: "Your
   sell stop order will only elect if there is a trade on the consolidated tape at or lower
   than your stop price." / "Your buy stop order will only elect if there is a trade on the
@@ -40,7 +40,7 @@ FINDING 2 — Alpaca stop-market orders on options are a loss-manufacturing devi
   appears only on the BUY side; if that asymmetry is literal, sell stops are electable by
   prints outside the NBBO, and complex-order legs and auction prints hit the consolidated
   tape well away from a single series' own quote.
-  Combine that with the retail option spread — Bryzgalova, Pavlova & Sikorskaya: quoted
+  Combine that with the retail option spread - Bryzgalova, Pavlova & Sikorskaya: quoted
   13.7%, effective 6.7% (note 07 §A.4). A print at the bid versus one at the ask differs by
   13.7% OF PREMIUM, so ordinary print alternation elects a percentage-based stop with no
   adverse move by anyone: you do not need a predator, the spread is sufficient (note 07
@@ -52,7 +52,7 @@ FINDING 2 — Alpaca stop-market orders on options are a loss-manufacturing devi
   bot pays.
 
 This module places no orders, opens no sockets, and imports nothing but the standard
-library. Every function is pure and TOTAL — it never raises and never returns NaN, because
+library. Every function is pure and TOTAL - it never raises and never returns NaN, because
 in an unattended trading loop an exception in a pricing helper means an unmanaged position.
 Sources: /home/claude/research/notes/07-microstructure-and-execution.md (§A, §D.1, §E, §H,
 §I) and /home/claude/research/notes/08-volatility-forecasting.md (§12.5).
@@ -63,7 +63,7 @@ import math
 from typing import Any, Optional
 
 # ---------------------------------------------------------------------------
-# Constants — every one of these carries a citation.
+# Constants - every one of these carries a citation.
 # ---------------------------------------------------------------------------
 
 # Alpaca fee schedule, EFFECTIVE 2026-07-01, per contract per round trip (note 07 §I.2,
@@ -74,7 +74,7 @@ from typing import Any, Optional
 #   Commission $0.00 (self-directed cash account)
 # Components sum to $0.08595 at a $1.00 contract; note 07's headline figure is $0.0854 and
 # we use it so the bot's numbers reconcile with the note. SEC is the only notional-
-# dependent term and moves the total by $0.002 per $1.00 of price — 0.2bp of premium. As a
+# dependent term and moves the total by $0.002 per $1.00 of price - 0.2bp of premium. As a
 # fraction of premium: 0.085% at $1.00, 0.43% at $0.20, 0.028% at $3.00.
 REG_FEES_PER_CONTRACT_ROUNDTRIP = 0.0854
 
@@ -93,12 +93,12 @@ IV_VOL_LO, IV_VOL_HI = 0.005, 5.0
 IV_MAX_ITER = 128
 
 # Penny Interval Program, in force 2025-2026 (MIAX all-exchange penny program page; Cboe
-# class-removal notice; SEC filing SR-CBOE-2025-069 of 2025-09-24; note 07 §D.1) — these
+# class-removal notice; SEC filing SR-CBOE-2025-069 of 2025-09-24; note 07 §D.1) - these
 # are exchange rules, not estimates:
 #   program member (425 classes): $0.01 below $3.00, $0.05 at/above
 #   SPY / QQQ / IWM:              $0.01 on ALL series (hence `all_penny=True`)
 #   non-program class:            $0.05 below $3.00, $0.10 at/above
-# The $3.00 line is a discontinuity, not a gradient — $2.99 -> $3.00 quintuples the tick,
+# The $3.00 line is a discontinuity, not a gradient - $2.99 -> $3.00 quintuples the tick,
 # and Ernst & Spatt's regression discontinuity measured exactly this boundary. Note 07
 # advises keeping the entry range in $0.50-$2.50 and staying clear of it.
 TICK_BOUNDARY = 3.00
@@ -107,7 +107,7 @@ TICK_FINE, TICK_COARSE = 0.01, 0.05
 # Cost-verdict bands (note 07 §H.2): move the spread gate to 2-4%, which puts required
 # gross edge in the 1.5-3.5% range, "where a genuinely strong signal could plausibly
 # compete." 7.3% is the note's OPTIMISTIC figure for the bot's current 15% gate (half-
-# spread capture on BOTH sides); past it, no published edge covers the trade — the best
+# spread capture on BOTH sides); past it, no published edge covers the trade - the best
 # documented bias-corrected option anomaly is 0.5%/month (Duarte/Jones/Khorram/Mo via
 # Garcia-Ares & Muravyev).
 COST_OK_MAX = 0.035
@@ -140,7 +140,7 @@ def _num(x: Any) -> Optional[float]:
 def _quote(bid: Any, ask: Any) -> Optional[tuple[float, float, float]]:
     """(bid, ask, mid) for a usable two-sided quote, else None. Rejects non-numeric,
     non-finite, zero/negative either side, and crossed markets. A zero bid is not a cheap
-    contract, it is an empty book — the same rejection the watcher makes."""
+    contract, it is an empty book - the same rejection the watcher makes."""
     b, a = _num(bid), _num(ask)
     if b is None or a is None or b <= 0.0 or a <= 0.0 or a < b:
         return None
@@ -178,7 +178,7 @@ def bs_price(spot: Any, strike: Any, t_years: Any, vol: Any,
     """European Black-Scholes price. No dividends (index/ETF options on a paper account; a
     dividend yield would enter as a spot haircut and is not modelled).
 
-    Returns 0.0 — never NaN, never raising — for anything that is not a well-posed pricing
+    Returns 0.0 - never NaN, never raising - for anything that is not a well-posed pricing
     problem (None, NaN, non-positive spot or strike): zero means "no tradeable value here."
     t_years <= 0 is NOT an error, it returns intrinsic value max(S-K,0); vol <= 0 returns
     FORWARD intrinsic max(S - K*exp(-rT), 0), the zero-vol limit and lower arb bound."""
@@ -204,7 +204,7 @@ def bs_price(spot: Any, strike: Any, t_years: Any, vol: Any,
 
 def bs_greeks(spot: Any, strike: Any, t_years: Any, vol: Any,
               rate: Any = 0.0, is_call: Any = True) -> dict:
-    """Black-Scholes greeks. UNITS — read this before sizing anything off it:
+    """Black-Scholes greeks. UNITS - read this before sizing anything off it:
       delta          per 1.00 of underlying     (call in [0,1], put in [-1,0])
       gamma          per 1.00^2 of underlying   (>= 0 for long options)
       vega           PER 1.00 CHANGE IN VOL, i.e. per 100 vol points, NOT per point. A
@@ -228,7 +228,7 @@ def bs_greeks(spot: Any, strike: Any, t_years: Any, vol: Any,
 
     if t <= 0.0 or v <= 0.0:
         # At expiry (or zero vol) the option is a forward: delta is a step function and the
-        # second-order greeks are 0 (or undefined exactly at the money — 0 is the sane,
+        # second-order greeks are 0 (or undefined exactly at the money - 0 is the sane,
         # non-exploding answer for a position sizer).
         itm = (s > k) if call else (s < k)
         return {"delta": (1.0 if call else -1.0) if itm else 0.0,
@@ -265,10 +265,10 @@ def implied_vol(price: Any, spot: Any, strike: Any, t_years: Any,
 
     None when: any input is unusable (None / NaN / non-positive spot, strike or price);
     t_years <= 0 (no vol at expiry, only intrinsic); the target price violates no-arbitrage
-    bounds — below forward intrinsic, or at/above the upper bound (spot for a call,
+    bounds - below forward intrinsic, or at/above the upper bound (spot for a call,
     K*exp(-rT) for a put); the true vol lies outside the bracket, detected by failing to
     bracket; or vega at the solution is below MIN_VEGA_FOR_IV = 0.02 per 1.00 of vol (see
-    that constant — below it half a tick of price noise moves the answer by >25 vol
+    that constant - below it half a tick of price noise moves the answer by >25 vol
     points, so the number would be arithmetic, not information)."""
     p, s, k, t, r = (_num(price), _num(spot), _num(strike), _num(t_years), _num(rate))
     if p is None or s is None or k is None or t is None or r is None:
@@ -309,7 +309,7 @@ def implied_vol(price: Any, spot: Any, strike: Any, t_years: Any,
 # ---------------------------------------------------------------------------
 def timing_edge(spot: Any, strike: Any, t_years: Any, ref_vol: Any,
                 bid: Any, ask: Any, is_call: Any = True, side: Any = "buy") -> dict:
-    """Muravyev-Pearson staleness check — run before every marketable order. Price the
+    """Muravyev-Pearson staleness check - run before every marketable order. Price the
     option off the LIVE underlying and its own recent implied vol (`ref_vol`, typically the
     IV from the last good option quote) and compare to the quoted mid. M&P regress the next
     minute's mid change on exactly this gap: R^2 = 22%, coefficient 0.54.
@@ -322,7 +322,7 @@ def timing_edge(spot: Any, strike: Any, t_years: Any, ref_vol: Any,
       favorable  buy -> bsm > mid (the stale quote is cheap relative to where the
                  underlying now is). sell -> bsm < mid. Symmetric, by construction.
 
-    On unusable input bsm/mid/edge are None and favorable is False — the fail-safe
+    On unusable input bsm/mid/edge are None and favorable is False - the fail-safe
     direction is "do not cross," since a non-timer gets none of M&P's discount but also
     loses nothing by waiting one more tick. The rate is pinned at 0: this compares two
     prices computed seconds apart on the same contract, so the discount factor cancels to
@@ -346,13 +346,13 @@ def timing_edge(spot: Any, strike: Any, t_years: Any, ref_vol: Any,
     if s <= 0.0 or k <= 0.0 or v <= 0.0:
         return bad("non-positive spot, strike or reference vol")
     if t <= 0.0:
-        # At expiry the quote cannot be stale relative to anything — there is no time value
+        # At expiry the quote cannot be stale relative to anything - there is no time value
         # left to converge. Refuse rather than compare against intrinsic.
         return bad("expired (t_years <= 0): no staleness to exploit")
 
     bsm = bs_price(s, k, t, v, 0.0, is_call)
     if bsm <= 0.0:
-        return bad("theoretical value is zero — contract is worthless on this vol")
+        return bad("theoretical value is zero - contract is worthless on this vol")
 
     edge_raw = (bsm - mid) / mid
     edge = edge_raw if sd == "buy" else -edge_raw
@@ -392,19 +392,19 @@ def roundtrip_cost_frac(bid: Any, ask: Any, capture_entry: Any = 0.5,
         RT = S*(2 - c_e - c_x) / (2 + S*(1 - c_e))  +  fees/premium
 
     Derivation: entry = M + h(1-c_e), exit = M - h(1-c_x) with h = S*M/2; the numerator is
-    entry-exit and the denominator is entry, not the mid — which is why RT is slightly
+    entry-exit and the denominator is entry, not the mid - which is why RT is slightly
     BELOW S even at zero capture.
 
     Capture conventions: 0.00 = you cross fully (pay the whole half-spread); 0.50 = you
     split the difference, which is BPS retail (6.7% effective vs 13.7% quoted, a ratio of
     0.51) and also what FINDING 1's timing filter buys you; 1.00 = filled exactly at the
     mid (BPS: 3.8% of trades, not systematically attainable). The defaults encode note 07
-    §D.3 — entries are discretionary so assume half-spread capture, MANDATORY exits
+    §D.3 - entries are discretionary so assume half-spread capture, MANDATORY exits
     (force-close at the bell, stop, time-stop) capture nothing.
 
     `notional_per_contract` is dollars of premium per contract and only scales the fixed
     regulatory fee; None derives it from the quote (entry price x 100). Returns
-    COST_SENTINEL (999% of premium — see that constant) for an unusable quote or a capture
+    COST_SENTINEL (999% of premium - see that constant) for an unusable quote or a capture
     fraction outside [0,1]."""
     q = _quote(bid, ask)
     ce, cx = _num(capture_entry), _num(capture_exit)
@@ -429,11 +429,11 @@ def roundtrip_cost_frac(bid: Any, ask: Any, capture_entry: Any = 0.5,
 
 def required_gross_edge(bid: Any, ask: Any, **kw: Any) -> float:
     """Gross return on premium the trade must earn just to break even. Numerically
-    identical to roundtrip_cost_frac by construction — it exists under its own name because
+    identical to roundtrip_cost_frac by construction - it exists under its own name because
     the two questions get asked by different code, and confusing "cost I pay" with "edge I
     need" is how a break-even filter ends up off by a factor of 2. Note 07 §H.3 argues for
     a 2x buffer on top (the estimate is itself uncertain: indicative feed, costs roughly
-    double in the last hour of a 0DTE, mandatory exits get no capture) — that is the
+    double in the last hour of a 0DTE, mandatory exits get no capture) - that is the
     CALLER's multiple to apply, not ours."""
     return roundtrip_cost_frac(bid, ask, **kw)
 
@@ -451,15 +451,15 @@ def cost_verdict(bid: Any, ask: Any, premium: Any = None, **kw: Any) -> dict:
 
     if cost >= COST_SENTINEL:
         return {"rt_cost": COST_SENTINEL, "verdict": "prohibitive",
-                "note": "unusable quote or bad capture assumption — refusing to price it"}
+                "note": "unusable quote or bad capture assumption - refusing to price it"}
     if cost <= COST_OK_MAX:
-        v, n = "ok", (f"{cost:.2%} round trip — inside note 07's 2-4% gate "
+        v, n = "ok", (f"{cost:.2%} round trip - inside note 07's 2-4% gate "
                       f"recommendation; a real signal can clear this")
     elif cost <= COST_EXPENSIVE_MAX:
-        v, n = "expensive", (f"{cost:.2%} round trip — needs ~{cost * 2:.1%} gross edge "
+        v, n = "expensive", (f"{cost:.2%} round trip - needs ~{cost * 2:.1%} gross edge "
                              f"at the 2x buffer note 07 §H.3 argues for")
     else:
-        v, n = "prohibitive", (f"{cost:.2%} round trip — no documented option anomaly "
+        v, n = "prohibitive", (f"{cost:.2%} round trip - no documented option anomaly "
                                f"covers this; at the best published edge of ~0.5%/month "
                                f"that is ~{cost / 0.005:.0f} months of alpha per trade")
     return {"rt_cost": cost, "verdict": v, "note": n}
@@ -488,7 +488,7 @@ def round_to_tick(price: Any, side: Any = "buy", all_penny: bool = False
                   ) -> Optional[float]:
     """Round a limit price to a valid tick, CONSERVATIVELY for the given side: buy rounds
     DOWN (never bid more than you meant to), sell rounds UP (never offer less). Returns
-    None — not a number — for unusable input, because a None limit price cannot be mistaken
+    None - not a number - for unusable input, because a None limit price cannot be mistaken
     for an order instruction, whereas a 0.0 sell limit could be and would sell at any price
     the book happened to show."""
     p = _num(price)
@@ -508,13 +508,13 @@ def stop_election_risk(bid: Any, ask: Any, stop_price: Any) -> dict:
     """Can this sell-stop be elected by ordinary print noise, with no adverse move?
 
     Alpaca: "Your sell stop order will only elect if there is a trade on the consolidated
-    tape at or lower than your stop price" — and then it becomes a MARKET order. Prints
+    tape at or lower than your stop price" - and then it becomes a MARKET order. Prints
     alternate between bid and ask constantly, so the lowest ordinary, entirely-non-adverse
     print given this quote is the BID: any stop at or above the bid is elected by the next
     seller-initiated print with the mid unmoved.
 
     Returns {"electable_by_noise", "min_print", "note"}. `min_print` is the bid and is the
-    OPTIMISTIC floor — Alpaca's sell-stop condition, unlike its buy-stop condition, carries
+    OPTIMISTIC floor - Alpaca's sell-stop condition, unlike its buy-stop condition, carries
     no "not outside of the NBBO" qualifier, and OPRA carries complex-order legs and auction
     prints that land well away from a single series' quote, so the true floor is lower and
     in principle unbounded. Unusable quote -> electable_by_noise=True, min_print=None: if
@@ -523,14 +523,14 @@ def stop_election_risk(bid: Any, ask: Any, stop_price: Any) -> dict:
     sp = _num(stop_price)
     if q is None or sp is None or sp <= 0.0:
         return {"electable_by_noise": True, "min_print": None,
-                "note": "unusable quote or stop — assuming the stop is electable"}
+                "note": "unusable quote or stop - assuming the stop is electable"}
     b, a, mid = q
     spread_frac = (a - b) / mid
     if sp >= b:
         depth_at_bid = (mid - b) / mid
         note = (f"ELECTABLE BY NOISE: stop {sp:.2f} sits at/above the bid {b:.2f}. "
                 f"The quote is {spread_frac:.1%} wide, so a print at the bid is "
-                f"{depth_at_bid:.1%} below the mid with the mid unmoved — the spread "
+                f"{depth_at_bid:.1%} below the mid with the mid unmoved - the spread "
                 f"alone elects it, and election converts it to a market order.")
         return {"electable_by_noise": True, "min_print": b, "note": note}
     room = (b - sp) / mid
@@ -548,7 +548,7 @@ def safe_stop_price(bid: Any, ask: Any, desired_stop: Any) -> float:
     buffer on the trigger itself is the minimum that survives a complex-order leg printing
     a spread through the bid. Result is rounded DOWN to a valid tick.
 
-    GUARANTEES (both tested): never returns a value ABOVE desired_stop — this only moves a
+    GUARANTEES (both tested): never returns a value ABOVE desired_stop - this only moves a
     stop further from the noise band, never toward it (sole exception: the $0.01 floor, the
     minimum valid option price, wins if desired_stop is below it); and monotone
     non-decreasing in desired_stop, so a trailing stop that ratchets up cannot ratchet down.
@@ -588,7 +588,7 @@ def marketable_limit(bid: Any, ask: Any, side: Any = "buy",
     the touch and no further." Rounding is conservative for the side, so the result never
     crosses further than asked. If a rounded BUY lands below the ask (only possible when
     the feed hands us an off-tick quote) it is bumped to the nearest tick at or above the
-    ask — an unfillable limit is a worse failure than one tick. None for an unusable quote
+    ask - an unfillable limit is a worse failure than one tick. None for an unusable quote
     or an unknown side."""
     q = _quote(bid, ask)
     sd = str(side).strip().lower() if side is not None else ""
@@ -621,7 +621,7 @@ def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
 
     Born from the day-2 zero-trade post-mortem: every signal was judged on
     ONE strike's quote at ONE instant, on Alpaca's indicative (non-NBBO)
-    feed, whose quoted spreads flutter — the same contract read 11%, 33%,
+    feed, whose quoted spreads flutter - the same contract read 11%, 33%,
     10%, 21% across consecutive hours on day 1. Two consequences: adjacent
     strikes of the same liquid underlying quote very differently at any
     moment, and a single wide read may be staleness rather than truth.
@@ -632,7 +632,7 @@ def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
         re-read up to `resample` more rounds, keeping per-candidate minima;
       * return the tightest (candidate, quote, notes) seen overall.
 
-    The caller's spread gate still delivers the verdict on what we return —
+    The caller's spread gate still delivers the verdict on what we return -
     a candidate that never tightens inside the cap is still rejected there.
     Total function: a raising/None-returning quote_fn marks that candidate
     unusable in that round rather than raising out.
@@ -671,7 +671,7 @@ def best_quoted(candidates, quote_fn, max_spread: float = 0.04,
         """Affordability as part of SELECTION (2026-07-30, Connor's call).
 
         A tighter strike that one contract of cannot fit in the per-trade
-        budget is not the best candidate — it is a guaranteed TOO-RICH
+        budget is not the best candidate - it is a guaranteed TOO-RICH
         rejection. Prefer the tightest AFFORDABLE candidate; if nothing
         fits, fall back to tightest overall so the rejection downstream
         still reports the truth."""

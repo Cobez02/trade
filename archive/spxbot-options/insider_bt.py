@@ -57,7 +57,7 @@ def run(cost_frac=COST_FRAC, debit_cap=DEBIT_CAP, mid_fills=False, quiet=False):
     """Defaults reproduce the pre-registered run exactly. Non-default args are
     the DISCLOSED post-hoc sensitivity (see INSIDER_REPORT.md): cost_frac=None
     disables the cost gate; mid_fills=True books both sides at mid with no
-    fees — a pure-signal diagnostic, not a tradeable configuration."""
+    fees - a pure-signal diagnostic, not a tradeable configuration."""
     fn = {"events": len(EVENTS), "in_window": 0, "has_option_chain": 0,
           "has_bars": 0, "quoted": 0, "gates_passed": 0, "probe_errors": 0}
     costs = []          # RT cost fraction of every QUOTED candidate
@@ -70,7 +70,7 @@ def run(cost_frac=COST_FRAC, debit_cap=DEBIT_CAP, mid_fills=False, quiet=False):
             has_chain[t] = bool(ex)     # "No data found" -> [] -> False: REAL no-chain
         except Exception:
             # An exception is NOT evidence about the ticker. If the terminal is
-            # down, abort loudly — completed probes are disk-cached, relaunch
+            # down, abort loudly - completed probes are disk-cached, relaunch
             # resumes here. If the terminal is up, count an isolated error.
             if not terminal_alive():
                 print(f"ABORT: theta terminal unreachable at probe {i+1}/"

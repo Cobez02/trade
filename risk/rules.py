@@ -74,7 +74,7 @@ PRESETS = {
     "tradeday_100k_static": RuleSet("TradeDay $100K static", 100_000, 6_000, 3_000, "static", True,
                                     0, False, 0.30, False, 5, 0, 0, 0, 10, "overnight ok", True,
                                     "static floor; VERIFY"),
-    # Apex intraday-trailing variant — here only to show why intraday trailing
+    # Apex intraday-trailing variant - here only to show why intraday trailing
     # is brutal; Apex bans bots on funded accounts anyway.
     "apex_intraday_50k": RuleSet("Apex 4.0 $50K intraday-trail", 50_000, 3_000, 2_500, "intraday",
                                  True, 0, False, 0.50, False, 0, 0, 0, 0, 10, "15:59", False,
@@ -153,7 +153,7 @@ def monte_carlo(rules: RuleSet, daily_sample: list[float], n: int = 20_000, bloc
     """Block-bootstrap the daily sample and replay each synthetic path.
 
     intraday_low_frac approximates the intraday low of a day as
-    min(x, 0) - frac * |x| — i.e. a day that closed +$100 may have been -$40
+    min(x, 0) - frac * |x| - i.e. a day that closed +$100 may have been -$40
     at some point (frac 0.4). 0 means "trust the close", which is optimistic.
     """
     rng = random.Random(seed)

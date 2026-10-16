@@ -1,12 +1,12 @@
 """
-Overnight sleeve, paper lab — buy before the close, sell at the next open.
+Overnight sleeve, paper lab - buy before the close, sell at the next open.
 
     python -m live.overnight --action buy    # waits until 14:57 CT, buys $NOTIONAL of SYMBOL (skips Fridays/holidays)
     python -m live.overnight --action sell   # waits until 08:31 CT, sells whatever the sleeve holds
 
 Trades QQQM (same index as QQQ, ~1/4 the price) so it never collides with the
 intraday sleeve's QQQ position in the same paper account. Notional defaults
-to $50,000 — one MNQ-equivalent, the size the backtest used — because the
+to $50,000 - one MNQ-equivalent, the size the backtest used - because the
 point of the lab is to observe the real fills and gaps of the exact book we
 would trade, not a scaled-down one. Paper account, so the -6.7% night is
 information, not money.
@@ -36,7 +36,7 @@ def wait_until(target: dt.datetime, max_wait_min: int, late_grace_min: int = 25)
     if now >= target:
         late = (now - target).total_seconds() / 60
         log(f"started {late:.0f} min after {target.strftime('%H:%M')} CT"
-            + (" — proceeding" if late <= late_grace_min else " — past the grace window"))
+            + (" - proceeding" if late <= late_grace_min else " - past the grace window"))
         return late <= late_grace_min
     deadline = now + dt.timedelta(minutes=max_wait_min)
     while S.now_ct() < target:

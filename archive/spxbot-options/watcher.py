@@ -1,5 +1,5 @@
 """
-Continuous position watcher — the "someone is actually looking at this" layer.
+Continuous position watcher - the "someone is actually looking at this" layer.
 
 The hourly cron is a scanner: it decides what to BUY. This process decides what
 to SELL, and it does so on every quote update rather than once an hour. The gap
@@ -10,21 +10,21 @@ the 41 minutes when nothing was watching.
 Design, in order of how much each part matters when things go wrong:
 
   1. A resting broker-side STOP sits on every position. Alpaca evaluates it
-     continuously whether or not this process — or this whole container — is
+     continuously whether or not this process - or this whole container - is
      alive. Everything else here is an improvement on top of that floor, not a
      replacement for it. Options accept `stop` but reject `trailing_stop` and
      OCO, so the trailing behaviour has to be emulated by re-placing the stop.
 
   2. Quotes arrive over a websocket, so "watching" means reacting to ticks, not
      polling a clock. Three threads, deliberately separated:
-        stream  — writes ticks into `latest`, touches nothing slow
-        rest    — refills `latest` for any symbol the stream has gone quiet on
-        main    — reads `latest`, decides, and places orders
+        stream  - writes ticks into `latest`, touches nothing slow
+        rest    - refills `latest` for any symbol the stream has gone quiet on
+        main    - reads `latest`, decides, and places orders
      The socket must never be behind an HTTP round-trip, or the "continuous"
      monitoring stalls for a second every time a decision is made.
 
-  3. Every sell is guarded three ways — an in-flight set, a check for existing
-     open SELL orders, and a re-read of the live position — because the watcher,
+  3. Every sell is guarded three ways - an in-flight set, a check for existing
+     open SELL orders, and a re-read of the live position - because the watcher,
      the resting stop and the hourly cron can all reach for the same position at
      the same moment, and selling a contract twice opens a SHORT option position.
 
@@ -128,10 +128,10 @@ class Watcher:
 
         The three-way split exists because of a real incident: a transient
         clock-API failure at 14:58 UTC returned the same None as a genuine
-        close, and the run loop said "market closed — watcher exiting" and
+        close, and the run loop said "market closed - watcher exiting" and
         SHUT DOWN mid-session with the workflow still showing green. "The API
         did not answer" and "the bell rang" must be impossible to confuse:
-        a failed read means we know NOTHING — and a watcher that knows nothing
+        a failed read means we know NOTHING - and a watcher that knows nothing
         must keep standing there asking, not walk off the floor.
         """
         try:
@@ -140,7 +140,7 @@ class Watcher:
                 return ("closed", None)
             return ("open", (c.next_close - c.timestamp).total_seconds() / 60.0)
         except Exception as e:
-            log(f"  clock read failed ({str(e)[:60]}) — treating as UNKNOWN, not closed")
+            log(f"  clock read failed ({str(e)[:60]}) - treating as UNKNOWN, not closed")
             return ("unknown", None)
 
     # -- quote intake ---------------------------------------------------------
@@ -149,7 +149,7 @@ class Watcher:
 
         Sequence numbers matter more than they look: the decision loop runs far
         faster than quotes arrive, and re-counting one cached quote three times
-        would satisfy CONFIRM_TICKS with a single print — turning the noise
+        would satisfy CONFIRM_TICKS with a single print - turning the noise
         guard into a rubber stamp.
         """
         try:
@@ -169,13 +169,13 @@ class Watcher:
     # -- websocket ------------------------------------------------------------
     def start_stream(self):
         if not USE_STREAM or OptionDataStream is None:
-            log("stream disabled — REST polling only")
+            log("stream disabled - REST polling only")
             return
         try:
             self.stream = OptionDataStream(self.key, self.secret,
                                            feed=OptionsFeed.INDICATIVE)
         except Exception as e:
-            log(f"stream init failed ({str(e)[:70]}) — REST polling only")
+            log(f"stream init failed ({str(e)[:70]}) - REST polling only")
             self.stream = None
             return
 
@@ -196,7 +196,7 @@ class Watcher:
                 log(f"stream ended: {str(e)[:90]}")
             finally:
                 self.stream_alive = False
-                log("stream down — REST fallback carries the watch")
+                log("stream down - REST fallback carries the watch")
 
         threading.Thread(target=worker, daemon=True, name="ws").start()
         time.sleep(1.5)
@@ -212,7 +212,7 @@ class Watcher:
             self.subscribed.update(new)
             log(f"  stream subscribed: {', '.join(new)}")
         except Exception as e:
-            log(f"  subscribe failed ({str(e)[:70]}) — REST covers these")
+            log(f"  subscribe failed ({str(e)[:70]}) - REST covers these")
 
     # -- position bookkeeping -------------------------------------------------
     def refresh_positions(self):
@@ -223,7 +223,7 @@ class Watcher:
             return sorted(self.entries.keys())
         # Split the book FIRST: credit-spread packages are managed as units
         # under their own exit rules (and Connor's overnight exemption), and
-        # their member legs must NEVER enter the singles machinery — a short
+        # their member legs must NEVER enter the singles machinery - a short
         # leg given a protective SELL stop would double the short, and a
         # flatten that market-sells one leg turns defined risk into naked.
         pkgs, members = E.detect_spreads(pos)
@@ -254,7 +254,7 @@ class Watcher:
                 # An unpaired short leg = assignment aftermath or a broken
                 # entry. The singles machinery must not touch it (its "sell"
                 # would ADD short); the hourly reconcile owns that repair.
-                log(f"  ORPHAN SHORT LEG {s} x{q} — left for reconcile, "
+                log(f"  ORPHAN SHORT LEG {s} x{q} - left for reconcile, "
                     f"not managed as a single")
                 continue
             live.add(s)
@@ -276,14 +276,14 @@ class Watcher:
     #
     # Alpaca's documented condition is: "Your sell stop order will only elect if
     # there is a trade on the consolidated tape at or lower than your stop
-    # price" — and on election it becomes a MARKET order. Note the asymmetry:
+    # price" - and on election it becomes a MARKET order. Note the asymmetry:
     # the "not outside of the NBBO" qualifier appears only in the BUY-stop
     # condition. A sell stop has no such protection.
     #
     #   (a) THE TRIGGER WAS INSIDE THE NOISE BAND. Prints alternate between bid
     #       and ask continuously, so the lowest entirely-non-adverse print given
     #       any quote is the BID. A stop at or above the bid is elected by the
-    #       next seller-initiated print with the mid unmoved — the spread alone
+    #       next seller-initiated print with the mid unmoved - the spread alone
     #       fires it. `execution.safe_stop_price` pushes the trigger a full
     #       quoted spread below the bid, which is the minimum that survives a
     #       complex-order leg printing through. It is guaranteed never to move a
@@ -295,7 +295,7 @@ class Watcher:
     #       protection whatsoever, and an elected stop becomes exactly that.
     #       These are now STOP-LIMIT orders with the limit one full spread below
     #       the trigger. In the normal case the fill is identical. In the
-    #       pathological case — the one this whole file exists for — the limit
+    #       pathological case - the one this whole file exists for - the limit
     #       refuses instead of printing into an empty book, and the watcher's own
     #       tick-by-tick exit (which sees the bid) is still there to work the
     #       position.
@@ -304,7 +304,7 @@ class Watcher:
     # unfilled in a genuine gap. That is why this is the FLOOR and not the
     # primary exit. If the quote is unusable we cannot measure the noise band at
     # all, and there `safe_stop_price` leaves the trigger alone and we fall back
-    # to a stop-market — with no quote, an unprotected fill beats no stop.
+    # to a stop-market - with no quote, an unprotected fill beats no stop.
     def _stop_prices(self, sym: str, desired: float):
         """(trigger, limit_or_None, note) for the resting stop on `sym`.
 
@@ -312,7 +312,7 @@ class Watcher:
         "at least one full quoted spread beyond the trigger"), not below the
         bid. The first version of this method priced it off the bid via
         marketable_limit, which inverted the protection: a stop deep below the
-        market — the normal state of a fresh hard-stop — got a limit ABOVE its
+        market - the normal state of a fresh hard-stop - got a limit ABOVE its
         trigger, failed the sanity check, and silently fell back to the
         stop-market this rework exists to eliminate. Only a stop that had
         already ratcheted up near the market kept its limit. By election time
@@ -334,7 +334,7 @@ class Watcher:
             t = X.tick_size(raw)
             limit = max(round(math.floor(raw / t + 1e-9) * t, 4), 0.01)
             if limit > trigger:             # both floors are $0.01, so this
-                limit = None                # is unreachable — belt+braces
+                limit = None                # is unreachable - belt+braces
         return trigger, limit, risk.get("note", "")
 
     def ensure_broker_stop(self, sym: str):
@@ -362,7 +362,7 @@ class Watcher:
             self.stops[sym] = f"dry-{sym}"; self.stop_px[sym] = want
             lim = f" limit ${limit:.2f}" if limit is not None else ""
             log(f"  [dry] would rest {kind} {sym} @ ${want:.2f}{lim} "
-                f"(wanted ${desired:.2f}) — {note}")
+                f"(wanted ${desired:.2f}) - {note}")
             return
         try:
             if old:
@@ -373,7 +373,7 @@ class Watcher:
                 # Live incident 14:05:12 UTC: 0.3s was not enough for the
                 # cancel to release the reserved contracts, and the replacement
                 # was rejected 40310000 "not eligible to trade uncovered
-                # option contracts" — both the stop-limit AND its stop-market
+                # option contracts" - both the stop-limit AND its stop-market
                 # fallback, inside the same reserved window. Self-healed on
                 # the next pass, but that is a 30s window with no floor.
                 time.sleep(0.8)
@@ -402,7 +402,7 @@ class Watcher:
                         symbol=sym, qty=self.qtys.get(sym, 1), side=OrderSide.SELL,
                         time_in_force=TimeInForce.DAY, stop_price=want))
                     self.stops[sym] = str(o.id); self.stop_px[sym] = want
-                    log(f"  broker stop-limit rejected ({str(e)[:60]}) — "
+                    log(f"  broker stop-limit rejected ({str(e)[:60]}) - "
                         f"fell back to stop-market {sym} @ ${want:.2f}")
                     return
                 except Exception as e2:
@@ -414,19 +414,19 @@ class Watcher:
 
         The watcher runs as two consecutive GitHub Actions jobs (a job caps at
         6h and the session is 6.5), and the hourly cron arms disaster floors of
-        its own. So at startup the book usually already HAS resting stops —
-        placed by the previous job or by main.py — and this process's in-memory
+        its own. So at startup the book usually already HAS resting stops -
+        placed by the previous job or by main.py - and this process's in-memory
         maps know nothing about them. Without adoption that ignorance is fatal,
         not cosmetic: has_open_sell() reads the unknown stop as "a sell is
-        already working" and exit_position() refuses to sell — INCLUDING THE
-        19:45 FLATTEN, which is exactly how positions get carried overnight —
+        already working" and exit_position() refuses to sell - INCLUDING THE
+        19:45 FLATTEN, which is exactly how positions get carried overnight -
         while ensure_broker_stop() tries to rest a second stop on contracts the
         first already reserves, which the broker rejects.
 
         Adopting means tracking the existing order as ours, so the upward
         ratchet and cancel-before-sell operate on it. If a symbol somehow has
         several resting stops, keep the HIGHEST trigger (the most ratcheted
-        state) and cancel the rest — duplicates double-reserve the contracts."""
+        state) and cancel the rest - duplicates double-reserve the contracts."""
         for sym in symbols:
             if sym in self.stops or sym in self.spread_members:
                 continue
@@ -489,7 +489,7 @@ class Watcher:
             self.inflight.add(sym)
         if DRY_RUN:
             pp = f"{pnl_pct:+.1%}" if pnl_pct is not None else "n/a"
-            log(f"[dry] WOULD EXIT {sym} — {reason} [{pp}]")
+            log(f"[dry] WOULD EXIT {sym} - {reason} [{pp}]")
             self.exits_done.append({"symbol": sym, "qty": self.qtys.get(sym),
                                     "reason": reason, "pnl_pct": pnl_pct,
                                     "dry": True,
@@ -500,7 +500,7 @@ class Watcher:
             time.sleep(0.35)
             # Every SKIP below must release the in-flight claim. An early
             # return here is NOT a completed exit, and evaluate() refuses any
-            # symbol in `inflight` — so keeping the claim would convert a
+            # symbol in `inflight` - so keeping the claim would convert a
             # transient condition (a working sell that later cancels, a network
             # blip that made the position read as gone) into a position this
             # watcher permanently refuses to manage. The claim is retained only
@@ -521,7 +521,7 @@ class Watcher:
                 symbol=sym, qty=qty, side=OrderSide.SELL,
                 time_in_force=TimeInForce.DAY))
             pp = f"{pnl_pct:+.1%}" if pnl_pct is not None else "n/a"
-            log(f"EXIT {sym} x{qty} — {reason} [{pp}] order {str(o.id)[:8]}")
+            log(f"EXIT {sym} x{qty} - {reason} [{pp}] order {str(o.id)[:8]}")
             self.exits_done.append({"symbol": sym, "qty": qty, "reason": reason,
                                     "pnl_pct": pnl_pct,
                                     "at": dt.datetime.utcnow().isoformat()[:19]})
@@ -541,7 +541,7 @@ class Watcher:
             q = dict(q) if q else None
         if not q:
             # No quote has ever arrived for this contract. Everywhere else that
-            # means "do nothing" — but at the bell it must not, or a dead feed
+            # means "do nothing" - but at the bell it must not, or a dead feed
             # becomes the reason a position is carried overnight.
             if flatten:
                 self.exit_position(sym, "eod-flatten (no quote)", None)
@@ -611,7 +611,7 @@ class Watcher:
     def recover_spread_credit(self, k, pkg):
         """The credit received at open, recovered statelessly.
 
-        Priority: (1) the mleg parent order whose legs match this package —
+        Priority: (1) the mleg parent order whose legs match this package -
         its |filled_avg_price| is the actual credit; (2) any SPXS- tag whose
         encoded width matches (the tag carries the LIMIT credit, a floor on
         what filled); (3) a conservative 25%-of-width assumption, loudly
@@ -649,14 +649,14 @@ class Watcher:
             credit = tag_fallback
         if credit is None or credit <= 0:
             credit = 0.25 * pkg["width"]
-            log(f"  spread credit UNRECOVERABLE for {k} — assuming "
+            log(f"  spread credit UNRECOVERABLE for {k} - assuming "
                 f"{credit:.2f} (25% of width; exits fire early, not late)")
         self.spread_credit[k] = credit
         return credit
 
     def evaluate_spreads(self):
         """Package-level exit management. Runs every loop; spreads are exempt
-        from the EOD flatten by owner decision, so there is no flatten branch —
+        from the EOD flatten by owner decision, so there is no flatten branch -
         the rules here (stop / take-profit / time) are the only exits."""
         for k, pkg in list(self.spread_pkgs.items()):
             if k in self.spread_inflight:
@@ -688,7 +688,7 @@ class Watcher:
                     continue
             self.spread_inflight.add(k)
             if DRY_RUN:
-                log(f"[dry] WOULD CLOSE SPREAD {k} — {d['reason']}")
+                log(f"[dry] WOULD CLOSE SPREAD {k} - {d['reason']}")
                 self.spread_inflight.discard(k)
                 self._spread_sig.pop(k, None)
                 continue
@@ -697,7 +697,7 @@ class Watcher:
                 o = E.close_spread_order(self.trading, pkg["short"],
                                          pkg["long"], pkg["qty"], limit)
                 log(f"CLOSE SPREAD {pkg['underlying']} "
-                    f"{pkg['short_strike']:g}/{pkg['long_strike']:g}P x{pkg['qty']} — "
+                    f"{pkg['short_strike']:g}/{pkg['long_strike']:g}P x{pkg['qty']} - "
                     f"{d['reason']} [{(d['pnl_frac'] or 0):+.0%} of credit] "
                     f"limit {limit:.2f} order {str(getattr(o, 'id', '?'))[:8]}")
                 self.exits_done.append({
@@ -726,7 +726,7 @@ class Watcher:
     def stale_symbols(self, symbols):
         """Symbols the socket has gone quiet on. An idle contract simply may not
         tick for a while, and 'no quote' is indistinguishable from 'stream is
-        silently dead' — so REST refills either way rather than guessing."""
+        silently dead' - so REST refills either way rather than guessing."""
         now = time.time()
         out = []
         with self.qlock:
@@ -738,7 +738,7 @@ class Watcher:
 
     # -- main loop ------------------------------------------------------------
     def run(self):
-        log(f"watcher starting{' [DRY RUN — no orders]' if DRY_RUN else ''}")
+        log(f"watcher starting{' [DRY RUN - no orders]' if DRY_RUN else ''}")
         # Check the clock BEFORE touching orders. Everything below places or
         # cancels resting stops, and doing that outside regular hours means
         # queueing DAY orders into a session nobody has looked at yet.
@@ -749,10 +749,10 @@ class Watcher:
             time.sleep(5)
             status, mins = self.minutes_to_close()
         if status == "closed":
-            log("market is closed — nothing to watch, exiting")
+            log("market is closed - nothing to watch, exiting")
             return
         if status == "unknown":
-            log("clock unreadable after 5 attempts — cannot confirm a live "
+            log("clock unreadable after 5 attempts - cannot confirm a live "
                 "session, exiting WITHOUT touching orders (resting stops, if "
                 "any, remain on the broker)")
             return
@@ -780,19 +780,19 @@ class Watcher:
         scan_proc = None           # the in-flight entry-scan subprocess, if any
         # Dead reckoning for clock outages: (minutes at last good read, when).
         # If the clock API goes dark we advance the last known reading by
-        # wall-clock time instead of exiting — so the 19:45 flatten fires on
+        # wall-clock time instead of exiting - so the 19:45 flatten fires on
         # the estimate even through an outage. Connor's no-overnight rule must
         # not depend on an API call succeeding at exactly the right minute.
         known = (mins, time.monotonic())
         while True:
             status, mins = self.minutes_to_close()
             if status == "closed":
-                log("market closed — watcher exiting")
+                log("market closed - watcher exiting")
                 break
             if status == "unknown":
                 mins = known[0] - (time.monotonic() - known[1]) / 60.0
                 if mins < -5.0:
-                    log("clock unreadable and dead-reckoned past the bell — exiting")
+                    log("clock unreadable and dead-reckoned past the bell - exiting")
                     break
             else:
                 known = (mins, time.monotonic())
@@ -802,7 +802,7 @@ class Watcher:
             # --- continuous entry scanning --------------------------------
             # Fire main.py in ENTRIES-ONLY mode every ENTRY_SCAN_SECONDS as a
             # NON-BLOCKING subprocess, so the 0.25s exit loop never waits on a
-            # scan. This runs REGARDLESS of whether the book has positions —
+            # scan. This runs REGARDLESS of whether the book has positions -
             # that is the whole point (an empty book is exactly when we need to
             # be looking for something to buy). Never inside the flatten window
             # (no new positions may open that late), and only on a confirmed
@@ -832,7 +832,7 @@ class Watcher:
                     if s not in prev:
                         log(f"  now watching new position {s} @ {self.entries[s]}")
                 self.subscribe(sorted(set(symbols) | self.spread_members))
-                # Adoption runs during flatten too — cancel-before-sell needs
+                # Adoption runs during flatten too - cancel-before-sell needs
                 # the resting stop's id even (especially) at the bell.
                 self.adopt_broker_stops(symbols)
                 if not flatten:
@@ -840,7 +840,7 @@ class Watcher:
                         self.ensure_broker_stop(s)
                 last_refresh = now
                 if flatten and not symbols and not self.spread_pkgs:
-                    log("book is flat — watcher exiting")
+                    log("book is flat - watcher exiting")
                     break
                 if flatten and not symbols and self.spread_pkgs:
                     # Spreads are overnight-exempt: nothing to flatten, but
@@ -876,7 +876,7 @@ class Watcher:
                 scan_proc.terminate()               # let a straggler scan go
             except Exception:
                 pass
-        log(f"watcher done — {len(self.exits_done)} exits, {self.tick_count} ticks")
+        log(f"watcher done - {len(self.exits_done)} exits, {self.tick_count} ticks")
         try:
             if self.stream:
                 self.stream.stop()

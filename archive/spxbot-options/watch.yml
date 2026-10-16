@@ -8,7 +8,7 @@ name: SPX-Beater continuous watcher
 #
 # Two jobs, not one, because a GitHub Actions job is capped at 6 hours and the
 # US session is 6.5. The first covers the open, the second hands over at ~17:07
-# UTC and runs through the closing flatten. (:07, not :00 — top-of-hour is
+# UTC and runs through the closing flatten. (:07, not :00 - top-of-hour is
 # GitHub's most congested cron slot; the concurrency group queues the second
 # job until the first one's 215-minute timeout releases it, so the handover
 # stays contiguous either way.)
@@ -16,7 +16,7 @@ name: SPX-Beater continuous watcher
 # ---------------------------------------------------------------------------
 # BEFORE ENABLING THIS, CHECK WHETHER THE REPO IS PUBLIC.
 # Actions minutes are free on public repos and metered on private ones. This
-# workflow runs ~6.5 hours a weekday, which is ~8,000 minutes a month — far past
+# workflow runs ~6.5 hours a weekday, which is ~8,000 minutes a month - far past
 # the 2,000-minute free allowance on a private repo. On a private repo, either
 # make the repo public or leave this disabled and rely on the resting broker
 # stops, which the hourly workflow now arms on every position and which Alpaca
@@ -70,8 +70,8 @@ jobs:
           SPXBOT_NO_NEW_ENTRY_MIN: "90"
           SPXBOT_SPREADS: "0"
           # Alerting (same owner-added secrets as trade.yml; unset = silently
-          # off). Without these the whole 6.5-hour watcher session — and every
-          # entry scan it spawns — would run with alerts and the dead-man's
+          # off). Without these the whole 6.5-hour watcher session - and every
+          # entry scan it spawns - would run with alerts and the dead-man's
           # switch disabled.
           SPXBOT_WA_PHONE: ${{ secrets.SPXBOT_WA_PHONE }}
           SPXBOT_WA_APIKEY: ${{ secrets.SPXBOT_WA_APIKEY }}

@@ -1,4 +1,4 @@
-# HANDOFF — read this first (written 2026-10-12 for a Claude Code session on Connor's Mac)
+# HANDOFF - read this first (written 2026-10-12 for a Claude Code session on Connor's Mac)
 
 ## What this is
 A Claude-built futures paper-trading bot aimed at passing a prop-firm evaluation. Two months of work
@@ -16,7 +16,7 @@ from scratch. The short version:
 - **Mac, `~/spxf/trade`** (this clone): launchd agent `com.spxf.lab` ticks every 30 min; on weekdays
   04:30-14:50 CT it runs `live/runner.py` (intraday QQQ paper sleeve on Alpaca + overnight QQQM paper
   sleeve). Keys in `~/.spxf.env` (never commit, never paste into chat). Logs: `logs/mac.log`, `logs/<date>.log`.
-  First install never started a session (launchd killed the backgrounded runner) — fixed in f936266;
+  First install never started a session (launchd killed the backgrounded runner) - fixed in f936266;
   **verify a session actually runs** (`tail -f logs/mac.log`, expect `session <date>` within a minute).
 - **GitHub Actions `lab` workflow**: DISABLED on purpose (it ran 4-8 h late and must not trade alongside the Mac).
 - **Alpaca paper account**: may still hold a QQQ short (-40) that the GitHub chain never flattened on 10/12;

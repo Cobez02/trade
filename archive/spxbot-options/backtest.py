@@ -1,5 +1,5 @@
 """
-Backtest harness — replays the SHIPPED rules over historical NBBO option quotes.
+Backtest harness - replays the SHIPPED rules over historical NBBO option quotes.
 
 ##########################################################################
 #  WARNING: THE SINGLES SIMULATION DOES NOT MATCH THE LIVE SINGLES SLEEVE #
@@ -25,13 +25,13 @@ USE THE SINGLES NUMBERS HERE FOR NOTHING. The spreads simulation is unaffected
 
 
 The point is fidelity, not flattery. Wherever possible this file does not
-re-implement a rule: it imports the exact functions production trades with —
+re-implement a rule: it imports the exact functions production trades with -
 strategies.rsi / macd_signal / trend_up for signals, vol.forecast_vol for the
 HAR forecast, execution.implied_vol for richness, exitrules.spread_decide for
 package exits. What it cannot share (the broker) it replaces with ThetaData
 EOD NBBO quotes served by the local Theta Terminal.
 
-Fill discipline — the part backtests usually lie about:
+Fill discipline - the part backtests usually lie about:
   * GATES are evaluated exactly as live evaluates them (mid-based credit),
     so entry FREQUENCY matches what production would have done;
   * FILLS are booked pessimistically: spreads open at the NET BID (cross both
@@ -43,7 +43,7 @@ Known simplifications, stated where the report can't miss them:
     Every trade whose leg-OHLC bounds imply an intraday breach is FLAGGED,
     and a stress variant re-books flagged spread exits at 2.5x credit.
   * Window is 2020-07 .. 2026-07 (free stock bars begin mid-2020; the study
-    therefore excludes Volmageddon 2018 and the Feb-Mar 2020 crash — two
+    therefore excludes Volmageddon 2018 and the Feb-Mar 2020 crash - two
     regimes in which short-premium strategies suffer most. Said plainly:
     the worst known environments for the spreads sleeve are NOT in sample.)
   * News sleeve untestable (no historical news feed); tech sleeve is tested
@@ -125,7 +125,7 @@ def theta_csv(path: str, **params) -> list:
                 # 472 is ThetaData's NO_DATA status: a real, cacheable empty
                 # answer ("this symbol has no options"), not a transient fault.
                 # Without this branch every optionless ticker burned ~10s of
-                # retries and never cached — which froze the insider probe.
+                # retries and never cached - which froze the insider probe.
                 if he.code == 472:
                     return []
                 if attempt == 3:
@@ -149,7 +149,7 @@ def _theta_strikes(symbol: str, expiration: str) -> list:
 
 
 # ---------------------------------------------------------------------------
-# ASSUMED ROUND-TRIP COST — this is load-bearing, read it.
+# ASSUMED ROUND-TRIP COST - this is load-bearing, read it.
 #
 # The old ThetaData path had real NBBO: it bought at the ASK and sold at the
 # BID, so every simulated trade paid the spread twice. Alpaca serves no
@@ -187,7 +187,7 @@ def exit_price(row: dict) -> float:
     return row["bid"] if SPREADS_MEASURABLE else row["mid"] * (1.0 - _HALF)
 
 
-DATA_ERRORS = []          # (what, error) — a bad combo logs, never kills the run
+DATA_ERRORS = []          # (what, error) - a bad combo logs, never kills the run
 
 
 def _parse_rows(rows) -> dict:
@@ -211,7 +211,7 @@ def _parse_rows(rows) -> dict:
 def _theta_day_snapshot(symbol: str, expiration: str, iso_day: str) -> dict:
     """ONE request: every contract of `expiration`, quotes on ONE day.
     ~3.7s live, free from the disk cache afterwards. This is what entry
-    evaluation runs on — 1 request per (sim day, symbol)."""
+    evaluation runs on - 1 request per (sim day, symbol)."""
     try:
         rows = theta_csv("/option/history/eod", symbol=symbol,
                          expiration=expiration, start_date=iso_day,
@@ -224,7 +224,7 @@ def _theta_day_snapshot(symbol: str, expiration: str, iso_day: str) -> dict:
 
 def _theta_contract_series(symbol: str, expiration: str, strike: float, right: str,
                            start: str) -> dict:
-    """Full remaining life of ONE contract — pulled only for ENTERED trades,
+    """Full remaining life of ONE contract - pulled only for ENTERED trades,
     so this cost scales with trade count, not day count."""
     rword = {"C": "CALL", "P": "PUT"}.get(right, right)
     try:
@@ -310,7 +310,7 @@ def stock_bars(symbol: str) -> pd.DataFrame:
                                   os.environ["ALPACA_SECRET_KEY"])
     # Full fixed range regardless of the sim window: the cache is shared
     # across runs, and an END-scoped pull once truncated it for every later
-    # run in the session (cache poisoning by monkeypatch — real incident).
+    # run in the session (cache poisoning by monkeypatch - real incident).
     # SIP, not IEX. IEX is one venue carrying a low single-digit share of
     # consolidated volume, and these bars drive RSI/MACD/trend -- so the feed
     # choice changes which SIGNALS fire, not just their prices. Algo Trader

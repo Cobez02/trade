@@ -1,5 +1,5 @@
 """
-Alpaca PAPER adapter — trades SPY/QQQ SHARES as a stand-in for MES/MNQ.
+Alpaca PAPER adapter - trades SPY/QQQ SHARES as a stand-in for MES/MNQ.
 
 Why keep Alpaca at all: it is free, it already has your keys, and it lets the
 futures logic forward-test for weeks on a live tape with real (simulated)
@@ -9,7 +9,7 @@ so this adapter can never be the live path.
 
 Uses SIP data if your key has Algo Trader Plus, otherwise IEX (set
 SPXF_ALPACA_FEED=iex). Stop orders are real Alpaca stop orders that survive
-this process dying — the same design principle as the options bot's
+this process dying - the same design principle as the options bot's
 broker-side floor.
 """
 from __future__ import annotations

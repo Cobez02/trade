@@ -8,7 +8,7 @@ Sources
   databento  MES/MNQ/ES/NQ from CME Globex MDP3 (GLBX.MDP3), continuous
              front-month by volume (".v.0"). Needs DATABENTO_API_KEY.
              This is the data the real bot must be validated on.
-  alpaca     SPY/QQQ SIP minute bars (Algo Trader Plus) — the share PROXY for
+  alpaca     SPY/QQQ SIP minute bars (Algo Trader Plus) - the share PROXY for
              research before you buy futures data, and for the paper lab.
   yfinance   SPY/QQQ, last 60 days of 5-minute bars, free, no key. Only for
              smoke-testing the pipeline; never for conclusions.
@@ -116,7 +116,7 @@ def load_alpaca(symbol: str, start: str, end: str, feed: str | None = None,
                 break
             except Exception as ex:                      # 429 rate limit, 5xx, network
                 wait = 20 * (attempt + 1)
-                print(f"  {symbol} {cur.date()}..{nxt.date()}: {type(ex).__name__}: {str(ex)[:120]} — retry in {wait}s",
+                print(f"  {symbol} {cur.date()}..{nxt.date()}: {type(ex).__name__}: {str(ex)[:120]} - retry in {wait}s",
                       file=sys.stderr, flush=True)
                 time.sleep(wait)
         else:

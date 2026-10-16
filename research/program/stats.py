@@ -48,7 +48,7 @@ def deflated_sharpe(sr: float, T: int, n_trials: int, skew: float = 0.0, kurt: f
 
 def pbo(returns: np.ndarray, n_blocks: int = 16) -> dict:
     """CSCV. returns: T x N matrix (rows = periods, cols = strategy variants). Returns PBO and the logits.
-    Calibration note (2026-10-14): on pure noise this implementation averages ~0.55-0.6 rather than 0.5 — it
+    Calibration note (2026-10-14): on pure noise this implementation averages ~0.55-0.6 rather than 0.5 - it
     errs toward calling things overfit. For a referee that is the right direction to err; do not "fix" it by
     loosening the gate."""
     R = np.asarray(returns, dtype=float)

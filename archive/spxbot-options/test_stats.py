@@ -1,5 +1,5 @@
 """
-Statistics test harness — pins the four measured defects that stats.py exists to
+Statistics test harness - pins the four measured defects that stats.py exists to
 fix. No network, no broker, no numpy, no scipy. Run: python3 test_stats.py
 
 stats.py is not a maths library, it is a set of guard rails, so what is tested
@@ -10,7 +10,7 @@ here is mostly *properties* rather than values:
   * required_n_for_gate must come out enormously larger than MIN_SAMPLES_GATE=5,
     because that gap is the whole finding
   * dedupe_dims must notice that `direction` and `trend_align` are one column
-  * gate_decision must NEVER return 0 — a hard gate is an absorbing state, and
+  * gate_decision must NEVER return 0 - a hard gate is an absorbing state, and
     an absorbing state is the difference between "discouraged" and "dead"
   * every public function must be total. These run inside a trading loop; an
     unhandled TypeError there is a financial bug, so the last section throws
@@ -30,7 +30,7 @@ HEADLINE: dict = {}
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 def close(name, got, want, tol=1e-9):
@@ -71,7 +71,7 @@ GARBAGE = [None, "", "abc", NAN, INF, -INF, -1, [], {}, 0, True, "na",
 
 
 # --------------------------------------------------------------------------
-section("1. norm_cdf / norm_ppf — the only numerics everything else stands on")
+section("1. norm_cdf / norm_ppf - the only numerics everything else stands on")
 close("norm_cdf(0) = 0.5", S.norm_cdf(0), 0.5, 0.0)
 close("norm_cdf(1.96) ~ 0.975", S.norm_cdf(1.96), 0.975, 1e-5)
 close("norm_cdf(-1.96) ~ 0.025", S.norm_cdf(-1.96), 0.025, 1e-5)
@@ -123,7 +123,7 @@ for bad in (None, "abc", "", NAN, INF, -INF, [], {}):
 
 
 # --------------------------------------------------------------------------
-section("2. intraclass_correlation — is a 'day' one observation or seven?")
+section("2. intraclass_correlation - is a 'day' one observation or seven?")
 close("perfectly homogeneous clusters -> rho = 1",
       S.intraclass_correlation([[1, 1, 1], [0, 0, 0]]), 1.0, 1e-9)
 close("noise clusters with identical means -> rho = 0",
@@ -159,14 +159,14 @@ close("a cluster emptied by cleaning drops out entirely",
 
 
 # --------------------------------------------------------------------------
-section("3. design_effect — Moulton: deff = 1 + (m_bar - 1) * rho")
+section("3. design_effect - Moulton: deff = 1 + (m_bar - 1) * rho")
 for r in (0.0, 0.25, 0.5, 0.99, 1.0, -3.0, 7.0):
-    close(f"deff(1, {r}) = 1.0 — a cluster of one costs nothing",
+    close(f"deff(1, {r}) = 1.0 - a cluster of one costs nothing",
           S.design_effect(1, r), 1.0, 0.0)
 for m in (1, 2, 7, 100, 1e6):
-    close(f"deff({m:g}, 0) = 1.0 — uncorrelated clusters cost nothing",
+    close(f"deff({m:g}, 0) = 1.0 - uncorrelated clusters cost nothing",
           S.design_effect(m, 0), 1.0, 0.0)
-close("deff(7, 1.0) = 7.0 — 7 identical trades are 1 observation",
+close("deff(7, 1.0) = 7.0 - 7 identical trades are 1 observation",
       S.design_effect(7, 1.0), 7.0, 1e-12)
 close("deff(3.5, 0.5) = 2.25", S.design_effect(3.5, 0.5), 2.25, 1e-12)
 
@@ -183,7 +183,7 @@ check("deff is never below 1", all(S.design_effect(m, r) >= 1.0
 
 
 # --------------------------------------------------------------------------
-section("4. effective_n — HEADLINE: 7 trades on one day are not 7 observations")
+section("4. effective_n - HEADLINE: 7 trades on one day are not 7 observations")
 # The real journal: every settled trade closed on 2026-07-27.
 REAL_DAY = [-0.5077, 0.9206, -0.3500, 0.6089, -0.5000, -0.5402, 0.5645]
 one_day = S.effective_n([REAL_DAY])
@@ -228,7 +228,7 @@ check("partial clustering sits strictly between the two extremes",
 
 
 # --------------------------------------------------------------------------
-section("5. bonferroni_alpha / fwer — HEADLINE: the gate was ~certain to fire")
+section("5. bonferroni_alpha / fwer - HEADLINE: the gate was ~certain to fire")
 close("bonferroni_alpha(0.05, 17) ~ 0.00294", S.bonferroni_alpha(0.05, 17), 0.00294, 5e-6)
 close("bonferroni_alpha(0.05, 1) = 0.05", S.bonferroni_alpha(0.05, 1), 0.05, 0.0)
 check("n_tests < 1 is floored at 1, not divided by zero",
@@ -236,7 +236,7 @@ check("n_tests < 1 is floored at 1, not divided by zero",
 
 # 0.337 is the MEASURED SIZE of the old rule "n>=5 and win_rate<=0.25" under the
 # bot's own 40% base win rate: P(at most 1 win in 5 | p=0.40). It is NOT the
-# 0.25 win-rate threshold, and using 0.25 here is the easy mistake — it gives
+# 0.25 win-rate threshold, and using 0.25 here is the easy mistake - it gives
 # 0.9925, not 0.9991. Both are printed so the write-up quotes the right one.
 size_of_rule = sum(math.comb(5, k) * 0.40 ** k * 0.60 ** (5 - k)
                    for k in range(6) if k / 5 <= 0.25)
@@ -244,22 +244,22 @@ close("size of 'n>=5 and win_rate<=0.25' at the bot's 40% base rate = 0.337",
       size_of_rule, 0.337, 5e-4)
 f_337 = S.fwer(size_of_rule, 17)
 f_25 = S.fwer(0.25, 17)
-headline("fwer(0.337, 17) — family-wise error across the 17 buckets", round(f_337, 4),
+headline("fwer(0.337, 17) - family-wise error across the 17 buckets", round(f_337, 4),
          "0.337 is the measured size of the old gate rule")
-headline("fwer(0.25, 17) — NOT the headline figure", round(f_25, 4),
+headline("fwer(0.25, 17) - NOT the headline figure", round(f_25, 4),
          "0.25 is the win-rate threshold, not a per-test alpha")
 close("fwer(0.337, 17) ~ 0.9991 to 3 decimals", f_337, 0.9991, 5e-4)
 close("fwer(0.25, 17) = 0.9925 (the number the docstring used to claim was 0.9991)",
       f_25, 0.9925, 5e-4)
-check("both are above 0.99 — either way a gate fires on noise", f_337 > 0.99 and f_25 > 0.99)
+check("both are above 0.99 - either way a gate fires on noise", f_337 > 0.99 and f_25 > 0.99)
 
 for a in (0.0, 0.05, 0.25, 0.5, 1.0):
-    close(f"fwer({a}, 0) = 0 — no tests, no false positives", S.fwer(a, 0), 0.0, 0.0)
+    close(f"fwer({a}, 0) = 0 - no tests, no false positives", S.fwer(a, 0), 0.0, 0.0)
 for n in (0, 1, 5, 17, 1000):
-    close(f"fwer(0, {n}) = 0 — a test that never fires never false-fires",
+    close(f"fwer(0, {n}) = 0 - a test that never fires never false-fires",
           S.fwer(0.0, n), 0.0, 0.0)
 for n in (1, 2, 17, 1000):
-    close(f"fwer(1, {n}) = 1 — a test that always fires always false-fires",
+    close(f"fwer(1, {n}) = 1 - a test that always fires always false-fires",
           S.fwer(1.0, n), 1.0, 0.0)
 check("fwer is monotone increasing in n_tests",
       all(S.fwer(0.05, n) <= S.fwer(0.05, n + 1) for n in range(0, 60)))
@@ -270,7 +270,7 @@ check("fwer stays inside [0, 1] for out-of-range alpha",
 
 
 # --------------------------------------------------------------------------
-section("6. effective_trials — M correlated trials are fewer than M trials")
+section("6. effective_trials - M correlated trials are fewer than M trials")
 for m in (1, 2, 17, 1000):
     close(f"rho = 0 -> {m} trials stay {m}", S.effective_trials(m, 0.0), float(m), 1e-9)
 for m in (1, 2, 17, 1000):
@@ -289,7 +289,7 @@ check("result always in [1, M]",
 
 
 # --------------------------------------------------------------------------
-section("7. required_n_for_gate — HEADLINE: 5 samples is not a sample")
+section("7. required_n_for_gate - HEADLINE: 5 samples is not a sample")
 n_unc = S.required_n_for_gate()
 n_bon = S.required_n_for_gate(alpha=S.bonferroni_alpha(0.05, 17))
 MIN_SAMPLES_GATE = 5          # the shipped constant, learn.py:22
@@ -305,7 +305,7 @@ check("default args return ~61", 55 <= n_unc <= 67, f"exact value: {n_unc}")
 check("Bonferroni-corrected returns ~131", 120 <= n_bon <= 142, f"exact value: {n_bon}")
 check("the requirement is >> MIN_SAMPLES_GATE = 5",
       n_unc > 10 * MIN_SAMPLES_GATE,
-      f"{n_unc} vs 5 — short by {n_unc / MIN_SAMPLES_GATE:.1f}x")
+      f"{n_unc} vs 5 - short by {n_unc / MIN_SAMPLES_GATE:.1f}x")
 check("  ...and by ~26x once multiplicity is paid for",
       n_bon > 25 * MIN_SAMPLES_GATE, f"{n_bon}/5 = {n_bon / MIN_SAMPLES_GATE:.1f}x")
 
@@ -337,7 +337,7 @@ for args in [dict(p_null=0.25, p_alt=0.50), dict(p_null=0.5, p_alt=0.5),
 
 
 # --------------------------------------------------------------------------
-section("8. cramers_v — HEADLINE: direction and trend_align are one column")
+section("8. cramers_v - HEADLINE: direction and trend_align are one column")
 DIR = ["call", "call", "put"]
 ALI = ["ct", "ct", "wt"]
 v_collinear = S.cramers_v(DIR, ALI)
@@ -388,7 +388,7 @@ check("V is always a float", all(is_float(v) for v in vs))
 
 
 # --------------------------------------------------------------------------
-section("9. dedupe_dims — one hypothesis must not be counted twice")
+section("9. dedupe_dims - one hypothesis must not be counted twice")
 # The real journal shape: trend_up was False on every trade, so align_bucket()
 # made counter_trend <=> call and with_trend <=> put. `regime` is a genuinely
 # independent split; `sleeve` is constant.
@@ -407,9 +407,9 @@ check("  ...mapped to the dim that kept it", dropped.get("trend_align", (None,))
 close("  ...with V ~ 1.0 recorded as the reason", dropped.get("trend_align", (None, 0))[1], 1.0, 1e-4)
 check("the first of the collinear pair is kept", "direction" in kept)
 check("the genuinely independent dim is kept", "regime" in kept)
-check("the constant dim is silently skipped — not kept",
+check("the constant dim is silently skipped - not kept",
       "sleeve" not in kept, f"kept = {kept}")
-check("the constant dim is silently skipped — not dropped either",
+check("the constant dim is silently skipped - not dropped either",
       "sleeve" not in dropped, f"dropped = {dropped}")
 check("kept and dropped are disjoint", not (set(kept) & set(dropped)))
 
@@ -439,7 +439,7 @@ check("'na'-only dims count as constant",
 
 
 # --------------------------------------------------------------------------
-section("10. eb_shrink — a 5-trade bucket does not get to claim -21%")
+section("10. eb_shrink - a 5-trade bucket does not get to claim -21%")
 check("k = 0 -> []", S.eb_shrink([]) == [])
 one = S.eb_shrink([{"key": "solo", "mean": -0.21, "var": 0.3, "n": 5}])
 check("k = 1 -> one row", len(one) == 1)
@@ -537,7 +537,7 @@ check("a zero-variance bucket does not produce infinite weight",
 
 
 # --------------------------------------------------------------------------
-section("11. gate_decision — THE absorbing-state fix. mult is NEVER 0.")
+section("11. gate_decision - THE absorbing-state fix. mult is NEVER 0.")
 # A hard gate blocks the entries that would generate the samples needed to leave
 # the gate, so P(exit) = 0 and the bucket is dead forever. Everything in this
 # section exists to prove the replacement cannot do that.
@@ -570,7 +570,7 @@ check("the floor is actually reached (the penalty is real, not cosmetic)",
       abs(sweep_min - S.GATE_FLOOR) < 1e-9)
 check("the ceiling is actually reached (the bonus is real too)",
       abs(sweep_max - S.GATE_CEIL) < 1e-9)
-check("GATE_FLOOR itself is strictly positive — no absorbing state by construction",
+check("GATE_FLOOR itself is strictly positive - no absorbing state by construction",
       S.GATE_FLOOR > 0, f"GATE_FLOOR = {S.GATE_FLOOR}")
 
 check("below activation the multiplier is exactly 1.0",
@@ -635,7 +635,7 @@ for args in BAD_INPUTS:
 # same evidence does not move size at all.
 regression = S.gate_decision(-0.21, 1.2)
 print(f"        shrunk_mean=-0.21, n_eff=1.2 -> {regression}")
-headline("gate_decision(-0.21, 1.2) — the real gated bucket",
+headline("gate_decision(-0.21, 1.2) - the real gated bucket",
          f"mult {regression['mult']}, confidence {regression['confidence']}")
 close("REGRESSION the-bot-went-short-only: mult is EXACTLY 1.0", regression["mult"], 1.0, 0.0)
 close("REGRESSION the-bot-went-short-only: confidence is EXACTLY 0.0",
@@ -658,7 +658,7 @@ check("every return carries mult, confidence and reason",
 
 
 # --------------------------------------------------------------------------
-section("12. sharpe_variance — and the raw-vs-excess kurtosis trap")
+section("12. sharpe_variance - and the raw-vs-excess kurtosis trap")
 check("n < 2 -> inf", all(S.sharpe_variance(0.5, n) == INF for n in (-5, 0, 1)))
 close("sr=0, n=101, kurt=3 -> exactly 1/100", S.sharpe_variance(0, 101, 0.0, 3.0), 0.01, 0.0)
 close("sr=0, n=1001, kurt=3 -> exactly 1/1000",
@@ -676,7 +676,7 @@ close("RAW kurtosis 3.0 reproduces the normal-case bracket: (1 + 0.5*SR^2)/(n-1)
 check("the excess-kurtosis mistake (0.0) gives a DIFFERENT, SMALLER variance",
       v_excess_mistake < v_raw,
       f"raw 3.0 -> {v_raw}, excess-mistake 0.0 -> {v_excess_mistake} "
-      f"({v_excess_mistake / v_raw:.1%} of it) — 3.0 is correct")
+      f"({v_excess_mistake / v_raw:.1%} of it) - 3.0 is correct")
 close("  ...specifically (1 - 0.25*SR^2)/(n-1)", v_excess_mistake,
       (1.0 - 0.25 * 0.25) / 100.0, 1e-15)
 check("at sr = 0 the two conventions coincide, so they cannot be told apart there",
@@ -701,7 +701,7 @@ check("variance falls as n grows",
 
 
 # --------------------------------------------------------------------------
-section("13. psr — P(true Sharpe > benchmark)")
+section("13. psr - P(true Sharpe > benchmark)")
 for sr in (-1.0, 0.0, 0.5, 2.0):
     close(f"sr == benchmark ({sr}) -> 0.5", S.psr(sr, 100, sr), 0.5, 1e-12)
 check("psr is monotone increasing in sr",
@@ -736,7 +736,7 @@ close("n < 2 -> 0.5 (infinite variance, no information)", S.psr(5.0, 1), 0.5, 0.
 
 
 # --------------------------------------------------------------------------
-section("14. min_track_record_length — HEADLINE: ~1,400 trades, not 4")
+section("14. min_track_record_length - HEADLINE: ~1,400 trades, not 4")
 for sr, bm in ((0.0, 0.0), (-0.5, 0.0), (0.5, 0.5), (0.1, 0.9)):
     check(f"sr {sr} <= benchmark {bm} -> inf (no data proves a worse thing better)",
           S.min_track_record_length(sr, bm) == INF)
@@ -756,7 +756,7 @@ check("MinTRL is in the thousands, as documented",
 check("  ...i.e. ~1,400 trades", abs(mintrl - 1400) < 100, f"{mintrl:.1f}")
 check("MinTRL >> MIN_SAMPLES_SLEEVE = 4",
       mintrl > 100 * MIN_SAMPLES_SLEEVE,
-      f"{mintrl:.0f} vs 4 — short by {mintrl / MIN_SAMPLES_SLEEVE:.0f}x")
+      f"{mintrl:.0f} vs 4 - short by {mintrl / MIN_SAMPLES_SLEEVE:.0f}x")
 
 seq = [S.min_track_record_length(s, 0.0, 0.0, 3.0) for s in frange(0.02, 1.0, 0.02)]
 check("monotone decreasing in (sr - benchmark) via sr",
@@ -780,7 +780,7 @@ check("MinTRL is always >= 1", all(S.min_track_record_length(s) >= 1.0
 
 
 # --------------------------------------------------------------------------
-section("15. expected_max_sharpe — the bar the BEST of N random rules clears")
+section("15. expected_max_sharpe - the bar the BEST of N random rules clears")
 for v in (0.0, 0.5, 4.0):
     close(f"n_trials = 1 at var {v} -> 0.0 (no selection, no inflation)",
           S.expected_max_sharpe(1, v), 0.0, 0.0)
@@ -803,7 +803,7 @@ check("trying 20 variants sets a real bar",
 
 
 # --------------------------------------------------------------------------
-section("16. deflated_sharpe — the same Sharpe stops being a discovery")
+section("16. deflated_sharpe - the same Sharpe stops being a discovery")
 d = S.deflated_sharpe(1.5, 250, 5, 0.5)
 check("returns exactly the three documented keys",
       set(d.keys()) == {"sr0", "dsr", "is_discovery"}, str(d))
@@ -848,7 +848,7 @@ check("f* rises with mu and falls with sigma",
       S.kelly_fraction(0.1, 0.2) > S.kelly_fraction(0.1, 0.4))
 
 close("c = 1 (full Kelly) -> 1.0 of the growth rate", S.kelly_growth_penalty(1.0), 1.0, 0.0)
-close("c = 0.5 (half Kelly) -> EXACTLY 0.75 — the 75%-for-a-quarter-of-the-variance claim",
+close("c = 0.5 (half Kelly) -> EXACTLY 0.75 - the 75%-for-a-quarter-of-the-variance claim",
       S.kelly_growth_penalty(0.5), 0.75, 0.0)
 close("c = 2 -> 0.0, zero growth despite a positive edge",
       S.kelly_growth_penalty(2.0), 0.0, 0.0)
@@ -864,9 +864,9 @@ check("symmetric about c = 1",
 
 
 # --------------------------------------------------------------------------
-section("19. drawdown_probability — HEADLINE: full Kelly halves you, 50/50")
+section("19. drawdown_probability - HEADLINE: full Kelly halves you, 50/50")
 p_half = S.drawdown_probability(0.5, 1.0)
-headline("drawdown_probability(0.5, 1.0) — P(ever halving) at full Kelly", p_half)
+headline("drawdown_probability(0.5, 1.0) - P(ever halving) at full Kelly", p_half)
 close("full Kelly: P(equity ever halves) = 0.5 EXACTLY", p_half, 0.5, 0.0)
 close("half Kelly: P(ever halving) = 0.125", S.drawdown_probability(0.5, 0.5), 0.125, 1e-12)
 close("quarter Kelly: P(ever halving) = 0.0078125",
@@ -891,7 +891,7 @@ check("at full Kelly a 90% drawdown is still a 1-in-10 event",
 
 
 # --------------------------------------------------------------------------
-section("20. time_to_multiple — and what a '10x in a year' Sharpe really is")
+section("20. time_to_multiple - and what a '10x in a year' Sharpe really is")
 for m, s in ((1.0, 1.0), (0.5, 1.0), (0.0, 1.0), (-2, 1.0)):
     check(f"multiple {m} <= 1 -> inf", S.time_to_multiple(m, s) == INF)
 for s in (0.0, -0.5, -10):
@@ -907,7 +907,7 @@ headline("Sharpe for a 10x in one year (expectation)", round(sr_1yr, 4),
          "= sqrt(2*ln 10); this is the E[time] inversion, not a probability")
 close("solving T = 1 at multiple 10 gives Sharpe ~2.146", sr_1yr, 2.145966026, 1e-6)
 close("  ...and it round-trips: T(10, 2.146) = 1.0", S.time_to_multiple(10, sr_1yr), 1.0, 1e-12)
-check("2.146 is above Medallion's ~2.5 gross? No — just below it",
+check("2.146 is above Medallion's ~2.5 gross? No - just below it",
       sr_1yr < 2.5, f"{sr_1yr:.4f} vs 2.5")
 
 # The docstring used to offer 1.72 as "a coin-flip chance of getting there".
@@ -934,7 +934,7 @@ for _ in range(200):
 sr_coinflip = (lo + hi) / 2.0
 print(f"        expectation variant : Sharpe {sr_1yr:.4f}  (E[time to 10x] = 1 year)")
 print(f"        coin-flip variant   : Sharpe {sr_coinflip:.4f}  "
-      f"(50% chance of touching 10x inside 1 year) — NOT 1.72")
+      f"(50% chance of touching 10x inside 1 year) - NOT 1.72")
 headline("Sharpe for a 10x in one year (coin flip)", round(sr_coinflip, 4),
          "50% chance of TOUCHING 10x inside the year; the docstring's 1.72 is neither variant")
 close("the coin-flip variant is 1.802, not 1.72", sr_coinflip, 1.8022, 1e-3)
@@ -952,7 +952,7 @@ check("monotone: a bigger multiple takes longer",
 
 
 # --------------------------------------------------------------------------
-section("21. prob_reach_multiple — HEADLINE: a coin flip 10x's you 9.09% free")
+section("21. prob_reach_multiple - HEADLINE: a coin flip 10x's you 9.09% free")
 free = S.prob_reach_multiple(10.0, 0.1)
 print(f"        zero edge, target 10x, ruin 0.1x ($10k -> $100k before $1k)")
 print(f"        -> {free:.6f}   (exact martingale answer (10-1)/(100-1) = {9 / 99:.6f})")
@@ -983,7 +983,7 @@ harmed = S.prob_reach_multiple(10.0, 0.1, -0.030, 0.61)
 headline("prob_reach_multiple at the measured -3.0pp/trade harm", round(harmed, 6),
          "vol 0.61 per trade (the journal's realised dispersion)")
 check("at a realistically negative per-trade edge it falls BELOW the free 9.09%",
-      harmed < free, f"{harmed:.6f} < {free:.6f} — worse than a coin flip")
+      harmed < free, f"{harmed:.6f} < {free:.6f} - worse than a coin flip")
 check("  ...by a material margin", harmed < free * 0.85,
       f"{harmed / free:.1%} of the free benchmark")
 
@@ -1018,7 +1018,7 @@ check("a nearer target is easier to reach",
 
 
 # --------------------------------------------------------------------------
-section("22. TOTALITY SWEEP — every public function, every kind of garbage")
+section("22. TOTALITY SWEEP - every public function, every kind of garbage")
 # These run inside a trading loop. An unhandled exception there is a financial
 # bug, not a stack trace. `inspect` enumerates the public callables so a
 # function added to stats.py without a test still gets swept.
@@ -1085,7 +1085,7 @@ for name, fn in PUBLIC:
             continue
         if is_float(got) and math.isnan(got):
             nan_returns.append(f"{name}({g!r})")
-check("no public function returns NaN on garbage — a NaN propagates silently",
+check("no public function returns NaN on garbage - a NaN propagates silently",
       not nan_returns, "; ".join(nan_returns[:8]))
 
 

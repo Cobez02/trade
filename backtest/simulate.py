@@ -1,5 +1,5 @@
 """
-Backtester — replays the strategy minute by minute with the same risk engine
+Backtester - replays the strategy minute by minute with the same risk engine
 the live runner uses.
 
 Fill model (deliberately pessimistic):
@@ -7,7 +7,7 @@ Fill model (deliberately pessimistic):
     of the next 1-minute bar, plus SLIPPAGE_TICKS against you
   * the protective stop is a resting stop-market order: if a 1-minute bar's
     low (long) / high (short) touches it, you are filled at the stop price
-    minus slippage — or at the bar's open if the bar opened through the stop
+    minus slippage - or at the bar's open if the bar opened through the stop
     (gap), which is what happens to real stop orders
   * commission is charged per side, every side
   * the flatten is a market order at the open of the first bar at/after
@@ -157,7 +157,7 @@ class Backtester:
                     pending = self.strat.on_bar_close(ctx, slot, pos, day.entries, bar_end)
                 slot += 1
                 next_decision_end = ctx.open_ts + bar_len * (slot + 1)
-        if pos != 0:   # data ended before flatten (early close without bars) — close at last
+        if pos != 0:   # data ended before flatten (early close without bars) - close at last
             close_position(n - 1, closes[-1], "session end")
         res = DayResult(str(ctx.day), round(cum, 2), round(low, 2), round(high, 2), day.trades,
                         day.halt_reason)
@@ -174,7 +174,7 @@ class Backtester:
         stretch (entries refused forever), which is exactly what happened in
         the first proxy run. Evaluation geometry is scored separately by
         risk/rules.py on the daily P&L this replay produces. The per-day gates
-        (kill, cap, max entries) still apply — they are part of the strategy.
+        (kill, cap, max entries) still apply - they are part of the strategy.
         """
         acct = AccountState(0.0, 0.0, -1e12)
         for ctx in contexts:

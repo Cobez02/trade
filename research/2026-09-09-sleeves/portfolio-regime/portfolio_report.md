@@ -1,4 +1,4 @@
-# Portfolio — S1r, S2r, S3r
+# Portfolio - S1r, S2r, S3r
 
 ## Per sleeve and combined (all sessions)
 
@@ -35,7 +35,7 @@ S3r -0.28 -0.05  1.00
 | S3r | -639 | -0.95 | -0.21 | -0.34 |
 | combined | 2469 | 3.67 | 0.46 | 0.75 |
 
-## Prop-rule Monte Carlo — MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+## Prop-rule Monte Carlo - MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
 
 - combined, all years: **P(pass) 33.2%** (median 137 days); zero-edge control 20.2%
 - combined, holdout only: **P(pass) 35.3%**
@@ -43,11 +43,11 @@ S3r -0.28 -0.05  1.00
 
 ## Pre-registered gates
 
-- FAIL — combined holdout Sharpe >= 1.2
-- FAIL — combined holdout t >= 1.5
-- FAIL — P(pass) all-years >= 65%
-- FAIL — P(pass) holdout >= 55%
-- PASS — zero sessions below -$1,000
-- PASS — max pairwise correlation < 0.5
+- FAIL - combined holdout Sharpe >= 1.2
+- FAIL - combined holdout t >= 1.5
+- FAIL - P(pass) all-years >= 65%
+- FAIL - P(pass) holdout >= 55%
+- PASS - zero sessions below -$1,000
+- PASS - max pairwise correlation < 0.5
 
 **Verdict: FAIL** (2/6 gates)

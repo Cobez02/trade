@@ -1,4 +1,4 @@
-# Portfolio — ONA, ONB
+# Portfolio - ONA, ONB
 
 ## Per sleeve and combined (all sessions)
 
@@ -31,7 +31,7 @@ ONB  0.89  1.00
 | ONB | 1746 | 2.6 | 0.38 | 0.61 |
 | combined | 3022 | 4.5 | 0.37 | 0.6 |
 
-## Prop-rule Monte Carlo — TradeDay $100K static: target $6,000, DD $3,000 (static, locks), DLL $0, consistency 30% of profit, flat by overnight ok CT, bots on funded: True
+## Prop-rule Monte Carlo - TradeDay $100K static: target $6,000, DD $3,000 (static, locks), DLL $0, consistency 30% of profit, flat by overnight ok CT, bots on funded: True
 
 - combined, all years: **P(pass) 20.2%** (median 200 days); zero-edge control 12.1%
 - combined, holdout only: **P(pass) 22.4%**
@@ -39,11 +39,11 @@ ONB  0.89  1.00
 
 ## Pre-registered gates
 
-- FAIL — combined holdout Sharpe >= 1.2
-- FAIL — combined holdout t >= 1.5
-- FAIL — P(pass) all-years >= 65%
-- FAIL — P(pass) holdout >= 55%
-- FAIL — zero sessions below -$1,000
-- FAIL — max pairwise correlation < 0.5
+- FAIL - combined holdout Sharpe >= 1.2
+- FAIL - combined holdout t >= 1.5
+- FAIL - P(pass) all-years >= 65%
+- FAIL - P(pass) holdout >= 55%
+- FAIL - zero sessions below -$1,000
+- FAIL - max pairwise correlation < 0.5
 
 **Verdict: FAIL** (0/6 gates)

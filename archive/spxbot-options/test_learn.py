@@ -1,5 +1,5 @@
 """
-Test suite for learn.py — the recursive learning layer.
+Test suite for learn.py - the recursive learning layer.
 
 This file exists to pin the four properties the rewrite of `learn.py` was
 performed to guarantee, because each one corresponds to a defect that a
@@ -8,14 +8,14 @@ Monte-Carlo replay showed was making the bot WORSE 56-59% of the time:
   1. NO HARD BLOCKS.  `learn()` must emit `hard_gates_issued: 0` and
      `size_multiplier()` must never return 0 or anything outside
      [GATE_FLOOR, GATE_CEIL], on ANY input including adversarial ones.
-     A hard gate is an absorbing state — it removes the entries that would
+     A hard gate is an absorbing state - it removes the entries that would
      produce the samples needed to leave it, so P(exit) = 0.
 
   2. CLUSTERING IS RESPECTED.  Seven trades settled on one day must report
      n_eff = 1.0, not 7.
 
   3. COLLINEAR DIMENSIONS ARE DEDUPED and the dropped dimension is REPORTED
-     but forced to mult exactly 1.0 — it must not influence sizing.
+     but forced to mult exactly 1.0 - it must not influence sizing.
 
   4. `is_gated()` fails OPEN forever (always None), so an unmigrated caller
      cannot resurrect the old behaviour.
@@ -24,7 +24,7 @@ Plus the usual: bucketer boundaries, totality under garbage, idempotency,
 journal-format compatibility, and a direct regression replay of the exact
 journal shape that made the old code go permanently short-only.
 
-Stdlib only. Deterministic — no clock, no RNG without a fixed seed.
+Stdlib only. Deterministic - no clock, no RNG without a fixed seed.
 """
 from __future__ import annotations
 
@@ -109,7 +109,7 @@ def spread_days(rows, n_days):
 
 
 # ===========================================================================
-section("1. Module contract — constants and exported surface")
+section("1. Module contract - constants and exported surface")
 # ===========================================================================
 check("GATE_FLOOR is 0.25", near(learn.GATE_FLOOR, 0.25), learn.GATE_FLOOR)
 check("GATE_CEIL is 1.25", near(learn.GATE_CEIL, 1.25), learn.GATE_CEIL)
@@ -135,7 +135,7 @@ check("docstring names the absorbing-state defect",
 
 
 # ===========================================================================
-section("2. Bucketers — boundaries, totality, and the macd None trap")
+section("2. Bucketers - boundaries, totality, and the macd None trap")
 # ===========================================================================
 for v, want in [(None, "na"), (0, "rsi<30"), (29.999, "rsi<30"), (30, "rsi30-45"),
                 (44.999, "rsi30-45"), (45, "rsi45-55"), (54.999, "rsi45-55"),
@@ -188,13 +188,13 @@ check("direction missing maps to put (not a crash)",
 
 
 # ===========================================================================
-section("3. Clustering — the n_eff=1.0 finding")
+section("3. Clustering - the n_eff=1.0 finding")
 # ===========================================================================
 st = learn._stat(REAL_SHAPE)
 check("n = 7", st["n"] == 7, st["n"])
 check("n_days = 1", st["n_days"] == 1, st["n_days"])
 check("n_eff = 1.0 for 7 same-day trades", near(st["n_eff"], 1.0, 1e-9),
-      f"n_eff={st['n_eff']} — the whole clustering argument rests on this")
+      f"n_eff={st['n_eff']} - the whole clustering argument rests on this")
 check("deff = 7.0", near(st["deff"], 7.0, 1e-9), st["deff"])
 check("rho = 1.0", near(st["rho"], 1.0, 1e-9), st["rho"])
 
@@ -233,7 +233,7 @@ check("_cluster drops None pnl", learn._cluster([{"pnl_pct": None}]) == [])
 
 
 # ===========================================================================
-section("4. _moments — RAW kurtosis, not excess")
+section("4. _moments - RAW kurtosis, not excess")
 # ===========================================================================
 g3, g4 = learn._moments(REAL_SHAPE)
 check("kurtosis is RAW (>= 1 for any real sample)", g4 >= 1.0,
@@ -263,7 +263,7 @@ check("_sharpe sign matches mean sign",
 
 
 # ===========================================================================
-section("5. THE HEADLINE — learn() cannot emit a hard block")
+section("5. THE HEADLINE - learn() cannot emit a hard block")
 # ===========================================================================
 s = real_state()
 out = learn.learn(s)
@@ -312,7 +312,7 @@ if call_st:
           call_st["win_rate"] <= 0.25, call_st["win_rate"])
     check("'call' has >= MIN_SAMPLES_GATE samples (old trigger condition)",
           call_st["n"] >= learn.MIN_SAMPLES_GATE - 1, call_st["n"])
-    check("REGRESSION: 'call' mult is EXACTLY 1.0 — old code would have blocked it",
+    check("REGRESSION: 'call' mult is EXACTLY 1.0 - old code would have blocked it",
           near(call_st["mult"], 1.0),
           f"mult={call_st['mult']}, n_eff={call_st['n_eff']}")
     check("'call' n_eff is 1.0 not 4", near(call_st["n_eff"], 1.0, 1e-9),
@@ -327,7 +327,7 @@ check("is_gated returns None on the real state",
 
 
 # ===========================================================================
-section("6. Deduplication — reported, but forced to mult 1.0")
+section("6. Deduplication - reported, but forced to mult 1.0")
 # ===========================================================================
 check("dims_kept is non-empty", len(out["dims_kept"]) > 0, out["dims_kept"])
 check("direction survives dedupe", "direction" in out["dims_kept"],
@@ -378,7 +378,7 @@ check("with varying trend_up, trend_align is NOT deduped",
 
 
 # ===========================================================================
-section("7. size_multiplier — range, minimum-rule, and never zero")
+section("7. size_multiplier - range, minimum-rule, and never zero")
 # ===========================================================================
 FEAT_A = {"direction": "bull", "rsi": 77.0, "dte": 4, "trend_up": False,
           "macd_rising": True, "spread_pct": 0.02}
@@ -462,7 +462,7 @@ check("deduped dim contributes no reason", rd == [], rd)
 
 
 # ===========================================================================
-section("8. size_multiplier sweep — 4,096 feature combinations, never zero")
+section("8. size_multiplier sweep - 4,096 feature combinations, never zero")
 # ===========================================================================
 DIRS = ["bull", "bear"]
 RSIS = [None, 10.0, 35.0, 50.0, 60.0, 90.0]
@@ -524,7 +524,7 @@ check("is_gated body is a bare `return None`",
 
 
 # ===========================================================================
-section("10. Enough evidence — the gate DOES engage when data justifies it")
+section("10. Enough evidence - the gate DOES engage when data justifies it")
 # ===========================================================================
 # 200 losing 'call' trades on 200 separate days: n_eff is large, the effect is
 # real, and the multiplier SHOULD drop. A learner that can never conclude
@@ -572,7 +572,7 @@ for sl, sst in out_big["sleeve"].items():
 
 
 # ===========================================================================
-section("11. Diagnostics — the multiple-testing numbers are the headline ones")
+section("11. Diagnostics - the multiple-testing numbers are the headline ones")
 # ===========================================================================
 d = out["diagnostics"]
 check("n_buckets_tested > 0", d["n_buckets_tested"] > 0, d["n_buckets_tested"])
@@ -590,7 +590,7 @@ check("fwer_if_uncorrected > 0.99", d["fwer_if_uncorrected"] > 0.99,
       d["fwer_if_uncorrected"])
 check("fwer(0.337, 17) == 0.9991 exactly", near(round(stats.fwer(0.337, 17), 4), 0.9991),
       round(stats.fwer(0.337, 17), 4))
-check("fwer(0.25, 17) == 0.9925 — NOT the headline figure",
+check("fwer(0.25, 17) == 0.9925 - NOT the headline figure",
       near(round(stats.fwer(0.25, 17), 4), 0.9925), round(stats.fwer(0.25, 17), 4))
 check("bonferroni_alpha < 0.05", d["bonferroni_alpha"] < 0.05, d["bonferroni_alpha"])
 check("activation_n_eff reported as 30", d["activation_n_eff"] == 30)
@@ -614,7 +614,7 @@ check("that is ~350x MIN_SAMPLES_SLEEVE=4",
 
 
 # ===========================================================================
-section("12. Lessons — every claim carries its sample size")
+section("12. Lessons - every claim carries its sample size")
 # ===========================================================================
 check("lessons non-empty", len(out["lessons"]) > 0)
 check("all lessons are strings", all(isinstance(x, str) for x in out["lessons"]))
@@ -631,7 +631,7 @@ check("footnote states nothing was blocked",
 check("no lesson claims a block",
       not any("BLOCK" in x.upper() and "blocked" not in x for x in out["lessons"]))
 check("empty journal gives the honest empty lesson",
-      learn.learn({"journal": []})["lessons"] == ["No settled trades yet — nothing to learn from."])
+      learn.learn({"journal": []})["lessons"] == ["No settled trades yet - nothing to learn from."])
 check("empty journal still emits zero hard gates",
       learn.learn({"journal": []})["diagnostics"]["hard_gates_issued"] == 0)
 
@@ -665,7 +665,7 @@ check("stored None -> 1.0",
 
 
 # ===========================================================================
-section("14. record_lesson — journal format compatibility")
+section("14. record_lesson - journal format compatibility")
 # ===========================================================================
 st2 = {}
 learn.record_lesson(st2, {"symbol": "AAPL260731C00200000", "sleeve": "tech",
@@ -734,7 +734,7 @@ check("open trades excluded from n_trades", o_c["n_trades"] == 7, o_c["n_trades"
 
 
 # ===========================================================================
-section("16. Totality — learn() and friends never raise on garbage")
+section("16. Totality - learn() and friends never raise on garbage")
 # ===========================================================================
 GARBAGE = [None, {}, {"journal": None}, {"journal": []}, {"journal": [{}]},
            {"journal": [{"pnl_pct": "x"}]},
@@ -810,7 +810,7 @@ check("totality sweep: zero unhandled exceptions", not sweep_raises,
 
 
 # ===========================================================================
-section("17. Structural proof — no code path can return a blocking value")
+section("17. Structural proof - no code path can return a blocking value")
 # ===========================================================================
 # Belt and braces: brute-force a wide grid of gate_decision inputs through the
 # same clamp learn.py applies, and confirm the floor holds. This is the property
@@ -844,7 +844,7 @@ check("...with zero confidence", near(dec["confidence"], 0.0), dec["confidence"]
 
 
 # ===========================================================================
-section("18. Cross-module — main.py uses the new API, not the old one")
+section("18. Cross-module - main.py uses the new API, not the old one")
 # ===========================================================================
 import os as _os
 # These used to read /home/claude/spxbot/*.py -- a copy, not the code under
@@ -865,13 +865,13 @@ check("main.py applies the multiplier to size",
 rep_src = open(_os.path.join(_HERE, "reporting.py"), encoding="utf-8").read()
 
 # Check EXECUTABLE lines only. A naive substring scan matches the comment that
-# explains the fix and reports the bug as still present — the same false
+# explains the fix and reports the bug as still present - the same false
 # positive that a `-iname "*config.env*"` secret sweep hits on a patch filename.
 rep_code = "\n".join(ln for ln in rep_src.splitlines()
                      if not ln.lstrip().startswith("#"))
 check("reporting.py does not describe a sleeve as paused at w == 0",
       "w == 0.0" not in rep_code,
-      "with a 0.25 floor, 'paused' is unreachable — the dashboard would lie")
+      "with a 0.25 floor, 'paused' is unreachable - the dashboard would lie")
 check("reporting.py bar scale matches the new ceiling",
       "/ 1.8" not in rep_code, "bars would render at 14-69% of their width")
 check("reporting.py scales bars against the 1.25 ceiling",
@@ -880,7 +880,7 @@ check("reporting.py empty-state copy no longer promises pausing/gating",
       "get paused" not in rep_code and "get gated" not in rep_code,
       "the dashboard would advertise a capability the bot deliberately lacks")
 
-# _weight_style is the whole contract in one function — sweep it.
+# _weight_style is the whole contract in one function - sweep it.
 import reporting  # noqa: E402
 
 ws_bad = []

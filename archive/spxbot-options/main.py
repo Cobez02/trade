@@ -40,10 +40,10 @@ def _dt_sleep(seconds: float):
 
 # --- end-of-day flat rule ----------------------------------------------------
 # Connor's requirement: carry NOTHING overnight. Two cooperating limits:
-#   NO_NEW_ENTRY_MIN — stop opening once the remaining session is too short for a
+#   NO_NEW_ENTRY_MIN - stop opening once the remaining session is too short for a
 #     thesis to beat its own round-trip spread (entries may cost up to
 #     MAX_SPREAD_PCT going in and the same coming out).
-#   EOD_FLATTEN_MIN  — force-close everything still open inside this window.
+#   EOD_FLATTEN_MIN  - force-close everything still open inside this window.
 # Both are minutes-to-close, read from Alpaca's own clock rather than a hardcoded
 # 20:00 UTC, so early closes (July 3rd, Christmas Eve, etc.) flatten correctly
 # instead of leaving the book open through a 13:00 ET bell.
@@ -56,7 +56,7 @@ def minutes_to_close(broker: Broker):
 
     Both timestamps come off the SAME clock object, so a skewed container clock
     cannot make the bot think it has more (or less) runway than it really has.
-    Returns None on failure, and every caller treats None as 'do not act' —
+    Returns None on failure, and every caller treats None as 'do not act' -
     guessing here would either strand positions overnight or dump the book at noon.
     """
     try:
@@ -257,7 +257,7 @@ def _round_trip(sym, buy, sell, qty):
 # ---------------------------------------------------------------------------
 def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos_feat: dict):
     """Reconcile against Alpaca positions; apply exit rules; realize closed P&L.
-    Only runs while the market is open — closing orders are rejected otherwise."""
+    Only runs while the market is open - closing orders are rejected otherwise."""
     try:
         if not broker.clock().is_open:
             return
@@ -266,7 +266,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
     mins = minutes_to_close(broker)
     flatten = mins is not None and mins <= EOD_FLATTEN_MIN
     if flatten:
-        notes.append(f"EOD FLATTEN — {mins:.0f} min to close, closing every open position.")
+        notes.append(f"EOD FLATTEN - {mins:.0f} min to close, closing every open position.")
     raw_positions = broker.positions()
     # Split out credit-spread packages BEFORE any singles rule runs. Their
     # legs must never be flattened or stop-lossed individually: market-selling
@@ -280,7 +280,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
             continue
         try:
             if int(float(p.qty)) < 0:
-                notes.append(f"ORPHAN SHORT LEG {p.symbol} — excluded from "
+                notes.append(f"ORPHAN SHORT LEG {p.symbol} - excluded from "
                              f"singles exits; reconcile owns it")
                 continue
         except Exception:
@@ -305,7 +305,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
             reason = f"time-stop ({d} DTE)"
         elif flatten:
             # Last in the chain on purpose. If take-profit or a stop would have
-            # fired anyway, record THAT as the cause — the learner's lessons are
+            # fired anyway, record THAT as the cause - the learner's lessons are
             # only as good as the attribution, and labelling a genuine +45%
             # take-profit as "eod-flatten" would hide the signal that worked.
             # No spread check here: the whole point is to end the day flat, so a
@@ -316,7 +316,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
                 qty = abs(int(float(pos.qty)))
                 # Clear any resting protective stop FIRST. It reserves the
                 # contracts, so a close placed alongside it is rejected for
-                # insufficient quantity — and if both did fill we would not be
+                # insufficient quantity - and if both did fill we would not be
                 # flat, we would be short the contract.
                 for o in broker.open_sell_orders(sym):
                     try:
@@ -343,7 +343,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
                        f"DTE {feat.get('dte','?')}, score {feat.get('signal_score','?')}")
                 verdict = "WIN" if realized > 0 else "LOSS"
                 notes.append(f"CLOSED {sym} [{sleeve}] {verdict} {reason}, "
-                             f"P&L ${realized:+.0f} — entry was: {why}")
+                             f"P&L ${realized:+.0f} - entry was: {why}")
             except Exception as e:
                 notes.append(f"close-failed {sym}: {e}")
     # 2) reconcile state entries Alpaca no longer holds (expired/assigned/closed elsewhere)
@@ -359,7 +359,7 @@ def manage_exits(broker: Broker, state: dict, notes: list, sleeve_map: dict, pos
                 "exit_reason": "expired/closed", "pnl": None, "pnl_pct": None,
                 "closed_on": today(), "thesis": meta.get("thesis", ""),
             })
-            notes.append(f"RECONCILED {sym} [{meta.get('sleeve')}] — no longer held")
+            notes.append(f"RECONCILED {sym} [{meta.get('sleeve')}] - no longer held")
 
 
 def reconcile_assignments(broker: Broker, notes: list):
@@ -374,7 +374,7 @@ def reconcile_assignments(broker: Broker, notes: list):
         for p in broker.positions():
             sym = getattr(p, "symbol", "") or ""
             if parse_occ(sym):
-                continue                      # an option — not our problem here
+                continue                      # an option - not our problem here
             try:
                 q = int(float(p.qty))
             except Exception:
@@ -386,14 +386,14 @@ def reconcile_assignments(broker: Broker, notes: list):
                 broker.trading.submit_order(MarketOrderRequest(
                     symbol=sym, qty=abs(q), side=side,
                     time_in_force=TimeInForce.DAY))
-                notes.append(f"ASSIGNMENT REPAIR — {'sold' if q > 0 else 'covered'} "
+                notes.append(f"ASSIGNMENT REPAIR - {'sold' if q > 0 else 'covered'} "
                              f"{abs(q)} shares of {sym} at market (stock in an "
                              f"options-only book = a short leg was assigned)")
-                alerts.send_alert(f"ASSIGNMENT detected and repaired on {sym} — "
+                alerts.send_alert(f"ASSIGNMENT detected and repaired on {sym} - "
                                   "stock was in the book; verify the account.")
             except Exception as e:
                 notes.append(f"ASSIGNMENT REPAIR FAILED {sym}: {str(e)[:80]}")
-                alerts.send_alert(f"ASSIGNMENT REPAIR FAILED on {sym} — stock "
+                alerts.send_alert(f"ASSIGNMENT REPAIR FAILED on {sym} - stock "
                                   "is sitting in the account; manual check needed.")
     except Exception:
         pass
@@ -457,7 +457,7 @@ def manage_spreads(broker: Broker, state: dict, notes: list):
         state["spreads_closed"] = closed_log[-100:]
         learn.record_lesson(state, row)
         notes.append(f"SPREAD CLOSED {rec.get('underlying')} "
-                     f"{rec.get('short_strike'):g}/{rec.get('long_strike'):g}P — "
+                     f"{rec.get('short_strike'):g}/{rec.get('long_strike'):g}P - "
                      f"P&L {'$%+.0f' % pnl if pnl is not None else 'unknown'} "
                      f"(credit {rec['credit']:.2f})")
 
@@ -487,7 +487,7 @@ def manage_spreads(broker: Broker, state: dict, notes: list):
         if not credit or credit <= 0:
             credit = 0.25 * p["width"]
             notes.append(f"SPREAD ADOPTED with assumed credit {credit:.2f} "
-                         f"(25% of width) — exits will fire early, never late")
+                         f"(25% of width) - exits will fire early, never late")
         book[k] = {"short": p["short"], "long": p["long"], "qty": p["qty"],
                    "underlying": p["underlying"], "width": p["width"],
                    "short_strike": p["short_strike"], "long_strike": p["long_strike"],
@@ -503,7 +503,7 @@ def manage_spreads(broker: Broker, state: dict, notes: list):
         q = broker.spread_quote(p["short"], p["long"])
         if not q:
             notes.append(f"SPREAD {p['underlying']} {p['short_strike']:g}/"
-                         f"{p['long_strike']:g}P — no usable net quote this run")
+                         f"{p['long_strike']:g}P - no usable net quote this run")
             continue
         d = exitrules.spread_decide(
             rec["credit"], max(q["mid"], 0.01), engine.spread_dte(p["expiry_ymd"]),
@@ -529,13 +529,13 @@ def manage_spreads(broker: Broker, state: dict, notes: list):
         except Exception:
             pass
         if dup:
-            notes.append(f"SPREAD CLOSE already working for {k} — not duplicating")
+            notes.append(f"SPREAD CLOSE already working for {k} - not duplicating")
             continue
         try:
             limit = max(round(q["ask"] + 0.02, 2), 0.01)
             broker.close_spread(p["short"], p["long"], p["qty"], limit)
             notes.append(f"SPREAD CLOSING {p['underlying']} {p['short_strike']:g}/"
-                         f"{p['long_strike']:g}P x{p['qty']} — {d['reason']} "
+                         f"{p['long_strike']:g}P x{p['qty']} - {d['reason']} "
                          f"(limit {limit:.2f})")
         except Exception as e:
             notes.append(f"SPREAD CLOSE FAILED {k}: {str(e)[:90]}")
@@ -546,10 +546,10 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
 
     The mirror of the singles' timing edge: the singles path refuses to BUY
     when the quote is above model value; this path SELLS defined risk in that
-    exact condition — implied at least SPREADS_RICH_PTS above the Yang-Zhang
+    exact condition - implied at least SPREADS_RICH_PTS above the Yang-Zhang
     realized forecast, trend not falling, and the package priced liquidly."""
-    # KILL SWITCH — default OFF as of the 2026-07-31 backtest (see
-    # BACKTEST_REPORT.md): six years of NBBO history, honest fills — the
+    # KILL SWITCH - default OFF as of the 2026-07-31 backtest (see
+    # BACKTEST_REPORT.md): six years of NBBO history, honest fills - the
     # sleeve never trades at shipped settings, and every parameter
     # neighborhood tested NEGATIVE (PF 0.81-0.98; stress -$1.1k to -$1.4k)
     # in a window that EXCLUDES 2018 and Mar-2020, the worst known regimes
@@ -585,12 +585,12 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
                 continue
             ind = broker.indicators(und) or {}
             if ind.get("trend_up") is False:
-                notes.append(f"SPREAD SKIP {und} — downtrend (no bull puts "
+                notes.append(f"SPREAD SKIP {und} - downtrend (no bull puts "
                              f"into a falling market)")
                 continue
             cand = broker.find_put_spread(und, spot, float(fc))
             if not cand:
-                notes.append(f"SPREAD SKIP {und} — no liquid strike pair in "
+                notes.append(f"SPREAD SKIP {und} - no liquid strike pair in "
                              f"{engine.SPREADS_DTE_MIN}-{engine.SPREADS_DTE_MAX} DTE")
                 continue
             s_sym, l_sym = cand["short"].symbol, cand["long"].symbol
@@ -602,36 +602,36 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
                     lq["mid"], spot, float(cand["short"].strike_price),
                     cand["dte"] / 365.0, is_call=False)
             if iv is None:
-                notes.append(f"SPREAD SKIP {und} — implied vol unreadable")
+                notes.append(f"SPREAD SKIP {und} - implied vol unreadable")
                 continue
             if iv - fc < engine.SPREADS_RICH_PTS:
-                notes.append(f"SPREAD NO EDGE {und} — implied {iv*100:.1f}% vs "
+                notes.append(f"SPREAD NO EDGE {und} - implied {iv*100:.1f}% vs "
                              f"forecast {fc*100:.1f}% (need +{engine.SPREADS_RICH_PTS*100:.0f}pts)")
                 continue
             q = broker.spread_quote(s_sym, l_sym)
             if not q:
-                notes.append(f"SPREAD SKIP {und} — no two-sided net quote")
+                notes.append(f"SPREAD SKIP {und} - no two-sided net quote")
                 continue
             credit = round(q["mid"] - 0.01, 2)     # sell just under net mid
             width = cand["width"]
             if credit <= 0 or credit / width < engine.SPREADS_MIN_CREDIT_FRAC:
-                notes.append(f"SPREAD SKIP {und} — credit {credit:.2f} is "
+                notes.append(f"SPREAD SKIP {und} - credit {credit:.2f} is "
                              f"{credit/width*100 if width else 0:.0f}% of width "
                              f"(floor {engine.SPREADS_MIN_CREDIT_FRAC*100:.0f}%)")
                 continue
             net_cost = (q["ask"] - q["bid"]) / credit if credit else 9.9
             if net_cost > engine.SPREADS_NET_COST_FRAC:
-                notes.append(f"SPREAD SCREENED OUT {und} — package round trip "
+                notes.append(f"SPREAD SCREENED OUT {und} - package round trip "
                              f"{net_cost*100:.1f}% of credit (cap "
                              f"{engine.SPREADS_NET_COST_FRAC*100:.0f}%)")
                 continue
             max_loss = (width - credit) * 100
             if max_loss > engine.SPREADS_MAX_LOSS:
-                notes.append(f"SPREAD SKIP {und} — max loss ${max_loss:.0f} > "
+                notes.append(f"SPREAD SKIP {und} - max loss ${max_loss:.0f} > "
                              f"${engine.SPREADS_MAX_LOSS:.0f}")
                 continue
             if committed + max_loss > engine.SPREADS_ALLOCATION:
-                notes.append(f"SPREAD BUDGET STOP {und} — ${committed:.0f} "
+                notes.append(f"SPREAD BUDGET STOP {und} - ${committed:.0f} "
                              f"committed + ${max_loss:.0f} > "
                              f"${engine.SPREADS_ALLOCATION:.0f} allocation")
                 continue
@@ -649,7 +649,7 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
             }
             committed += max_loss
             notes.append(f"OPENED SPREAD {und} {cand['short'].strike_price}/"
-                         f"{cand['long'].strike_price}P exp {cand['expiry_ymd']} — "
+                         f"{cand['long'].strike_price}P exp {cand['expiry_ymd']} - "
                          f"credit {credit:.2f} on {width:g} wide (max loss "
                          f"${max_loss:.0f}, RT {net_cost*100:.1f}% of credit, "
                          f"IV {iv*100:.1f}% vs forecast {fc*100:.1f}%)")
@@ -660,7 +660,7 @@ def try_spread_entries(broker: Broker, state: dict, notes: list):
 def sweep_entry_buys(broker: Broker, notes: list):
     """Cancel every resting entry BUY once the flatten window opens.
 
-    Orders are TIF=DAY, so an unfilled buy dies at the bell anyway — but a fill
+    Orders are TIF=DAY, so an unfilled buy dies at the bell anyway - but a fill
     in the 19:55-20:00 gap (after the last flatten pass, before expiry) would
     carry a position overnight, which the flat rule exists to forbid. During
     normal hours a resting buy is legitimate (waiting at the gated price); in
@@ -678,7 +678,7 @@ def sweep_entry_buys(broker: Broker, notes: list):
             try:
                 broker.cancel(o.id)
                 notes.append(f"FLATTEN SWEEP cancelled resting buy {o.symbol} "
-                             f"x{o.qty} — no new positions inside the flatten window")
+                             f"x{o.qty} - no new positions inside the flatten window")
             except Exception as e:
                 notes.append(f"flatten sweep failed {o.symbol}: {str(e)[:60]}")
     except Exception:
@@ -687,7 +687,7 @@ def sweep_entry_buys(broker: Broker, notes: list):
 
 def broker_paper() -> bool:
     """Paper unless SPXBOT_LIVE=1. The live switch is an env flip + new keys in
-    the repo secrets — never a code edit on go-live day."""
+    the repo secrets - never a code edit on go-live day."""
     return os.environ.get("SPXBOT_LIVE") != "1"
 
 
@@ -696,7 +696,7 @@ def ensure_broker_stops(broker: Broker, state: dict, notes: list):
 
     The watcher places these too, but the watcher is a process that can die and
     a container that can be reclaimed. Doing it here as well means the floor is
-    established by whatever runs — and if only the hourly cron ever runs, every
+    established by whatever runs - and if only the hourly cron ever runs, every
     position still has a stop Alpaca evaluates continuously rather than one this
     code re-checks sixty minutes from now.
 
@@ -730,11 +730,11 @@ def ensure_broker_stops(broker: Broker, state: dict, notes: list):
             px = exitrules.broker_stop_price(entry, None)
             broker.rest_stop(p.symbol, qty, px)
             notes.append(f"STOP ARMED {p.symbol} x{qty} @ ${px:.2f} "
-                         f"({exitrules.HARD_STOP_PCT:+.0%} from ${entry:.2f}) — "
+                         f"({exitrules.HARD_STOP_PCT:+.0%} from ${entry:.2f}) - "
                          f"holds whether or not anything of ours is running")
         except Exception as e:
             notes.append(f"stop-arm failed {p.symbol}: {str(e)[:70]}")
-            alerts.send_alert(f"STOP-ARM FAILED on {p.symbol} — position may "
+            alerts.send_alert(f"STOP-ARM FAILED on {p.symbol} - position may "
                               "be unprotected; check the account now.")
 
 
@@ -829,7 +829,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
             for s in signals.get(sleeve, [])
         ]
     if not market_open:
-        notes.append("Market closed — signals recorded, no orders placed this run.")
+        notes.append("Market closed - signals recorded, no orders placed this run.")
         return
 
     # Nothing is carried overnight, so anything opened now must be closed by the
@@ -841,20 +841,20 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
     # also fire a full entry scan on ordinary days, churning trades at 16:45 UTC
     # for no reason other than that the cron existed.
     if os.environ.get("SPXBOT_FLATTEN_ONLY") == "1":
-        notes.append("Flatten-only run — exits managed, entry scan skipped.")
+        notes.append("Flatten-only run - exits managed, entry scan skipped.")
         return
 
     mins_left = minutes_to_close(broker)
     if mins_left is not None and mins_left <= NO_NEW_ENTRY_MIN:
-        notes.append(f"NO NEW ENTRIES — {mins_left:.0f} min to close "
+        notes.append(f"NO NEW ENTRIES - {mins_left:.0f} min to close "
                      f"(cutoff {NO_NEW_ENTRY_MIN}); positions will be flattened at "
                      f"{EOD_FLATTEN_MIN} min.")
         return
 
     # Names at peak retail attention are a veto on NEW buys in either
     # direction: crowd lottery demand inflates exactly those premia, and this
-    # bot's only order type is buying premium. Defensive only — it removes
-    # candidates, never creates or inverts one — and fail-open: a dead feed
+    # bot's only order type is buying premium. Defensive only - it removes
+    # candidates, never creates or inverts one - and fail-open: a dead feed
     # returns {} and the Tier-1 screens still stand. Fetched once per run.
     crowd = crowd_veto()
     if crowd:
@@ -874,12 +874,12 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 break
             und, direction = sig["underlying"], sig["direction"]
             if und in crowd:
-                notes.append(f"CROWD VETO {und} {direction} [{sleeve}] — {crowd[und]}")
+                notes.append(f"CROWD VETO {und} {direction} [{sleeve}] - {crowd[und]}")
                 continue
             if already_positioned(state, sleeve, und, direction):
                 continue
             if UNDERLYING_COOLDOWN and traded_today(state, und):
-                notes.append(f"COOLDOWN {und} [{sleeve}] — already traded today")
+                notes.append(f"COOLDOWN {und} [{sleeve}] - already traded today")
                 continue
             if (sleeve, und) in pending:      # a working order already exists for this name
                 continue
@@ -895,7 +895,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 notes.append(f"no liquid contract for {und} [{sleeve}]")
                 continue
             # Judge each signal on the 2-3 nearest liquid strikes and each
-            # strike's tightest reading, not one strike at one instant — the
+            # strike's tightest reading, not one strike at one instant - the
             # indicative feed's spreads flutter (day-1: 11%->33%->10% on one
             # contract across consecutive hours), so a single wide read is
             # often staleness, not truth. Near misses get re-sampled twice,
@@ -916,7 +916,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 # An earlier version synthesised a bid/ask here; every
                 # downstream decision then computed on an invented spread.
                 # "No usable quote" is a correct and useful answer. Skip.
-                notes.append(f"{und}: no two-sided quote on any candidate — skipped")
+                notes.append(f"{und}: no two-sided quote on any candidate - skipped")
                 continue
             ask, bid = q["ask"], q["bid"]
             if not ask or ask <= 0:
@@ -951,7 +951,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 if bars is not None and len(bars) >= 30:
                     closes = [float(c) for c in bars["close"].tolist()]
                     # HAR-RV forecast first (the conditional forecast the
-                    # research phase built — Jensen-corrected, gap-inclusive);
+                    # research phase built - Jensen-corrected, gap-inclusive);
                     # trailing Yang-Zhang only as the fallback ESTIMATE when
                     # the fit is unusable. The distinction is the alpha: HAR
                     # conditions on the 1/5/22-day cascade instead of assuming
@@ -979,7 +979,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 spot=spot, strike=strike, is_call=is_call, dte=dte,
                 bid=bid, ask=ask, vol=ref_vol, closes=closes, day=dt.date.today())
             if not verdict["ok"]:
-                notes.append(f"SCREENED OUT {und} {direction} [{sleeve}] — "
+                notes.append(f"SCREENED OUT {und} {direction} [{sleeve}] - "
                              + "; ".join(verdict["failed"]))
                 continue
 
@@ -998,7 +998,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                                            bid, ask, is_call=is_call, side="buy")
                 if not te["favorable"]:
                     notes.append(
-                        f"NO EDGE {und} {direction} [{sleeve}] — implied "
+                        f"NO EDGE {und} {direction} [{sleeve}] - implied "
                         f"{(iv*100 if iv else float('nan')):.1f}% vs forecast "
                         f"{ref_vol*100:.1f}%; {te['reason']}")
                     continue
@@ -1024,23 +1024,23 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                 # Never round a discouraged trade back up to 1 contract: that
                 # would silently discard the learner's only lever.
                 if mult < 1.0 or weight < 1.0:
-                    notes.append(f"SIZED OUT {und} {direction} [{sleeve}] — "
+                    notes.append(f"SIZED OUT {und} {direction} [{sleeve}] - "
                                  f"×{mult} learned, ×{weight} sleeve"
                                  + (f" ({'; '.join(why)})" if why else ""))
                 else:
                     # Every rejection must say so. This branch was silent for
-                    # three days and TSLA — which passed every quality gate
-                    # with 1.4-2.2% scanned spreads — kept vanishing from the
+                    # three days and TSLA - which passed every quality gate
+                    # with 1.4-2.2% scanned spreads - kept vanishing from the
                     # notes without a verdict: its contracts simply cost more
                     # than the per-trade cap. An unexplained absence reads as
                     # a bug; a stated reason is a design fact Connor can see.
-                    notes.append(f"TOO RICH {und} {direction} [{sleeve}] — one "
+                    notes.append(f"TOO RICH {und} {direction} [{sleeve}] - one "
                                  f"contract ${limit_px * 100:,.0f} vs per-trade "
                                  f"budget ${size_budget:,.0f} (cap ${per_trade:,.0f})")
                 continue
             cost = qty * limit_px * 100
             if cost > cash or cost > budget_left:
-                notes.append(f"BUDGET STOP {und} {direction} [{sleeve}] — "
+                notes.append(f"BUDGET STOP {und} {direction} [{sleeve}] - "
                              f"${cost:,.0f} vs cash ${cash:,.0f} / "
                              f"day budget left ${budget_left:,.0f}")
                 continue
@@ -1065,7 +1065,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
             # anything.
             ok, why_not = broker_clear_to_open(broker, contract.symbol, und)
             if not ok:
-                notes.append(f"RACE BLOCKED {und} {direction} [{sleeve}] — {why_not}")
+                notes.append(f"RACE BLOCKED {und} {direction} [{sleeve}] - {why_not}")
                 continue
             try:
                 tag = build_tag(sleeve, feat)   # fingerprint -> recoverable from Alpaca
@@ -1085,7 +1085,7 @@ def open_new_trades(broker: Broker, state: dict, signals: dict, api_key, secret,
                     f"(${cost:.0f}, sleeve ×{weight}, learned ×{mult}"
                     + (f", vol edge {feat.get('vol_edge_pts'):+.1f}pts" if feat.get("vol_edge_pts") else "")
                     + (f", round trip {rt*100:.1f}%" if rt else "")
-                    + f") — {sig['thesis']}")
+                    + f") - {sig['thesis']}")
             except Exception as e:
                 notes.append(f"order-failed {und} [{sleeve}]: {e}")
 
@@ -1096,12 +1096,12 @@ def notify_settled_trades(state: dict, journal: list) -> int:
 
     The journal (rebuilt from Alpaca's fills every run) is the authoritative
     settled-trade record, so this catches every exit no matter who executed
-    it — the hourly run, the tick watcher, or a flatten pass. Watcher exits
+    it - the hourly run, the tick watcher, or a flatten pass. Watcher exits
     therefore notify at the NEXT hourly run (up to ~60 min later); the trade
     itself was protected in real time, only the receipt waits.
 
     First run with this code: seed the seen-set from the existing journal
-    WITHOUT sending — otherwise deploy day would replay every historical
+    WITHOUT sending - otherwise deploy day would replay every historical
     trade as 22 phone messages.
 
     Dedup key includes pnl so a same-day re-entry of one contract (which the
@@ -1135,7 +1135,7 @@ def notify_settled_trades(state: dict, journal: list) -> int:
             emoji = "\U0001F7E2" if pnl >= 0 else "\U0001F534"
             alerts.send_alert(
                 f"{emoji} CLOSED {j.get('symbol')} [{j.get('sleeve', '?')}] "
-                f"{'+' if pnl >= 0 else ''}${pnl:,.0f}{pct_s} — "
+                f"{'+' if pnl >= 0 else ''}${pnl:,.0f}{pct_s} - "
                 f"{j.get('exit_reason', 'closed')}", prefix="")
             sent += 1
         except Exception:
@@ -1151,7 +1151,7 @@ def send_eod_summary(broker: Broker, state: dict) -> None:
 
     Fires at most once per date, from whichever run first observes the market
     closed on a day the bot actually saw a session (equity_history got
-    today's row). A 0-trade day still reports — silence and discipline look
+    today's row). A 0-trade day still reports - silence and discipline look
     identical on a phone unless the wrap says which one happened.
     """
     try:
@@ -1236,7 +1236,7 @@ def run():
                      f"${state['account_baseline']:.0f}), SPY {state['benchmark_start_price']}")
 
     # Rebuild the learning journal + open-position features from Alpaca's order
-    # history — this is what lets the bot run with NO external state store.
+    # history - this is what lets the bot run with NO external state store.
     journal, pos_feat = rebuild_from_alpaca(broker)
     # Reconstruct OPEN positions from Alpaca every run (stateless-safe): this keeps
     # duplicate-entry guards and per-sleeve caps/budgets correct without a state file.
@@ -1263,10 +1263,10 @@ def run():
     sleeve_map = {s: f.get("sleeve", "unknown") for s, f in pos_feat.items()}
     # Two run modes for the continuous-watcher architecture (default = neither,
     # i.e. a full run, exactly as the hourly cron has always behaved):
-    #   ENTRIES_ONLY — the watcher fires this every 5 min. It owns ENTRIES; the
+    #   ENTRIES_ONLY - the watcher fires this every 5 min. It owns ENTRIES; the
     #     watcher's own 0.25s loop owns exits/stops, so this skips exit
     #     management to avoid two processes reaching for the same sell.
-    #   NO_ENTRIES  — lets a run do exits/housekeeping WITHOUT placing entries,
+    #   NO_ENTRIES  - lets a run do exits/housekeeping WITHOUT placing entries,
     #     the flip that makes the watcher the sole entry-placer for live.
     entries_only = os.environ.get("SPXBOT_ENTRIES_ONLY") == "1"
     no_entries   = os.environ.get("SPXBOT_NO_ENTRIES") == "1"
@@ -1284,7 +1284,7 @@ def run():
         # Never let a short order history pass silently: it shrinks the
         # learner's training data and the only symptom is a settled-trade
         # count that quietly goes DOWN.
-        notes.append("ORDER HISTORY INCOMPLETE — journal may be missing older "
+        notes.append("ORDER HISTORY INCOMPLETE - journal may be missing older "
                      f"round trips ({getattr(broker, 'order_fetch_error', '?')})")
     if journal:                                    # Alpaca is authoritative for settled trades
         state["journal"] = journal
@@ -1320,12 +1320,12 @@ def run():
             sp = q.get("spread_pct")
             if sp is not None and sp > MAX_SPREAD_PCT:
                 broker.cancel(o.id)
-                notes.append(f"CANCELLED working order {o.symbol} qty={o.qty} — "
+                notes.append(f"CANCELLED working order {o.symbol} qty={o.qty} - "
                              f"spread widened to {sp*100:.0f}% (> {MAX_SPREAD_PCT*100:.0f}%)")
         except Exception:
             pass
 
-    # names that already have a WORKING (unfilled) order — don't re-submit them
+    # names that already have a WORKING (unfilled) order - don't re-submit them
     pending = set()
     for o in broker.open_orders():
         coid = getattr(o, "client_order_id", "") or ""
@@ -1362,8 +1362,8 @@ if __name__ == "__main__":
         raise
     except Exception as e:
         # The alert goes out BEFORE the re-raise: a run that dies after this
-        # line still told the phone. Alert failure cannot mask the crash —
+        # line still told the phone. Alert failure cannot mask the crash -
         # send_alert never raises.
-        alerts.send_alert(f"RUN CRASHED: {type(e).__name__}: {str(e)[:150]} — "
+        alerts.send_alert(f"RUN CRASHED: {type(e).__name__}: {str(e)[:150]} - "
                           "check the account; resting stops are the floor.")
         raise

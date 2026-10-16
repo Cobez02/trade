@@ -1,5 +1,5 @@
 """
-ProjectX gateway adapter — TopstepX (Topstep Combine / XFA).             [UNTESTED]
+ProjectX gateway adapter - TopstepX (Topstep Combine / XFA).             [UNTESTED]
 
 Written from the public gateway docs (gateway.docs.projectx.com) without an
 account. Topstep sells API access as an add-on (~$14.50/mo with their code as

@@ -1,4 +1,4 @@
-# Pre-registration — refinement batch, 2026-09-09
+# Pre-registration - refinement batch, 2026-09-09
 
 Written BEFORE the batch runs. One refinement, two parameters, then no more tuning on this data.
 

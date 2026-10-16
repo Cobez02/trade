@@ -1,5 +1,5 @@
 """
-Portfolio test — combine the sleeves' daily P&L and score the combination.
+Portfolio test - combine the sleeves' daily P&L and score the combination.
 
   python -m scripts.portfolio --holdout-from 2024-01-01 --out research/<date>-portfolio \
       name1=path/to/daily.csv name2=path/to/daily.csv ...
@@ -43,7 +43,7 @@ def main(argv=None):
         P[n] = f["pnl"].reindex(days).fillna(0.0); L[n] = f["low"].reindex(days).fillna(0.0)
     P["combined"] = P[list(frames)].sum(axis=1); L["combined"] = L[list(frames)].sum(axis=1)
     rules = R.PRESETS[args.preset]
-    lines = [f"# Portfolio — {', '.join(frames)}", ""]
+    lines = [f"# Portfolio - {', '.join(frames)}", ""]
     lines += ["## Per sleeve and combined (all sessions)", "", "| sleeve | sessions | net | $/day | sd | Sharpe | t |", "|---|---|---|---|---|---|---|"]
     for c in list(frames) + ["combined"]:
         s = stats(P[c]); lines.append(f"| {c} | {s['sessions']} | {s['net']} | {s['mean_day']} | {s['sd_day']} | {s['sharpe']} | {s['t']} |")
@@ -63,7 +63,7 @@ def main(argv=None):
     mc0 = R.monte_carlo(rules, [x - st.mean(comb) for x in comb], n=args.mc, intraday_low_frac=min(frac, 1.0))
     mch = R.monte_carlo(rules, P.loc[ho, "combined"].tolist(), n=args.mc, intraday_low_frac=min(frac, 1.0)) if ho.sum() > 30 else {"pass": None}
     days_700 = int((L["combined"] <= -700).sum()); days_1000 = int((L["combined"] <= -1000).sum())
-    lines += ["", f"## Prop-rule Monte Carlo — {R.describe(rules)}", "",
+    lines += ["", f"## Prop-rule Monte Carlo - {R.describe(rules)}", "",
               f"- combined, all years: **P(pass) {mc['pass']:.1%}** (median {mc['median_days']} days); zero-edge control {mc0['pass']:.1%}",
               f"- combined, holdout only: **P(pass) {mch['pass']:.1%}**" if mch["pass"] is not None else "- holdout too short for MC",
               f"- sessions with combined intraday low <= -$700: **{days_700}**; <= -$1,000: **{days_1000}**", ""]
@@ -79,7 +79,7 @@ def main(argv=None):
         "zero sessions below -$1,000": days_1000 == 0,
         "max pairwise correlation < 0.5": max_corr < 0.5,
     }
-    lines += ["## Pre-registered gates", ""] + [f"- {'PASS' if v else 'FAIL'} — {k}" for k, v in gates.items()]
+    lines += ["## Pre-registered gates", ""] + [f"- {'PASS' if v else 'FAIL'} - {k}" for k, v in gates.items()]
     lines += ["", f"**Verdict: {'PASS' if all(gates.values()) else 'FAIL'}** ({sum(gates.values())}/{len(gates)} gates)"]
     os.makedirs(args.out, exist_ok=True)
     open(os.path.join(args.out, "portfolio_report.md"), "w").write("\n".join(lines))

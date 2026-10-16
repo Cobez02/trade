@@ -21,7 +21,7 @@ def replay(entry, path, spread=0.05, label=""):
     return (path[-1]-entry)/entry, "held to end", len(path)
 
 print("="*74)
-print("A. NVDA260731P00200000 — the +92% winner (entry 3.15 -> 6.05)")
+print("A. NVDA260731P00200000 - the +92% winner (entry 3.15 -> 6.05)")
 print("="*74)
 path = [3.15,3.4,3.9,4.57,5.1,5.6,6.05,5.9]   # ran up, small fade at the end
 pct, why, t = replay(3.15, path)
@@ -31,7 +31,7 @@ print(f"  -> trail keeps {(pct-0.45)*3.15*100:+.0f} dollars more on 1 contract")
 
 print()
 print("="*74)
-print("B. SLB260731C00053000 — the -51% loser (entry 0.65 -> 0.32, 33% spread)")
+print("B. SLB260731C00053000 - the -51% loser (entry 0.65 -> 0.32, 33% spread)")
 print("="*74)
 for sp in (0.05, 0.15, 0.33):
     path = [0.65,0.60,0.55,0.50,0.46,0.42,0.38,0.34,0.32]
@@ -41,7 +41,7 @@ print(f"  actual hourly-checked outcome: -50.8% at the final tick")
 
 print()
 print("="*74)
-print("C. Whipsaw — dips to -28% then recovers to +40%")
+print("C. Whipsaw - dips to -28% then recovers to +40%")
 print("="*74)
 path = [1.00,0.90,0.80,0.72,0.85,1.10,1.40]
 pct, why, t = replay(1.00, path)
@@ -50,7 +50,7 @@ print("  -> a -30% stop should NOT fire on a -28% dip; it must ride to the trail
 
 print()
 print("="*74)
-print("D. Spike-and-collapse — +80% then straight back to entry")
+print("D. Spike-and-collapse - +80% then straight back to entry")
 print("="*74)
 path = [1.00,1.30,1.60,1.80,1.55,1.20,1.00]
 pct, why, t = replay(1.00, path)
@@ -69,7 +69,7 @@ cases = [
 ]
 for name, q, age in cases:
     d = E.decide(1.00, q or {}, None, age_s=age)
-    verdict = "OK" if d["action"]=="hold" else "FAIL — WOULD HAVE SOLD"
+    verdict = "OK" if d["action"]=="hold" else "FAIL - WOULD HAVE SOLD"
     print(f"  {name:<18} action={d['action']:<6} {d['reason'][:38]:<40}{verdict}")
 
 print()
@@ -78,11 +78,11 @@ print("F. Spread-aware stop thresholds")
 print("="*74)
 for sp in (0.0,0.05,0.10,0.20,0.33,0.60,2.0):
     print(f"  spread {sp*100:>5.0f}%  ->  stop fires at {E.effective_stop(sp):+.1%}")
-print(f"  hard floor: {E.HARD_STOP_PCT:+.0%} — relief can never exceed it")
+print(f"  hard floor: {E.HARD_STOP_PCT:+.0%} - relief can never exceed it")
 
 print()
 print("="*74)
-print("G. Liquidity deterioration — the exit that spread relief must not swallow")
+print("G. Liquidity deterioration - the exit that spread relief must not swallow")
 print("="*74)
 # Every position clears a 15% spread gate on entry, so a wide market later is
 # news. But wide-and-winning is not the same trade as wide-and-losing.
@@ -102,7 +102,7 @@ print("  -> a wide WINNER is left to the trail; only a wide LOSER is dumped")
 
 print()
 print("="*74)
-print("H. No-market rejection — an absent bid is not a cheap contract")
+print("H. No-market rejection - an absent bid is not a cheap contract")
 print("="*74)
 for name, bid, ask in [("0.01 x 0.40 (phantom)",0.01,0.40),
                        ("0.18 x 0.22 (real, tight)",0.18,0.22),
@@ -110,11 +110,11 @@ for name, bid, ask in [("0.01 x 0.40 (phantom)",0.01,0.40),
     mid=(bid+ask)/2
     ok,why = E.quote_ok({"bid":bid,"ask":ask})
     print(f"  {name:<26} usable={str(ok):<6}{why}")
-print(f"  threshold: {E.NO_MARKET_SPREAD:.0%} wide — beyond it we hold, not dump")
+print(f"  threshold: {E.NO_MARKET_SPREAD:.0%} wide - beyond it we hold, not dump")
 
 print()
 print("="*74)
-print("I. Confirmation window — ticks AND wall-clock, unless it is a collapse")
+print("I. Confirmation window - ticks AND wall-clock, unless it is a collapse")
 print("="*74)
 conf = [
     ("1 tick, 0.0s, at threshold",      1, 0.0, -0.31, -0.30, False),
@@ -133,7 +133,7 @@ print(f"  need {E.CONFIRM_TICKS} ticks AND {E.CONFIRM_MIN_SEC}s; "
 # ---------------------------------------------------------------------------
 print()
 print("=" * 74)
-print("OVERNIGHT EXEMPTION (SPXBOT_OVERNIGHT) — off by default, gated when on")
+print("OVERNIGHT EXEMPTION (SPXBOT_OVERNIGHT) - off by default, gated when on")
 print("=" * 74)
 import importlib as _il
 import os as _os

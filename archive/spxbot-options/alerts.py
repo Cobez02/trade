@@ -1,4 +1,4 @@
-"""Phone alerting for live issues — CallMeBot WhatsApp + dead-man's switch.
+"""Phone alerting for live issues - CallMeBot WhatsApp + dead-man's switch.
 
 Design rules, in order of importance:
   1. An alert failure must NEVER break trading. Every function here swallows
@@ -8,17 +8,17 @@ Design rules, in order of importance:
      paper runs and tests need no configuration.
   3. CallMeBot is an unofficial personal bridge (owner-chosen channel,
      reliability caveat disclosed 8/7): treat delivery as best-effort. The
-     dead-man's switch (healthchecks.io) is the guaranteed layer — it alerts
+     dead-man's switch (healthchecks.io) is the guaranteed layer - it alerts
      on SILENCE, which no sender-side code can do for itself.
   4. Messages are truncated hard: WhatsApp chops long texts and the URL has
      length limits; an alert's job is "look at the account now", not detail.
 
 Channels, any or all (unset = skipped):
-  SPXBOT_ALERT_WEBHOOK — any webhook URL taking POST JSON. The payload carries
+  SPXBOT_ALERT_WEBHOOK - any webhook URL taking POST JSON. The payload carries
       BOTH {"content": ...} (Discord's field) and {"text": ...} (generic/Slack
       -compatible); receivers ignore the key they don't use.
-  SPXBOT_TG_TOKEN + SPXBOT_TG_CHAT — first-class Telegram (official bot API).
-  SPXBOT_WA_PHONE + SPXBOT_WA_APIKEY — CallMeBot WhatsApp (unofficial bridge;
+  SPXBOT_TG_TOKEN + SPXBOT_TG_CHAT - first-class Telegram (official bot API).
+  SPXBOT_WA_PHONE + SPXBOT_WA_APIKEY - CallMeBot WhatsApp (unofficial bridge;
       kept for the day their capacity opens, owner's original channel pick).
 """
 from __future__ import annotations
@@ -64,7 +64,7 @@ def send_alert(msg: str, prefix: str = "SPXBOT: ") -> bool:
         try:
             # Discord sits behind Cloudflare, which rejects python-urllib's
             # default User-Agent with 403 (error 1010). Found 2026-08-12:
-            # every runner-side send had been silently dropped since deploy —
+            # every runner-side send had been silently dropped since deploy -
             # the never-raise design hid it. A real UA fixes delivery.
             req = urllib.request.Request(
                 hook, data=json.dumps({"content": text, "text": text}).encode(),
@@ -78,7 +78,7 @@ def send_alert(msg: str, prefix: str = "SPXBOT: ") -> bool:
 
 
 def ping_deadman() -> None:
-    """Tell healthchecks.io this run happened. A missed ping IS the alert —
+    """Tell healthchecks.io this run happened. A missed ping IS the alert -
     it is how a silently dead scheduler (Thursday's failure) reaches a phone."""
     url = os.environ.get("SPXBOT_HEALTHCHECK_URL", "").strip()
     if not url:

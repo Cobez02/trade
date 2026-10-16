@@ -1,11 +1,11 @@
-# Pre-registration — sleeves 2 & 3, regime switch, portfolio (2026-09-09, written before the run)
+# Pre-registration - sleeves 2 & 3, regime switch, portfolio (2026-09-09, written before the run)
 
 Same data (SPY/QQQ SIP minute bars 2016-01-04..2026-09-05), same costs (MES/MNQ-equivalent), same
 constant $200 risk per trade, same holdout split (2024-01-01). The holdout is already contaminated by
 batches 1-3 and is treated as such: a pass here is a reason to run real MNQ/ES data, not to buy anything.
 
 ## Sleeves
-- S1  noise-area intraday momentum, QQQ, band exit — ALREADY RUN (batch 2: PF 1.13, holdout PF 1.10).
+- S1  noise-area intraday momentum, QQQ, band exit - ALREADY RUN (batch 2: PF 1.13, holdout PF 1.10).
       Used as-is from research/2026-09-07-lots10/QQQ-as-MNQ. SPY excluded from the portfolio: it failed
       in all three prior batches (decided now, before this run).
 - S2  last-half-hour momentum (Gao-Han-Li-Zhou): one trade at 14:30 CT, sign of the first-half-hour
@@ -20,7 +20,7 @@ batches 1-3 and is treated as such: a pass here is a reason to run real MNQ/ES d
 - S3: PF >= 1.1, daily-P&L correlation with S1 and S2 below 0.3 (market-neutral).
 - Regime: fewer sessions, higher Sharpe on the holdout for S1; unclear for S2/S3.
 - Combined equal-weight portfolio {S1, S2 QQQ, S3}: Sharpe roughly sqrt(3) x the average sleeve Sharpe
-  if correlations are low — i.e. ~0.9-1.1, which would still be BELOW the gate.
+  if correlations are low - i.e. ~0.9-1.1, which would still be BELOW the gate.
 
 ## Gates (scripts/portfolio.py evaluates exactly these; no subset selection)
   combined holdout Sharpe >= 1.2;  combined holdout t >= 1.5;  P(pass) all-years >= 65%;

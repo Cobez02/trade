@@ -3,10 +3,10 @@ Credit-spreads sleeve test harness. No network, no broker. Run: python3 test_spr
 
 What must never regress, in order of how expensive it would be live:
 
-  * the SIGN CONVENTION — Alpaca mleg treats a negative limit as a credit;
+  * the SIGN CONVENTION - Alpaca mleg treats a negative limit as a credit;
     flipping it turns "collect $60" into "pay $60" on every open
-  * leg pairing — mis-grouping the book turns defined risk into naked shorts
-  * the exemptions — a flatten or a stop that touches ONE leg of a spread
+  * leg pairing - mis-grouping the book turns defined risk into naked shorts
+  * the exemptions - a flatten or a stop that touches ONE leg of a spread
     unmakes its loss bound at the worst possible moment
 """
 from __future__ import annotations
@@ -20,7 +20,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 def P(sym, qty):
     return types.SimpleNamespace(symbol=sym, qty=str(qty), avg_entry_price="1.0")
@@ -30,7 +30,7 @@ EXP2 = (dt.date.today() + dt.timedelta(days=15)).strftime("%y%m%d")
 
 # --------------------------------------------------------------------------
 print("=" * 74)
-print("1. detect_spreads — pairing is exact or it is nothing")
+print("1. detect_spreads - pairing is exact or it is nothing")
 print("=" * 74)
 pk, mem = E.detect_spreads([P(f"SPY{EXP}P00690000", -1), P(f"SPY{EXP}P00687000", 1)])
 check("short put + lower long put pair into one package",
@@ -95,7 +95,7 @@ check("garbage ymd -> None (never raises)",
 # --------------------------------------------------------------------------
 print()
 print("=" * 74)
-print("3. spread_decide — the three documented exits, in priority order")
+print("3. spread_decide - the three documented exits, in priority order")
 print("=" * 74)
 d = R.spread_decide(0.60, 0.29, 6)
 check("value at 48% of credit -> take-profit", d["action"] == "exit" and "take-profit" in d["reason"])
@@ -126,7 +126,7 @@ check("garbage battery: never raises, never exits blind", bad == 0)
 # --------------------------------------------------------------------------
 print()
 print("=" * 74)
-print("4. THE SIGN CONVENTION — a credit is a NEGATIVE mleg limit, exactly once")
+print("4. THE SIGN CONVENTION - a credit is a NEGATIVE mleg limit, exactly once")
 print("=" * 74)
 class RecTrading:
     def __init__(self): self.reqs = []
@@ -156,7 +156,7 @@ check("CLOSE: short leg BUY_TO_CLOSE, long leg SELL_TO_CLOSE",
 # --------------------------------------------------------------------------
 print()
 print("=" * 74)
-print("5. rebuild_from_alpaca — spread orders can NEVER poison the singles journal")
+print("5. rebuild_from_alpaca - spread orders can NEVER poison the singles journal")
 print("=" * 74)
 def O(sym, side, coid="", oclass="", filled="1", price="1.0", at="2026-07-30T15:00:00Z"):
     return types.SimpleNamespace(symbol=sym, side=side, client_order_id=coid,
@@ -185,7 +185,7 @@ print()
 
 print()
 print("=" * 74)
-print("6. Spreads kill switch — entries gated, management never")
+print("6. Spreads kill switch - entries gated, management never")
 print("=" * 74)
 import os as _os, importlib as _imp
 _os.environ["SPXBOT_SPREADS"] = "0"

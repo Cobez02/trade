@@ -1,11 +1,11 @@
 """
-Tradovate REST adapter — the execution path for MyFundedFutures, Tradeify and
+Tradovate REST adapter - the execution path for MyFundedFutures, Tradeify and
 other Tradovate-cleared prop accounts.                              [UNTESTED]
 
 Written from Tradovate's public API reference (api.tradovate.com/#tag/Orders)
 without an account to run against. What you must do before trusting it:
   1. Get API credentials from Tradovate (an API "app" gives you cid + sec;
-     access requires the API add-on on your account — check the current fee
+     access requires the API add-on on your account - check the current fee
      and whether your prop firm enables it; some require a written request).
   2. Point BASE at the demo host first, run with qty=1, watch every fill.
   3. Confirm the contract symbol format your account expects ("MESZ6").
@@ -119,7 +119,7 @@ class TradovateBroker(Broker):
         return OrderResult(str(j.get("orderId", "")), "orderId" in j, str(j))
 
     def place_bracket(self, symbol, side, qty, stop_px, tag) -> OrderResult:
-        """Entry market order with a linked (OSO) protective stop — atomic, preferred."""
+        """Entry market order with a linked (OSO) protective stop - atomic, preferred."""
         j = self._post("order/placeoso", {
             "accountSpec": self.account_spec, "accountId": self.account_id,
             "action": "Buy" if side > 0 else "Sell", "symbol": symbol, "orderQty": qty,

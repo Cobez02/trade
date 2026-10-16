@@ -1,15 +1,15 @@
-"""Override study — "if there's confidence in a run, go over what the bot
+"""Override study - "if there's confidence in a run, go over what the bot
 wants." PRE-REGISTERED 2026-08-04 (Connor-approved) before running.
 
 Question: the production sim blocks entries when the timing-edge gate says
 the option is priced against us (implied rich vs forecast). Connor proposes
 overriding that gate when the market is visibly running. This study replays
-EXACTLY those blocked trades — same signals, same strike selection, same
-spread/premium/cap gates, same pessimistic fills and production exits — and
+EXACTLY those blocked trades - same signals, same strike selection, same
+spread/premium/cap gates, same pessimistic fills and production exits - and
 takes ONLY the entries the edge gate refused:
 
   Cell A: every edge-blocked entry (the full override).
-  Cell B: edge-blocked entries on "run" days — underlying moved >= 1.0% from
+  Cell B: edge-blocked entries on "run" days - underlying moved >= 1.0% from
           prior close in the signal's direction on entry day (the proposal).
   Cell C: same with a >= 1.5% run threshold.
 

@@ -1,4 +1,4 @@
-# Defined-Risk Credit-Spreads Sleeve — Design (v1, pre-build)
+# Defined-Risk Credit-Spreads Sleeve - Design (v1, pre-build)
 
 Owner approval: Connor, 2026-07-30 ("research and build it").
 Status: DESIGN APPROVED. Overnight exemption GRANTED (Connor, 2026-07-30):
@@ -9,13 +9,13 @@ open. Long options still flatten daily. Build proceeds per §7.
 
 The audit gap: the documented persistent edge in options markets is on the
 SELLER side (variance risk premium), and this bot is long-single-leg by
-construction. Our vol machinery is already two-sided — `timing_edge` computes
+construction. Our vol machinery is already two-sided - `timing_edge` computes
 implied vs forecast and today acts only on "implied BELOW forecast → buy."
 This sleeve acts on the mirror: implied RICH vs forecast → sell a
 defined-risk credit spread. Same model, other side, maximum loss fixed at
 entry by the long leg. Post-2012 caveat honored: naive short-vol decayed
 (research note: Sharpe +0.74 pre-2012 → −0.12 after); what retains support
-is FILTERED, DEFINED-RISK, MANAGED structures — which is what this is.
+is FILTERED, DEFINED-RISK, MANAGED structures - which is what this is.
 
 ## 2. Structure (v1 deliberately narrow)
 
@@ -40,11 +40,11 @@ is FILTERED, DEFINED-RISK, MANAGED structures — which is what this is.
   k = 1.1 (a ~20-25-delta proxy computed without greeks, which the free feed
   does not provide). Width $2–3 (SPY) / $3–5 (QQQ).
 * Credit floor: net credit ≥ 20% of width, measured on NET quotes (both
-  legs' NBBO-proxy mids; the package must also pass a net-spread cost gate —
+  legs' NBBO-proxy mids; the package must also pass a net-spread cost gate -
   the two-leg analogue of the 4% rule, threshold 8% of credit).
 * Max loss per spread = width − credit ≤ $400. This is the number the
   per-trade cap governs for spreads (the cap caps LOSS, not premium).
-* Earnings screen: not holding through underlying-level binary events —
+* Earnings screen: not holding through underlying-level binary events -
   moot for SPY/QQQ (no earnings), kept as an assertion for any future
   single-name extension. Ex-dividend screen: exit/never-hold short ITM puts
   across ex-div dates (early-assignment magnet).
@@ -54,7 +54,7 @@ is FILTERED, DEFINED-RISK, MANAGED structures — which is what this is.
 * Take-profit: buy the spread back at 50% of the credit received. This is
   the management rule with the strongest large-sample support.
 * Stop: buy back if the spread's net value reaches 2.0× credit received
-  (loss = 1× credit) — before max loss, always.
+  (loss = 1× credit) - before max loss, always.
 * Time exit: off by 2 DTE regardless (gamma week and assignment risk are
   not our trade).
 * Assignment handling: if a short leg is ever assigned (stock appears in
@@ -64,7 +64,7 @@ is FILTERED, DEFINED-RISK, MANAGED structures — which is what this is.
 * Watcher: manages the PACKAGE net value (both legs quoted, net mid),
   same confirmation-window discipline as singles. The resting disaster
   floor has no mleg stop-order equivalent at Alpaca; the floor for spreads
-  IS the structure itself — max loss is capped at entry, which is a
+  IS the structure itself - max loss is capped at entry, which is a
   stronger guarantee than any resting order.
 
 ## 5. Sizing and cadence
@@ -74,17 +74,17 @@ is FILTERED, DEFINED-RISK, MANAGED structures — which is what this is.
 * Expected shape (must be said out loud): HIGH win rate, NEGATIVE skew.
   Many small wins (~half the credit each), occasional losses of ~1× credit,
   rare gap losses toward max. The learner must judge this sleeve on long
-  windows — its per-trade win rate is flattering by construction and its
+  windows - its per-trade win rate is flattering by construction and its
   tail arrives late. The existing n_eff clustering correction applies.
 * Evidence rate: ~2–4 settled spreads/week added to the journal.
 
-## 6. THE OPEN DECISION — overnight holding (Connor's call)
+## 6. THE OPEN DECISION - overnight holding (Connor's call)
 
 The evidence-backed version of this trade needs DAYS in the position
 (5–10 DTE at entry, exits at 50% credit / 2 DTE): theta is the product and
 it accrues mostly overnight. An intraday-only variant obeys the current
 flat-by-close rule but pays two legs' costs twice a day for a fraction of
-the decay, and has no credible evidence base — building it would be
+the decay, and has no credible evidence base - building it would be
 building a worse trade to satisfy a rule written for a different risk.
 
 The rule's PURPOSE was: no unbounded, unwatched risk while nobody is
@@ -94,12 +94,12 @@ spread inverts that premise: its worst case is fixed at entry
 monitoring can be outrun because the loss is already bounded by the long
 leg. The proposal is therefore a NARROW exemption: defined-risk spreads
 (and only they) may carry overnight, with max loss ≤ $400 each, ≤ 2 open,
-everything else — long options — still flattens daily. Weekend carry
+everything else - long options - still flattens daily. Weekend carry
 included (that is where 2 of 7 nights' theta lives), or excluded at
 Connor's preference with a Friday time-exit.
 
 If declined: the sleeve ships as intraday-only with the honest label
-"unsupported by evidence, cost-disadvantaged, expected ~zero edge" — or
+"unsupported by evidence, cost-disadvantaged, expected ~zero edge" - or
 does not ship, which is the more truthful alternative.
 
 ## 7. Build plan (after §6 is decided)

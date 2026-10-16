@@ -8,7 +8,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 def O(sym, side, oclass="", oid="x", qty="1"):
     return types.SimpleNamespace(symbol=sym, side=side, order_class=oclass,
@@ -24,7 +24,7 @@ class FakeBroker:
         self.cancelled.append(oid)
 
 print("=" * 70)
-print("1. sweep_entry_buys — buys die, protection and packages survive")
+print("1. sweep_entry_buys - buys die, protection and packages survive")
 print("=" * 70)
 b = FakeBroker([
     O("AAPL260814C00230000", "OrderSide.BUY", oid="buy1"),
@@ -51,7 +51,7 @@ check("cancel failure is noted, never raised",
 
 print()
 print("=" * 70)
-print("2. broker_paper — live only on an explicit env flip")
+print("2. broker_paper - live only on an explicit env flip")
 print("=" * 70)
 os.environ.pop("SPXBOT_LIVE", None)
 check("default is paper", M.broker_paper() is True)
@@ -63,7 +63,7 @@ os.environ.pop("SPXBOT_LIVE", None)
 
 print()
 print("=" * 70)
-print("3. wiring — the sweep runs in the flatten path of run()")
+print("3. wiring - the sweep runs in the flatten path of run()")
 print("=" * 70)
 src = open("main.py").read()
 seg = src[src.index("def run():"):]

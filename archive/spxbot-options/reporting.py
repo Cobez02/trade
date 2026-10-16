@@ -17,8 +17,8 @@ SLEEVE_LABEL = {
 # Retired sleeves stay on the dashboard: their history is part of the record,
 # and a row that silently vanished would read as a broken feed, not a decision.
 RETIRED_NOTE = {
-    "wsb":  "retired — entry signal replaced by the crowd veto",
-    "flow": "retired — OI skew is unsigned; no signal without open/close data",
+    "wsb":  "retired - entry signal replaced by the crowd veto",
+    "flow": "retired - OI skew is unsigned; no signal without open/close data",
 }
 
 # dark-mode palette (validated slots)
@@ -166,7 +166,7 @@ def _learning_html(state: dict) -> str:
     lessons = lr.get("lessons", []) or []
     n = lr.get("n_trades", 0)
     if not n:
-        return ('<div class="empty">The learner is still gathering data — it forms '
+        return ('<div class="empty">The learner is still gathering data - it forms '
                 'conclusions once trades settle. Weights start neutral; sleeves and '
                 'setups with evidence against them are sized down, never switched '
                 'off, so they keep producing the evidence that could clear them.</div>')
@@ -176,12 +176,12 @@ def _learning_html(state: dict) -> str:
     act = lr.get("diagnostics", {}).get("activation_n_eff", 30)
     if isinstance(n_eff, (int, float)):
         if n_eff < act:
-            hdr = (f"{n} settled trades over {n_days} session(s) — effective sample "
+            hdr = (f"{n} settled trades over {n_days} session(s) - effective sample "
                    f"{n_eff:.1f} after same-day clustering. Sizing stays neutral "
                    f"until {act}.")
             hdr_col = MUTED
         else:
-            hdr = (f"{n} settled trades over {n_days} session(s) — effective sample "
+            hdr = (f"{n} settled trades over {n_days} session(s) - effective sample "
                    f"{n_eff:.1f}. Sizing is active.")
             hdr_col = INK2
     else:
@@ -194,7 +194,7 @@ def _learning_html(state: dict) -> str:
         frac, col, status = _weight_style(st.get("weight", 1.0), nn)
         if s in RETIRED_SLEEVES:
             # Weight is still learned from the sleeve's history but no longer
-            # sizes anything — entry skips retired sleeves entirely.
+            # sizes anything - entry skips retired sleeves entirely.
             col, status = MUTED, "retired"
         ne = st.get("n_eff")
         eff_txt = f" · n<sub>eff</sub> {ne:.1f}" if isinstance(ne, (int, float)) and nn else ""
@@ -241,14 +241,14 @@ def build_dashboard(state: dict) -> str:
         _tile("S&amp;P 500 (SPY)", _pct(k["spx_ret"]), "buy &amp; hold benchmark", _color_for(k["spx_ret"])),
         _tile("Alpha vs S&amp;P", _pct(k["alpha"]), verdict, verdict_color),
         _tile("Open positions", str(k["open_n"]), f"{k['closed_n']} closed", INK),
-        _tile("Win rate", ("—" if k["win_rate"] is None else f"{k['win_rate']*100:.0f}%"),
+        _tile("Win rate", ("-" if k["win_rate"] is None else f"{k['win_rate']*100:.0f}%"),
               f"{k['realized_n']} settled trades", INK),
     ])
 
     # sleeve table
     srows = ""
     for r in sleeve_rows(state):
-        wr = "—" if r["win_rate"] is None else f"{r['win_rate']*100:.0f}%"
+        wr = "-" if r["win_rate"] is None else f"{r['win_rate']*100:.0f}%"
         badge = (f' <span style="color:{MUTED};font-size:11px" title='
                  f'"{html.escape(RETIRED_NOTE.get(r["sleeve"], "retired"))}">'
                  f'· retired</span>') if r.get("retired") else ""
@@ -285,7 +285,7 @@ def build_dashboard(state: dict) -> str:
     crows = ""
     for c in reversed(state.get("closed", [])[-12:]):
         pnl = c.get("pnl")
-        pnl_s = "—" if pnl is None else _money(pnl)
+        pnl_s = "-" if pnl is None else _money(pnl)
         col = INK2 if pnl is None else _color_for(pnl)
         crows += f'''<tr>
           <td class="mono">{html.escape(str(c.get('underlying','')))} {str(c.get('type','')).upper()} ${c.get('strike','')}</td>
@@ -304,7 +304,7 @@ def build_dashboard(state: dict) -> str:
 
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPX-Beater — options paper trading</title>
+<title>SPX-Beater - options paper trading</title>
 <style>
   :root {{ color-scheme: dark; }}
   * {{ box-sizing: border-box; }}
@@ -371,7 +371,7 @@ def build_dashboard(state: dict) -> str:
   </div>
 
   <div class="card">
-    <h2>Strategy sleeves — which method is winning</h2>
+    <h2>Strategy sleeves - which method is winning</h2>
     <table>
       <tr><th>Sleeve</th><th style="text-align:right">Open</th><th style="text-align:right">Realized P&amp;L</th>
       <th style="text-align:right">Return</th><th style="text-align:right">Trades</th><th style="text-align:right">Win %</th></tr>
@@ -380,7 +380,7 @@ def build_dashboard(state: dict) -> str:
   </div>
 
   <div class="card">
-    <h2>Recursive learning — what's working, what's gated</h2>
+    <h2>Recursive learning - what's working, what's gated</h2>
     {_learning_html(state)}
   </div>
 
@@ -408,7 +408,7 @@ def build_dashboard(state: dict) -> str:
 
   <div class="disc">Experimental / educational paper-trading system. Trades are simulated on an Alpaca
   paper account with no real money. Signals are generated autonomously from public sentiment, news
-  keywords, technical indicators, and options open-interest — none of this is investment advice, and
+  keywords, technical indicators, and options open-interest - none of this is investment advice, and
   paper-trading results do not reflect real-world fills, slippage, or liquidity.</div>
 </div></body></html>'''
 
@@ -417,12 +417,12 @@ def build_digest(state: dict) -> str:
     k = compute_kpis(state)
     lines = []
     verdict = "BEATING" if k["alpha"] >= 0 else "TRAILING"
-    wr_str = "—" if k["win_rate"] is None else f"{k['win_rate']*100:.0f}%"
-    lines.append(f"SPX-Beater daily digest — {dt.date.today().isoformat()}")
+    wr_str = "-" if k["win_rate"] is None else f"{k['win_rate']*100:.0f}%"
+    lines.append(f"SPX-Beater daily digest - {dt.date.today().isoformat()}")
     lines.append("")
     lines.append(f"Portfolio: {_money(k['equity'])}  ({_pct(k['bot_ret'])})")
     lines.append(f"S&P 500:   {_pct(k['spx_ret'])}  buy & hold")
-    lines.append(f"Alpha:     {_pct(k['alpha'])}  — {verdict} the S&P 500")
+    lines.append(f"Alpha:     {_pct(k['alpha'])}  - {verdict} the S&P 500")
     lines.append(f"Open: {k['open_n']} positions | Closed: {k['closed_n']} | Win rate: {wr_str}")
     lines.append("")
     lines.append("By sleeve:")

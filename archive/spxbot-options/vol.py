@@ -7,7 +7,7 @@ against, so the measurement IS the strategy, not a detail of it.
 
 ★ THE ONE THING TO GET RIGHT: PARKINSON AND GARMAN-KLASS ARE GAP-BLIND.
 They and Rogers-Satchell measure OPEN-TO-CLOSE variation only and cannot see the
-overnight gap — roughly a fifth of daily variation for US equities (Hansen &
+overnight gap - roughly a fifth of daily variation for US equities (Hansen &
 Lunde). Measured bias against a known vol path, 2,600 days, in annualized vol
 points (note 08 §11.2): parkinson -2.16, garman_klass -2.45, rogers_satchell
 -2.47, yang_zhang -0.62 (the only near-unbiased one), close_to_close -0.01
@@ -22,9 +22,9 @@ garman_klass stay as DIAGNOSTICS (genuinely lower-variance, and correct for
 intraday-only exposure) but warn when chosen through the dispatcher.
 
 Units: every vol-returning function returns ANNUALIZED DECIMAL volatility
-(0.20 == 20%) on 252 days — never variance, never percent. HAR is the labelled
+(0.20 == 20%) on 252 days - never variance, never percent. HAR is the labelled
 exception: it eats and returns DAILY VARIANCE, because variance is what is
-additive in time. Nothing returns NaN — insufficient or impossible data returns
+additive in time. Nothing returns NaN - insufficient or impossible data returns
 None, so misuse raises a TypeError at the point of use instead of silently
 sizing a position to nan.
 
@@ -47,7 +47,7 @@ _OHLC = ("open", "high", "low", "close")
 
 # These three see the session only, never the gap. Bias measured vs true
 # full-day vol in note 08 §11.2 (2,600-day simulation, 15% of daily variance
-# arriving overnight — real single names gap MORE than that).
+# arriving overnight - real single names gap MORE than that).
 GAP_BLIND_METHODS = frozenset({"parkinson", "garman_klass", "rogers_satchell"})
 GAP_BLIND_BIAS_VOL_POINTS = (2.2, 2.5)
 
@@ -78,7 +78,7 @@ def _prepare(df: pd.DataFrame | None, window: int) -> pd.DataFrame | None:
     Rejects, rather than repairs, anything meaning the data is WRONG rather than
     merely awkward: missing column, non-positive price, high < low, or fewer than
     window+1 usable rows (yang_zhang and close_to_close need the prior close). A
-    NaN row is dropped instead — that is how a feed says "no bar", and dropping
+    NaN row is dropped instead - that is how a feed says "no bar", and dropping
     it just lengthens the overnight gap the way a weekend does, which YZ handles.
     An inf price can only be upstream corruption, so it rejects the frame.
     high < max(open, close) is CLAMPED: a single-venue-tape consistency artifact,
@@ -171,7 +171,7 @@ def _last(df, window: int, method: str) -> float | None:
 @_never_raises(None)
 def close_to_close(df: pd.DataFrame, window: int = 21) -> float | None:
     """Plain historical vol: stdev of daily log close returns, annualized.
-    Unbiased but noisy — ~2.7x the RMSE of Yang-Zhang (§11.2). Assumes clean
+    Unbiased but noisy - ~2.7x the RMSE of Yang-Zhang (§11.2). Assumes clean
     closes and i.i.d. returns; ddof=1 subtracts the sample mean, so drift is
     removed empirically. Needs window+1 bars. None on any invalid input.
     """
@@ -184,7 +184,7 @@ def parkinson(df: pd.DataFrame, window: int = 21) -> float | None:
     ★ GAP-BLIND: it sees intraday range only, so on equities it under-reports
     full-day vol by ~2.2 annualized vol points (measured, §11.2). Differenced
     against an implied vol that DOES price the overnight, it fabricates a
-    permanent 2-point "options are rich" signal — never feed it to a VRP or
+    permanent 2-point "options are rich" signal - never feed it to a VRP or
     cone-percentile signal, use yang_zhang. It is legitimate for exactly one
     thing: variance you will only ever be exposed to intraday. Also assumes zero
     drift and continuous monitoring; discretely observed extremes understate the
@@ -202,7 +202,7 @@ def garman_klass(df: pd.DataFrame, window: int = 21) -> float | None:
     under-reporting full-day vol by ~2.5 annualized vol points on equities
     (measured, §11.2). Same trap as parkinson: differenced against implied vol it
     manufactures a fake variance risk premium about the size of the premium you
-    are hunting. Use yang_zhang for anything held overnight — which an options
+    are hunting. Use yang_zhang for anything held overnight - which an options
     position always is. Assumes zero drift; the efficiency gain is eaten by that
     bias in practice (1.44x RMSE ratio, §11.2). None on invalid input.
     """
@@ -225,12 +225,12 @@ def yang_zhang(df: pd.DataFrame, window: int = 21) -> float | None:
 
     The only estimator here that measures FULL-DAY variance, which is the
     variance an overnight options position is actually exposed to. Measured bias
-    -0.6 vol points with 2.7x lower RMSE than close-to-close (§11.2) — it wins by
+    -0.6 vol points with 2.7x lower RMSE than close-to-close (§11.2) - it wins by
     modelling the gap, not through variance reduction. Assumes one session per
     row, split/dividend-adjusted prices, and independent overnight and intraday
     components (the paper's derivation of k). It is a BACKWARD-LOOKING window
     estimator, not a forecast: after a spike yang_zhang(10) overstates the next
-    10 days — use har_fit for that, or blend a short and a long window. Needs
+    10 days - use har_fit for that, or blend a short and a long window. Needs
     window+1 bars. None on invalid input.
     """
     return _last(df, window, "yang_zhang")
@@ -257,7 +257,7 @@ def realized_vol(df: pd.DataFrame, window: int = 21,
     return _last(df, window, method)
 
 
-# --- 2. HAR-RV (Corsi 2009) — the one place we work in DAILY VARIANCE -------
+# --- 2. HAR-RV (Corsi 2009) - the one place we work in DAILY VARIANCE -------
 def _clean_rv(rv_series) -> pd.Series:
     """Coerce to a positive, finite DAILY VARIANCE series. Empty on garbage."""
     s = pd.Series(rv_series, dtype="float64") if not isinstance(rv_series, pd.Series) \
@@ -267,7 +267,7 @@ def _clean_rv(rv_series) -> pd.Series:
     if len(s) and float(s.median()) > (3.0 ** 2) / TRADING_DAYS:
         # 0.0357 daily variance == 300% annualized. Almost always means the
         # caller passed annualized variance or vol instead of daily variance.
-        warnings.warn("vol: rv_series median implies >300% annualized vol — "
+        warnings.warn("vol: rv_series median implies >300% annualized vol - "
                       "har_* expects DAILY VARIANCE (e.g. yz**2/252), not "
                       "annualized vol or variance.", RuntimeWarning, stacklevel=3)
     return s
@@ -305,14 +305,14 @@ def har_fit(rv_series, non_overlapping: bool = True) -> dict | None:
     """Fit HAR-RV by OLS on LOG daily variance, one-day-ahead target.
 
     Returns {"beta": [b0, bd, bw, bm], "n", "r2", "resid_std", "non_overlapping"}
-    or None. beta and resid_std are in LOG-VARIANCE units — har_forecast owns the
+    or None. beta and resid_std are in LOG-VARIANCE units - har_forecast owns the
     conversion back to annualized vol, Jensen included. r2 is in-sample on log RV
     (Corsi's S&P 500 range is 0.52-0.71; a much higher number means you are
     fitting overlapping windows, not RV).
 
     Numerically safe by construction: solved with numpy.linalg.lstsq (SVD), never
     a normal-equation inverse, and returns None when lstsq reports the design
-    rank-deficient (< 4) — which is what a constant or duplicated RV series
+    rank-deficient (< 4) - which is what a constant or duplicated RV series
     produces. Requires >= 60 usable observations.
     """
     X = har_features(rv_series, non_overlapping=non_overlapping)
@@ -361,7 +361,7 @@ def har_forecast(model: dict, rv_series, horizon: int = 1) -> float | None:
     ★ JENSEN CORRECTION. The fit is in logs, so exp(mu) is the MEDIAN, not the
     mean. Each day is converted with exp(mu_h + sigma_h^2 / 2), where sigma_h^2 is
     the accumulated h-step forecast variance from the model's MA representation.
-    Omitting this — the most commonly dropped line in retail HAR code — biases
+    Omitting this - the most commonly dropped line in retail HAR code - biases
     every forecast LOW, the dangerous direction for anyone ever short volatility.
 
     Also clips the daily-variance forecast to [min(rv), 3*max(rv)] of the history
@@ -424,14 +424,14 @@ def vol_cone(df: pd.DataFrame, windows: Iterable[int] = (5, 10, 21, 42, 63),
     """Volatility cone: the historical distribution of realized vol by horizon.
 
     Returns {window: {"p10".."p90", "min", "max", "n_obs", "n_eff"}}, with
-    percentiles on 0-100. Windows with too little history are OMITTED — use
+    percentiles on 0-100. Windows with too little history are OMITTED - use
     .get(window), not [window].
 
     ★ READ n_eff BEFORE ACTING ON THIS. The percentiles come from OVERLAPPING
     windows, so n_obs is a fiction: consecutive 63-day windows share 62 days. The
     honest sample size is n_eff = n_obs / window, so two years of daily bars gives
     a 63-day cone an n_eff of about 8. The 21-day p90 in the reference study
-    carried a bootstrap 95% CI 2.18 VOL POINTS WIDE (§11.2) — the same order as
+    carried a bootstrap 95% CI 2.18 VOL POINTS WIDE (§11.2) - the same order as
     the entire edge the bot is hunting. Call cone_ci() and refuse the trade when
     your threshold sits inside the band.
 
@@ -443,7 +443,7 @@ def vol_cone(df: pd.DataFrame, windows: Iterable[int] = (5, 10, 21, 42, 63),
     pcts = [float(p) for p in percentiles]
     pcts = [p for p in pcts if math.isfinite(p) and 0.0 <= p <= 100.0]
     if pcts and max(pcts) <= 1.0:
-        warnings.warn("vol.vol_cone: percentiles are 0-100, not 0-1 — "
+        warnings.warn("vol.vol_cone: percentiles are 0-100, not 0-1 - "
                       f"{pcts} will be read as sub-1st-percentile.",
                       RuntimeWarning, stacklevel=2)
     out: dict[int, dict] = {}
@@ -468,7 +468,7 @@ def cone_percentile(df: pd.DataFrame, window: int, value: float,
     Returns 0-100: the percent of historical `window`-day realized-vol
     observations strictly below `value`. Round-trips against vol_cone with the
     same method/gap. Requires >= 20 observations, else None. The percentile is
-    only as certain as the cone behind it — "IV is at the 90th percentile" off an
+    only as certain as the cone behind it - "IV is at the 90th percentile" off an
     n_eff of 8 is not a signal. See cone_ci and n_eff.
     """
     if not isinstance(value, (int, float, np.floating, np.integer)) or isinstance(value, bool):
@@ -491,7 +491,7 @@ def cone_ci(df: pd.DataFrame, window: int, percentile: float,
     Block length = window, the minimum honest choice: overlapping window
     estimates are autocorrelated for exactly `window` days, so an i.i.d. bootstrap
     understates the interval by roughly sqrt(window). In the reference run the
-    21-day p90 came out 0.2528 with a CI of [0.2420, 0.2638] — 2.18 vol points
+    21-day p90 came out 0.2528 with a CI of [0.2420, 0.2638] - 2.18 vol points
     wide on 2,579 nominal observations (n_eff = 122). If your entry threshold is
     inside that interval you do not have a signal, you have a sample. Requires
     >= 3*window observations.
@@ -534,7 +534,7 @@ def vrp(implied_vol: float, forecast_vol: float) -> float | None:
 
     Watch the horizon too: VIX is 30 CALENDAR days annualized on 365, realized vol
     here is 21 TRADING days on 252, and mismatching them is a permanent 1-2 vol
-    point bias. Returns None (not NaN) if either input is missing or non-finite —
+    point bias. Returns None (not NaN) if either input is missing or non-finite -
     the path that catches har_forecast() having returned None.
     """
     a, b = _as_vol(implied_vol), _as_vol(forecast_vol)
@@ -571,7 +571,7 @@ def iex_noise_bias(n_bars_per_day: int, noise_std: float,
     M=78 -> 0.0198 (+2.0). ★ That is the vol equivalent of the VARIANCE bias in
     isolation, which is the note's convention and the right number for comparing
     sampling schemes. It is NOT the additive inflation of a measurement on a name
-    that actually has vol, because variances add and the square root is concave —
+    that actually has vol, because variances add and the square root is concave -
     pass true_vol for that instead (at a 20% level: +0.49 points at 1-minute,
     +0.10 at 5-minute).
     """
@@ -594,7 +594,7 @@ def recommended_sampling_minutes() -> int:
 
     Three independent reasons, any one of which is sufficient (note 08 §C.2-3):
     1. NOISE BIAS. At M=390 with 1bp single-venue noise the RV bias is +4.4
-       annualized vol points, against +2.0 at M=78 (see iex_noise_bias) — bigger
+       annualized vol points, against +2.0 at M=78 (see iex_noise_bias) - bigger
        than any edge documented anywhere in the research. The 5-minute residual is
        roughly a constant level shift, so it largely cancels in a HAR intercept
        and in RV-vs-own-average comparisons, but NOT when you compare RV to IV.
@@ -609,7 +609,7 @@ def recommended_sampling_minutes() -> int:
     Liu, Patton & Sheppard (2015) tested 400+ realized measures across 31 assets
     and could not significantly beat 5-minute RV, so there is no upside to being
     clever here either. Subsample (average the five 5-minute grids at offsets 0-4)
-    — it is free and reduces variance.
+    - it is free and reduces variance.
     """
     return 5
 
@@ -626,7 +626,7 @@ def daily_variance(df) -> "pd.Series | None":
     The gap term is not optional decoration: the research phase measured
     gap-blind estimators (Parkinson, plain GK) 2.2-2.5 vol points LOW on this
     watchlist, and a low-biased forecast makes every option look expensive to
-    buy and every spread look safe to sell — both in the losing direction.
+    buy and every spread look safe to sell - both in the losing direction.
     Returns a pandas Series indexed like df, or None on unusable input.
     """
     need = {"open", "high", "low", "close"}
@@ -654,8 +654,8 @@ def forecast_vol(df, horizon: int = 5) -> float | None:
     forecast: HAR (Corsi) conditions on the 1/5/22-day cascade instead of
     assuming yesterday's level persists, and the research phase's fit carries
     the Jensen correction that retail HAR implementations habitually drop
-    (omitting it biases forecasts LOW — the dangerous direction for a book
-    that now sells spreads). Returns None whenever the fit is not usable —
+    (omitting it biases forecasts LOW - the dangerous direction for a book
+    that now sells spreads). Returns None whenever the fit is not usable -
     callers fall back to trailing realized vol and say so.
     """
     v = daily_variance(df)

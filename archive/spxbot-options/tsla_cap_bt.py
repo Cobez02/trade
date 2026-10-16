@@ -1,12 +1,12 @@
-"""TSLA cap study — Connor's question, 2026-07-31: does raising or removing
+"""TSLA cap study - Connor's question, 2026-07-31: does raising or removing
 MAX_PREMIUM_PER_TRADE improve the singles sleeve ON TSLA specifically?
 
 Method: the production sim (sim_singles, unmodified) replayed on TSLA over the
-full window at three cap levels. The cap is monkeypatched per cell —
+full window at three cap levels. The cap is monkeypatched per cell -
 backtest.py on disk keeps the production mirror, and cell 1 IS production.
 Note honestly: the sim rejects a day when the single target strike (~1.5% OTM)
 exceeds the cap, while the live engine's budget-fit scan can substitute a
-cheaper strike — so the $600 cell here UNDERSTATES what live cap-600 trades.
+cheaper strike - so the $600 cell here UNDERSTATES what live cap-600 trades.
 The comparison still answers the direction question: do the trades that a
 higher cap ADMITS make money or lose it?
 """

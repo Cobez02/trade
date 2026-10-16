@@ -1,5 +1,5 @@
 """
-Risk engine — the part of the bot that actually decides whether it survives.
+Risk engine - the part of the bot that actually decides whether it survives.
 
 The signal proposes; this module disposes. It is deliberately dumb and
 deterministic, and every decision is explainable in one line, because on a
@@ -7,13 +7,13 @@ prop account the failure mode is not "the strategy was wrong", it is "the
 bot kept trading after the day was already lost".
 
 Four gates, in order:
-  1. session gate    — inside RTH, before the entry cutoff, not a holiday
-  2. daily gate      — today's realised+unrealised P&L above the kill level and
+  1. session gate    - inside RTH, before the entry cutoff, not a holiday
+  2. daily gate      - today's realised+unrealised P&L above the kill level and
                        below the profit cap (consistency-rule protection)
-  3. buffer gate     — distance to the trailing-drawdown floor; size shrinks
+  3. buffer gate     - distance to the trailing-drawdown floor; size shrinks
                        as the buffer shrinks and entries stop when a single
                        stop-out could touch the floor
-  4. sizing          — contracts = floor(risk / (stop_points * point_value)),
+  4. sizing          - contracts = floor(risk / (stop_points * point_value)),
                        never rounded up, capped by the firm's contract limit
 
 All dollar figures are in ACCOUNT dollars. The engine never places orders; it

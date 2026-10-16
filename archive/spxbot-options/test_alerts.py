@@ -10,7 +10,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 # scrub env so tests never send anything real
 for k in ("SPXBOT_WA_PHONE", "SPXBOT_WA_APIKEY", "SPXBOT_ALERT_WEBHOOK",

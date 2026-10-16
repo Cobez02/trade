@@ -1,4 +1,4 @@
-"""Live-exit replay — post-hoc DIAGNOSTIC on the watchlist drop call, 8/1.
+"""Live-exit replay - post-hoc DIAGNOSTIC on the watchlist drop call, 8/1.
 
 The watchlist study graded names under the sim's simplified exits (fixed
 +45% take / -30% stop / 2-DTE time). The LIVE watcher has no fixed take:
@@ -7,7 +7,7 @@ hard-stops at -30%, time-stops at <=1 DTE (exitrules.decide). If trailing
 lets big winners run, names whose wins are outsized (NFLX's live +183%)
 could grade differently. This replays the IDENTICAL entries under the
 live exit rules, EOD-conservatively: pnl% measured on each day's CLOSING
-BID (no intraday peaks), so the trail benefit is UNDERSTATED — a name
+BID (no intraday peaks), so the trail benefit is UNDERSTATED - a name
 that flips positive here flips despite the handicap.
 
 Entry block copied verbatim from backtest.sim_singles (same gates, same

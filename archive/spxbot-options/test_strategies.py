@@ -5,7 +5,7 @@ endpoint are monkeypatched. Run: python3 test_strategies.py
 What this file pins:
 
   * Retired sleeves (engine.RETIRED_SLEEVES) never have their entry functions
-    CALLED — not "called and discarded," never called. The wsb feed's only
+    CALLED - not "called and discarded," never called. The wsb feed's only
     remaining job is the veto, and flow's OI scan is 2x500-contract pagination
     per name per run that must not silently keep burning rate limit.
   * The retirement is a partition: SLEEVES == ACTIVE + RETIRED exactly, and
@@ -30,7 +30,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 class FakeResp:
@@ -137,7 +137,7 @@ check("raising sleeve becomes [], run continues", out["news"] == [])
 
 print()
 print("=" * 74)
-print("4. crowd_veto — fail-open on every feed failure mode")
+print("4. crowd_veto - fail-open on every feed failure mode")
 print("=" * 74)
 real_requests = S.requests
 for label, payload in [
@@ -163,10 +163,10 @@ for label, payload in [
 
 print()
 print("=" * 74)
-print("5. crowd_veto — filtering, capping, and shape")
+print("5. crowd_veto - filtering, capping, and shape")
 print("=" * 74)
 feed = ([{"ticker": f"T{i}", "no_of_comments": 200 - i, "sentiment": "Bullish"}
-         for i in range(9)]                       # T0..T8: crowded, alpha? no —
+         for i in range(9)]                       # T0..T8: crowded, alpha? no -
         )
 # tickers must be alphabetic: T0..T8 contain digits and must be dropped
 feed += [
@@ -213,7 +213,7 @@ check("cap keeps the MOST crowded names",
 
 print()
 print("=" * 74)
-print("6. main.py wiring — entry iterates ACTIVE_SLEEVES and applies the veto")
+print("6. main.py wiring - entry iterates ACTIVE_SLEEVES and applies the veto")
 print("=" * 74)
 src = open("main.py").read()
 code = "\n".join(ln for ln in src.splitlines()
@@ -231,7 +231,7 @@ check("last_signals still recorded for ALL sleeves (dashboard sees retirees)",
 
 print()
 print("=" * 74)
-print("7. Dashboard — retired sleeves labelled, never dropped")
+print("7. Dashboard - retired sleeves labelled, never dropped")
 print("=" * 74)
 state = {"positions": {}, "closed": [], "history": [], "learning": {},
          "last_signals": {}}

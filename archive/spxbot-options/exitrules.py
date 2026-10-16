@@ -1,5 +1,5 @@
 """
-Continuous exit rules — the logic a human day-trader applies while watching a
+Continuous exit rules - the logic a human day-trader applies while watching a
 position tick by tick, expressed as PURE FUNCTIONS so it can be replayed against
 recorded quote streams without touching the broker.
 
@@ -10,12 +10,12 @@ free of sockets, clocks and order plumbing and tested directly.
 Three ideas do the work:
 
 1. BID-BASED P&L. The bid is what you would actually collect. Marking a position
-   at the mid flatters it by half the spread — that is precisely how a position
+   at the mid flatters it by half the spread - that is precisely how a position
    reading -29% at the last hourly check got liquidated at -51%.
 
 2. SPREAD-AWARE STOP FLOOR. A raw bid stop is unfair to wide contracts: on a
    33%-wide market the bid sits ~17% below mid, so a -30% bid stop would fire
-   while the contract is only -13% on mid — stopped out by the spread rather
+   while the contract is only -13% on mid - stopped out by the spread rather
    than by the trade going wrong. The stop is therefore loosened by half the
    quoted spread, which is exactly the amount the bid is depressed by. Capped so
    a pathological market can't loosen the stop indefinitely.
@@ -42,13 +42,13 @@ MAX_QUOTE_AGE_S   = 30.0    # older than this and we refuse to act on it
 # A market that blows out AFTER entry is information, not just noise. Every
 # position clears a 15% spread gate on the way in, so a 50%-wide quote means
 # liquidity has evaporated since. Loosening the stop to accommodate that is
-# backwards — it keeps us in the exact contract we can no longer get out of.
+# backwards - it keeps us in the exact contract we can no longer get out of.
 # Only fires on a position already losing, so a wide but WINNING contract is
 # left to the trail rather than panic-sold into its own spread.
 SPREAD_EXIT_PCT   = 0.50
 SPREAD_EXIT_LOSS  = -0.15
 
-# Beyond this the quote is not a wide market, it is an ABSENT one — a 0.01 x
+# Beyond this the quote is not a wide market, it is an ABSENT one - a 0.01 x
 # 0.40 print is the book showing no bid, not the contract being worth a cent.
 # Market-selling into it realises a catastrophic fill on a position that still
 # has value. Treated as an unusable quote: hold, and let the resting broker
@@ -163,13 +163,13 @@ def decide(entry: float, q: dict, peak_pct: float | None,
            age_s: float | None = None) -> dict:
     """Return the exit decision for one position at one instant.
 
-    Never raises — a watcher that dies on a malformed quote stops protecting
+    Never raises - a watcher that dies on a malformed quote stops protecting
     every other position too, so unusable input yields a 'hold, and say why'.
     """
     ok, why = quote_ok(q, age_s)
 
     # Flatten is checked FIRST and does not consult the quote, because the
-    # decision does not depend on a price — it is "be flat by the bell". An
+    # decision does not depend on a price - it is "be flat by the bell". An
     # earlier version refused to flatten on a malformed quote, which meant a
     # position whose feed had broken was the one position carried overnight:
     # exactly the exposure the rule exists to remove.
@@ -195,7 +195,7 @@ def decide(entry: float, q: dict, peak_pct: float | None,
     peak = update_peak(peak_pct, cur)
     stop = effective_stop(q.get("spread_pct"))
 
-    # Expiry risk next — a contract about to expire is not worth defending.
+    # Expiry risk next - a contract about to expire is not worth defending.
     if dte_left is not None and dte_left <= 1:
         return {"action": "exit", "reason": f"time-stop ({dte_left} DTE) {cur:+.0%}",
                 "pnl_pct": cur, "peak_pct": peak, "confident": True,
@@ -242,7 +242,7 @@ def confirm_ok(ticks: int, elapsed_s: float, cur_pct: float | None,
     that costs money, so a move well beyond the threshold acts at once.
     """
     if trigger_pct is None:
-        # Not a price-triggered exit — the bell and the expiry calendar are
+        # Not a price-triggered exit - the bell and the expiry calendar are
         # facts, not prints, and debouncing a fact just delays it.
         return True
     if cur_pct is not None and cur_pct <= trigger_pct - PANIC_MARGIN:
@@ -255,8 +255,8 @@ def broker_stop_price(entry: float, peak_pct: float | None) -> float:
 
     This is the floor that survives the watcher dying, the container being
     reclaimed, or the network dropping. It is deliberately looser than the
-    watcher's own trigger so that in normal operation the watcher — which sees
-    the bid — exits first, and this only fires when nothing is watching.
+    watcher's own trigger so that in normal operation the watcher - which sees
+    the bid - exits first, and this only fires when nothing is watching.
     """
     floor = entry * (1 + HARD_STOP_PCT)
     if peak_pct is not None and peak_pct >= TRAIL_ARM_PCT:
@@ -266,7 +266,7 @@ def broker_stop_price(entry: float, peak_pct: float | None) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Defined-risk credit spreads (sleeve "spreads") — package-level exits
+# Defined-risk credit spreads (sleeve "spreads") - package-level exits
 # ---------------------------------------------------------------------------
 def spread_decide(credit: float, net_now: float, dte_left,
                   take_frac: float = 0.50, stop_mult: float = 2.00,
@@ -285,7 +285,7 @@ def spread_decide(credit: float, net_now: float, dte_left,
                   risk are not our trade)
 
     Total function: unreadable inputs -> hold with a reason, never an
-    exception — this sits in the loop that manages live positions.
+    exception - this sits in the loop that manages live positions.
     Returns {"action": "hold"|"exit", "reason": str, "pnl_frac": float|None}
     where pnl_frac is P&L as a fraction of max profit (the credit).
     """

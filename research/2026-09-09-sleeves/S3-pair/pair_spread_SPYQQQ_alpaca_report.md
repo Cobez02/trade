@@ -52,7 +52,7 @@ year
 2026   170      75  1707.0      10.0   100.9 -287.0  444.0
 ```
 
-## IN-SAMPLE — 2007 sessions
+## IN-SAMPLE - 2007 sessions
 ```
 {
   "sessions": 2007,
@@ -85,7 +85,7 @@ year
 }
 ```
 
-## HOLDOUT — 672 sessions
+## HOLDOUT - 672 sessions
 ```
 {
   "sessions": 672,
@@ -118,6 +118,6 @@ year
 }
 ```
 
-## Prop-rule Monte Carlo — MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
+## Prop-rule Monte Carlo - MyFundedFutures Core $50K: target $3,000, DD $2,000 (eod, locks), DLL $1,000, consistency 50% of profit, flat by 15:10 CT, bots on funded: True
 P(pass) 1x = **3.2%**, median days 192.0
 Zero-edge control: P(pass) = 11.9%

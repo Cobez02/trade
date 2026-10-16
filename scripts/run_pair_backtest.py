@@ -46,11 +46,11 @@ def main(argv=None):
     if args.holdout_from:
         for label, keep in (("IN-SAMPLE", lambda d: d.day < args.holdout_from), ("HOLDOUT", lambda d: d.day >= args.holdout_from)):
             sub = type(rep)([t for t in rep.trades if keep(t)], [d for d in rep.days if keep(d)], rep.inst)
-            lines += ["", f"## {label} — {len(sub.days)} sessions", "```", json.dumps(sub.summary(), indent=2), "```"]
+            lines += ["", f"## {label} - {len(sub.days)} sessions", "```", json.dumps(sub.summary(), indent=2), "```"]
     scores = {}
     for key in ("mffu_core_50k",):
         rules = R.PRESETS[key]; sc = rep.prop_score(rules, n=args.mc, scale=1.0)
-        lines += ["", f"## Prop-rule Monte Carlo — {R.describe(rules)}", f"P(pass) 1x = **{sc['pass']:.1%}**, median days {sc['median_days']}"]
+        lines += ["", f"## Prop-rule Monte Carlo - {R.describe(rules)}", f"P(pass) 1x = **{sc['pass']:.1%}**, median days {sc['median_days']}"]
         scores[key] = sc["pass"]
         import statistics as st
         d = rep.daily

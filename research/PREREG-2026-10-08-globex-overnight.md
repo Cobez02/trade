@@ -1,4 +1,4 @@
-# Pre-registration — the Globex overnight sleeve (2026-10-08, written before any live test)
+# Pre-registration - the Globex overnight sleeve (2026-10-08, written before any live test)
 
 ## What was found today (real NQ/ES/RTY/YM futures, Yahoo hourly bars, 2024-05-17 .. 2026-10-08, 582 nights)
 Buying the micro index future at the 17:00 CT Globex reopen, resting a 1% stop, and selling at the
@@ -6,7 +6,7 @@ Buying the micro index future at the 17:00 CT Globex reopen, resting a 1% stop, 
 (Sharpe 1.11 vs 0.92 on MNQ), and it is the window every futures prop firm allows: a position opened
 after 17:00 CT and closed before the next day's cutoff stays inside one Globex session (Topstep: flat by
 15:10 CT; TradeDay: by 15:50 CT). The cash-close hold (14:59 -> next morning) crosses the 16:00 CT
-session boundary and is NOT allowed anywhere — so the paper lab's QQQM hold was testing the wrong window.
+session boundary and is NOT allowed anywhere - so the paper lab's QQQM hold was testing the wrong window.
 
 | book, 1% stop, net of ~$3-4.50 round trip | $/night | sd  | Sharpe | worst | P(pass) Topstep $50K | zero-edge |
 |---|---|---|---|---|---|---|
@@ -38,4 +38,4 @@ night worse than -$640 (MNQ) / -$390 (MES) in two years.
 
 ## Falsifiers
 - The practice account shows the stop not resting overnight or fills > 2 ticks worse than the hourly model.
-- 60 live nights with mean/night below $0 (MES) — the drift is absent in this regime.
+- 60 live nights with mean/night below $0 (MES) - the drift is absent in this regime.

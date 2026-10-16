@@ -1,4 +1,4 @@
-"""Watchlist validation study — 2026-08-01, Connor-approved.
+"""Watchlist validation study - 2026-08-01, Connor-approved.
 
 The 6-year backtest validated the singles rules on SPY+QQQ only (a disclosed
 limitation), and the TSLA cap study validated TSLA. The live bot trades 11
@@ -7,7 +7,7 @@ unmodified, production cap/gates) on each remaining watchlist name.
 
 VALIDATION, not a search: one cell per name, production config only.
 Multiple-looks note for the report: with 11 names, 1-2 nominally negative
-results are expected by chance even if every name is fine (and vice versa) —
+results are expected by chance even if every name is fine (and vice versa) -
 flag names for Connor's decision only on strongly negative totals AND PF
 well under 1 AND enough trades to mean something. No automatic config change.
 

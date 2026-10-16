@@ -1,4 +1,4 @@
-# Pre-registration — corrected regime switch: re-run, cross-validation, robustness (written before the run)
+# Pre-registration - corrected regime switch: re-run, cross-validation, robustness (written before the run)
 
 Batch 4's regime result (S1 QQQ: PF 1.38, Sharpe 1.17, P(pass) 67%) used a switch whose 14-day window
 included the session's OWN close-to-close move. That is look-ahead and it flatters a momentum strategy.

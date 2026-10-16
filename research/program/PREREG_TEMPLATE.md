@@ -1,4 +1,4 @@
-# PREREG <id> — <one-line hypothesis>   (write ALL of this before running anything)
+# PREREG <id> - <one-line hypothesis>   (write ALL of this before running anything)
 - Mechanism (who pays, why): 
 - Source (paper / structural fact): 
 - Venue constraints it respects (prop single-session / own-capital multi-day): 

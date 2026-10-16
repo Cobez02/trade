@@ -1,4 +1,4 @@
-# spxbot (options) — retired 2026-09-06
+# spxbot (options) - retired 2026-09-06
 
 This folder is the complete final state of the Claude-built S&P 500 options
 paper-trading bot (July 24 – Sept 5, 2026): 100 settled trades, +$1,305 on the

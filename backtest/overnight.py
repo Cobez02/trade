@@ -1,5 +1,5 @@
 """
-Sleeve 4 — the overnight drift ("night effect").
+Sleeve 4 - the overnight drift ("night effect").
 
 Literature: Cooper, Cliff & Gulen (2008) "Return differences between trading and
 non-trading hours"; Lou, Polk & Skouras (2019) "A tug of war: overnight versus
@@ -9,11 +9,11 @@ forbids it; a swing-capable one (TradeDay weekday overnight; Elite Trader
 Funding Diamond Hands/DTF) allows it.
 
 THE RULE: buy at the last RTH minute (14:59 CT close), sell at the next
-session's first RTH minute (08:30 CT open). Weekday nights only — no Friday ->
+session's first RTH minute (08:30 CT open). Weekday nights only - no Friday ->
 Monday (firms forbid weekend holds). Fixed contract count per instrument; the
 worst historical night, not the average, sets the size. No stop is modelled
 overnight (the proxy has no overnight path; in live MNQ/M2K a resting Globex
-stop can and should exist — stated as a limitation). Costs per share per side
+stop can and should exist - stated as a limitation). Costs per share per side
 mapped to the micro contract's round trip.
 """
 from __future__ import annotations

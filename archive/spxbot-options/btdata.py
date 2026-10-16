@@ -1,4 +1,4 @@
-"""Alpaca-backed data layer for backtest.py — replaces ThetaData.
+"""Alpaca-backed data layer for backtest.py - replaces ThetaData.
 
 WHY
 ---
@@ -163,7 +163,7 @@ def strikes(symbol: str, expiration: str) -> list:
 
 
 def open_interest(symbol: str, expiration: str) -> dict:
-    """{(strike, RIGHT): oi} — lets the backtest apply the live MIN_OPEN_INTEREST
+    """{(strike, RIGHT): oi} - lets the backtest apply the live MIN_OPEN_INTEREST
     floor rather than silently skipping a screen the live bot enforces."""
     return {(c["strike"], c["right"]): c["oi"] for c in _contracts(symbol, expiration)}
 

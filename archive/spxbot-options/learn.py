@@ -353,7 +353,7 @@ def learn(state: dict) -> dict:
                 # did. Counting it twice is exactly the old bug.
                 d = {"mult": 1.0, "confidence": 0.0,
                      "reason": f"dimension deduplicated against "
-                               f"'{dropped.get(dim, ('?',))[0]}' — reported, not acted on"}
+                               f"'{dropped.get(dim, ('?',))[0]}' - reported, not acted on"}
             st["mult"] = d["mult"]
             st["confidence"] = d["confidence"]
             st["evidence"] = d["reason"]
@@ -413,12 +413,12 @@ def _lessons(learning: dict) -> list:
     n_eff = _num(learning.get("n_eff")) or 0.0
     n = learning.get("n_trades") or 0
     if not isinstance(n, int):
-        return ["No settled trades yet — nothing to learn from."]
+        return ["No settled trades yet - nothing to learn from."]
     if not isinstance(learning.get("sleeve"), dict):
-        return ["No settled trades yet — nothing to learn from."]
+        return ["No settled trades yet - nothing to learn from."]
 
     if n == 0:
-        return ["No settled trades yet — nothing to learn from."]
+        return ["No settled trades yet - nothing to learn from."]
 
     # The headline: how much data is actually here.
     if n_eff < GATE_ACTIVATION_N:
@@ -430,10 +430,10 @@ def _lessons(learning: dict) -> list:
             f"Trades on the same day share the market's move, so they are not "
             f"independent observations.")
 
-    # Deduplication is a finding, not plumbing — it is the bug that gated the bot.
+    # Deduplication is a finding, not plumbing - it is the bug that gated the bot.
     for dim, info in _dict(learning.get("dims_dropped")).items():
         lessons.append(
-            f"DEDUPLICATED '{dim}' — Cramér's V {info['cramers_v']} against "
+            f"DEDUPLICATED '{dim}' - Cramér's V {info['cramers_v']} against "
             f"'{info['duplicates']}'. These are the same hypothesis; acting on "
             f"both would count one piece of evidence twice.")
 
@@ -450,7 +450,7 @@ def _lessons(learning: dict) -> list:
         if st["weight"] == 1.0:
             lessons.append(
                 f"'{s}': {st['win_rate']*100:.0f}% win, avg {st['avg_pnl_pct']*100:+.0f}% "
-                f"over {st['n']} trades (n_eff {st['n_eff']:.1f}) — size unchanged, "
+                f"over {st['n']} trades (n_eff {st['n_eff']:.1f}) - size unchanged, "
                 f"evidence too thin to move it.{need}")
         else:
             lessons.append(
@@ -458,10 +458,10 @@ def _lessons(learning: dict) -> list:
                 f"{(st.get('shrunk_pnl_pct') or 0)*100:+.1f}% against the pooled mean at "
                 f"n_eff {st['n_eff']:.1f}.{need}")
 
-    # Bucket verdicts — only ones the gate actually acted on.
+    # Bucket verdicts - only ones the gate actually acted on.
     for g in (learning.get("gates") if isinstance(learning.get("gates"), list) else []):
         lessons.append(
-            f"DISCOURAGED {g['bucket']} ({g['dim']}) — sized ×{g['mult']} at "
+            f"DISCOURAGED {g['bucket']} ({g['dim']}) - sized ×{g['mult']} at "
             f"{g['confidence']*100:.0f}% confidence, not blocked. "
             f"{g['win_rate']*100:.0f}% win over {g['n']} (n_eff {g['n_eff']:.1f}). "
             f"It keeps trading at reduced size so the evidence can keep accruing; "

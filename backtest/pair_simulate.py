@@ -1,7 +1,7 @@
 """
-Sleeve 3 — intraday relative value between the two index futures (ES vs NQ),
+Sleeve 3 - intraday relative value between the two index futures (ES vs NQ),
 proxied by SPY vs QQQ. Market-neutral by construction, so its P&L should be
-nearly uncorrelated with the directional sleeves — which is the point.
+nearly uncorrelated with the directional sleeves - which is the point.
 
 THE RULE (pre-registered; one entry per session):
   On the 30-minute grid, spread s_t = ln(Q_t / Q_open) - ln(S_t / S_open):
@@ -12,7 +12,7 @@ THE RULE (pre-registered; one entry per session):
     -> bet on reversion: s_t > 0  => short QQQ / long SPY;  s_t < 0 => long QQQ / short SPY
   Exit at a later 30-minute close when |s_t| <= Z_EXIT * sigma_t, or when the
   spread moves a further STOP_SIGMA * sigma_t against the position (checked at
-  bar closes — intrabar stops are not modelled, stated as a limitation), or at
+  bar closes - intrabar stops are not modelled, stated as a limitation), or at
   the flatten. Dollar-neutral legs: notional L each, with L chosen so a full
   stop-out costs RISK_PER_TRADE. Fills at the next 1-minute open with per-leg
   slippage; commission per share per side per leg.

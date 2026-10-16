@@ -85,13 +85,13 @@ SLEEVE_ALLOCATION = START_EQUITY / len(SLEEVES)   # ~$2,500 logical bankroll eac
 # sleeve name, and a position opened under a sleeve must remain manageable and
 # attributable for as long as it (or its history) exists.
 #
-# Why these two, specifically — the research phase's two clearest verdicts:
+# Why these two, specifically - the research phase's two clearest verdicts:
 #
 #   flow  RETIRED. The sleeve reads call/put OPEN INTEREST skew as "smart money
 #         positioning," but open interest has no trade direction in it: every
 #         contract has a buyer and a seller, and the literature that does find
 #         signal in options activity (Pan & Poteshman 2006) needs signed,
-#         volume-based put-call ratios from proprietary open/close data — an
+#         volume-based put-call ratios from proprietary open/close data - an
 #         input this bot cannot get from its feed. What it is actually reading
 #         is mostly hedging structure. No study supports the deployed signal.
 #
@@ -101,14 +101,14 @@ SLEEVE_ALLOCATION = START_EQUITY / len(SLEEVES)   # ~$2,500 logical bankroll eac
 #         identifies as the single most reliably overpriced corner of the
 #         market: attention-driven lottery demand inflates exactly those
 #         premia (Han & Kumar; Boyer & Vorkink ex-ante skewness). The veto
-#         keeps the feed's one usable property — it knows where the crowd is —
+#         keeps the feed's one usable property - it knows where the crowd is -
 #         and only ever BLOCKS a buy on a crowded name, never places or
 #         inverts one.
 #
 # Retiring a sleeve retires its capital. SLEEVE_ALLOCATION deliberately still
 # divides by len(SLEEVES): the verdict on these sleeves is "this class of trade
 # is negative-EV," which is not an argument that the survivors deserve double
-# stakes — at any Kelly fraction, a doubtful edge argues for LESS deployment,
+# stakes - at any Kelly fraction, a doubtful edge argues for LESS deployment,
 # not redistribution. Flagged in the strategy spec as an owner decision.
 RETIRED_SLEEVES = {"wsb", "flow"}
 ACTIVE_SLEEVES = [s for s in SLEEVES if s not in RETIRED_SLEEVES]
@@ -129,7 +129,7 @@ def _envf(name, default):
 MAX_PREMIUM_PER_TRADE = _envf("SPXBOT_MAX_PREM", 600.0)  # max $ risked per position
 # 350 -> 600 on 2026-07-30, Connor's call after the TOO-RICH postmortem: 6% of
 # the $10k bankroll per trade. Removing the cap entirely was considered and
-# rejected — the sleeve allocation alone would permit 25% of the bankroll on
+# rejected - the sleeve allocation alone would permit 25% of the bankroll on
 # one contract, and a 3-stop cluster (which happened THIS week) would cost
 # 15-25%% of the account. The cap is the survivability governor.
 MAX_OPEN_PER_SLEEVE   = int(_envf("SPXBOT_MAX_OPEN", 2)) # cap concurrent positions per sleeve
@@ -242,7 +242,7 @@ class Broker:
         spreads flutter. Adjacent strikes on the same liquid name routinely
         quote very differently at any instant; letting the entry path compare
         2-3 and take the tightest is a measurement fix, not a discipline
-        change — every candidate still clears the same OI floor and the same
+        change - every candidate still clears the same OI floor and the same
         spread/premium/skew/lottery gates."""
         ctype = ContractType.CALL if direction == "bull" else ContractType.PUT
         today = dt.date.today()
@@ -293,7 +293,7 @@ class Broker:
         # purpose: the filter fired precisely when the chain was illiquid, and
         # the fallback then guaranteed a trade in the least liquid contract
         # available. That is adverse selection by construction, and it is the
-        # single most expensive habit in the retail options literature — the
+        # single most expensive habit in the retail options literature - the
         # measured round-trip cost is 10.93% of premium at a 15% spread against
         # a best-case forecasting edge worth well under 1% per trade.
         #
@@ -316,7 +316,7 @@ class Broker:
 
         Named for what it returns. It was previously called `option_ask` while
         returning the mid, and main.py bound the result to a variable named
-        `ask` and priced marketable orders off it — so every fallback fill was
+        `ask` and priced marketable orders off it - so every fallback fill was
         priced half a spread too tight and silently missed. At the old 15%
         spread ceiling that is a 7.5%-of-premium mispricing on the fallback
         path. Use `option_quote()` when you need the two sides separately;
@@ -443,7 +443,7 @@ class Broker:
         """Place a resting protective stop.
 
         This is the only piece of risk control that keeps working when nothing
-        of ours is running — no cron, no watcher, no container. Alpaca evaluates
+        of ours is running - no cron, no watcher, no container. Alpaca evaluates
         it continuously on its own side. Options accept `stop` but reject
         `trailing_stop` and OCO, so a trail has to be emulated by replacing it.
         """
@@ -454,7 +454,7 @@ class Broker:
             client_order_id=f"{self.STOP_TAG}-{int(time.time()*1000)}"))
 
     def open_sell_orders(self, occ_symbol: str = None):
-        """Working SELL orders — protective stops, plus anything else resting.
+        """Working SELL orders - protective stops, plus anything else resting.
 
         A resting sell reserves the contracts, so a close order placed while one
         is live is rejected for insufficient quantity. Anything that intends to
@@ -509,7 +509,7 @@ class Broker:
         long strike one preferred width below it, both legs OI-passing.
 
         Returns {"short": contract, "long": contract, "width", "dte",
-                 "expiry_ymd"} or None. No fallback past the OI floor — the
+                 "expiry_ymd"} or None. No fallback past the OI floor - the
         same no-adverse-selection rule as singles."""
         try:
             if not spot or spot <= 0 or not sigma_ann or sigma_ann <= 0:
@@ -634,7 +634,7 @@ class Broker:
         return out[:limit]
 
     def open_orders(self, limit: int = 200):
-        """Working (unfilled) orders — used to avoid re-submitting the same name."""
+        """Working (unfilled) orders - used to avoid re-submitting the same name."""
         try:
             req = GetOrdersRequest(status=QueryOrderStatus.OPEN, limit=limit)
             return list(self.trading.get_orders(req))
@@ -703,7 +703,7 @@ def trend_up(series: pd.Series) -> bool:
 
 
 # ============================================================================
-# DEFINED-RISK SPREADS (sleeve "spreads" — see SPREADS_DESIGN.md)
+# DEFINED-RISK SPREADS (sleeve "spreads" - see SPREADS_DESIGN.md)
 # ============================================================================
 # Put credit spreads on SPY/QQQ only: sell a put ~one expected move down,
 # buy a put 2-5 dollars further down. Max loss is fixed at entry
@@ -737,10 +737,10 @@ def detect_spreads(positions):
     """Group raw Alpaca option positions into put-credit-spread packages.
 
     Stateless by design, like everything else: a package is derivable from
-    the book alone — a SHORT put (qty < 0) paired with the nearest LOWER-
+    the book alone - a SHORT put (qty < 0) paired with the nearest LOWER-
     strike LONG put of the same underlying and expiry, quantity-matched.
     Anything that does not pair stays a single and is managed (and
-    flattened) by the ordinary rules — an orphan short leg would mean
+    flattened) by the ordinary rules - an orphan short leg would mean
     assignment or a broken entry, and treating it as a normal position is
     the safe default because the ordinary rules will close it.
 

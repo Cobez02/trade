@@ -48,7 +48,7 @@ year
 2026   170     108  -664.0      -3.9   129.2 -379.0   432.0
 ```
 
-## IN-SAMPLE — 2007 sessions
+## IN-SAMPLE - 2007 sessions
 ```
 {
   "sessions": 2007,
@@ -77,7 +77,7 @@ year
 }
 ```
 
-## HOLDOUT (out-of-sample) — 672 sessions
+## HOLDOUT (out-of-sample) - 672 sessions
 ```
 {
   "sessions": 672,
@@ -141,7 +141,7 @@ This exact history replayed once at 1x: **{'result': 'fail', 'days': 90, 'reason
 
 This exact history replayed once at 1x: **{'result': 'fail', 'days': 90, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1667.0)}**  (intraday-low fraction used: 0.229)
 
-Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 24.5% — anything close to this number is luck, not edge.
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 24.5% - anything close to this number is luck, not edge.
 
 ## Falsification gates (from the research brief)
 

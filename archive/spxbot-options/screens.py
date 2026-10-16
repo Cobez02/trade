@@ -201,7 +201,7 @@ def ex_ante_skewness(spot: float, strike: float, t_years: float, vol: float,
     # (s/|d|)^n, so the THIRD moment loses ~3*log10(|d|/s) digits. At S=100,
     # K=115, 7 DTE, 15% vol that is every digit there is, and the naive form
     # returns a large NEGATIVE skewness for a payoff that is positively skewed
-    # by construction — which then sails straight through skew_verdict.
+    # by construction - which then sails straight through skew_verdict.
     #
     # Reformulation. With s = vol*sqrt(t), m = ln S + (mu - vol^2/2) t and
     # d = (m - ln K)/s, write P = P(exercise) and
@@ -240,7 +240,7 @@ def ex_ante_skewness(spot: float, strike: float, t_years: float, vol: float,
     # A long OTM option's payoff is non-negative with an atom at zero, so its
     # third central moment is strictly positive. If the arithmetic disagrees,
     # the third difference has run out of significant digits and the honest
-    # answer is "not computable" — NOT a negative number, which would pass the
+    # answer is "not computable" - NOT a negative number, which would pass the
     # screen. ITM contracts genuinely can be negatively skewed (a deep ITM put
     # is a short forward), so the invariant is asserted only where it holds.
     if sgn * d < 0.0 and not (mu3 > 0.0):
@@ -285,7 +285,7 @@ def skew_verdict(skew: Optional[float], threshold: float = MAX_EX_ANTE_SKEW) -> 
         threshold = MAX_EX_ANTE_SKEW
     if skew > threshold:
         return {"ok": False, "skew": skew,
-                "reason": f"ex-ante skew {skew:.1f} > {threshold:.1f} — Boyer-Vorkink "
+                "reason": f"ex-ante skew {skew:.1f} > {threshold:.1f} - Boyer-Vorkink "
                           f"top-skew quintile returned -35%/wk (calls) to -60%/wk (puts)"}
     return {"ok": True, "skew": skew, "reason": f"ex-ante skew {skew:.1f} acceptable"}
 
@@ -305,7 +305,7 @@ def moneyness_verdict(spot: float, strike: float, is_call: bool,
     otm = (K / S - 1.0) if is_call else (1.0 - K / S)
     if otm > max_otm:
         return {"ok": False, "otm": round(otm, 4),
-                "reason": f"{otm*100:.1f}% OTM > {max_otm*100:.0f}% — Ni (2009) measured "
+                "reason": f"{otm*100:.1f}% OTM > {max_otm*100:.0f}% - Ni (2009) measured "
                           f"-36.9%/month on K/S>1.15 equity calls"}
     return {"ok": True, "otm": round(otm, 4), "reason": f"{otm*100:+.1f}% OTM"}
 
@@ -336,7 +336,7 @@ def in_expiration_blackout(day: dt.date) -> dict:
     """
     try:
         # dt.datetime is a SUBCLASS of dt.date, so `isinstance(day, dt.date)`
-        # accepts one — and then `day == exp` is silently False for the expiry
+        # accepts one - and then `day == exp` is silently False for the expiry
         # Friday itself and `day - exp` raises outright on the Monday. A caller
         # passing dt.datetime.now() is the obvious mistake, so normalise here.
         if isinstance(day, dt.datetime):
@@ -358,13 +358,13 @@ def in_expiration_blackout(day: dt.date) -> dict:
         return {"ok": True, "reason": "date not parseable"}
     exp = third_friday(d.year, d.month)
     if d == exp:
-        return {"ok": False, "reason": f"monthly expiration Friday ({exp}) — "
+        return {"ok": False, "reason": f"monthly expiration Friday ({exp}) - "
                                        f"Garcia-Ares & Muravyev: -0.43% delta-hedged "
                                        f"across expiry Fri + following Mon"}
     # The Monday after expiration Friday (Tuesday if Monday is a holiday is not
     # detectable without a calendar; the Friday leg carries most of the effect).
     if d.weekday() == 0 and (d - exp).days == 3:
-        return {"ok": False, "reason": f"post-expiration Monday (expiry was {exp}) — "
+        return {"ok": False, "reason": f"post-expiration Monday (expiry was {exp}) - "
                                        f"customer roll imbalance ~-12%, the other half "
                                        f"of the -0.43% two-day effect"}
     return {"ok": True, "reason": "not in expiration-rollover window"}
@@ -391,7 +391,7 @@ def dte_verdict(dte: Optional[int], min_dte: int = MIN_DTE) -> dict:
         return {"ok": True, "dte": None, "reason": "DTE unparseable"}
     if d < min_dte:
         return {"ok": False, "dte": d,
-                "reason": f"{d} DTE < {min_dte} — vega ~0, so a volatility view cannot "
+                "reason": f"{d} DTE < {min_dte} - vega ~0, so a volatility view cannot "
                           f"pay; 0DTE retail fills run ~4.7pp worse than average"}
     return {"ok": True, "dte": d, "reason": f"{d} DTE"}
 
@@ -415,10 +415,10 @@ def spread_verdict(bid: float, ask: float, max_spread: float = MAX_SPREAD_PCT) -
         b, a = float(bid), float(ask)
     except (TypeError, ValueError, OverflowError):
         return {"ok": False, "spread_pct": None, "rt_cost": None,
-                "reason": "quote unparseable — refusing to trade blind"}
+                "reason": "quote unparseable - refusing to trade blind"}
     if not (math.isfinite(b) and math.isfinite(a)) or b <= 0 or a <= 0 or a < b:
         return {"ok": False, "spread_pct": None, "rt_cost": None,
-                "reason": "quote invalid — refusing to trade blind"}
+                "reason": "quote invalid - refusing to trade blind"}
     mid = (a + b) / 2.0
     sp = (a - b) / mid
     rt = None
@@ -429,7 +429,7 @@ def spread_verdict(bid: float, ask: float, max_spread: float = MAX_SPREAD_PCT) -
             rt = None
     if sp > max_spread:
         return {"ok": False, "spread_pct": round(sp, 4), "rt_cost": rt,
-                "reason": f"spread {sp*100:.1f}% > {max_spread*100:.0f}% — modelled "
+                "reason": f"spread {sp*100:.1f}% > {max_spread*100:.0f}% - modelled "
                           f"round trip {('%.1f%%' % (rt*100)) if rt else 'n/a'} of premium "
                           f"vs a best-documented edge of 0.5%/month"}
     return {"ok": True, "spread_pct": round(sp, 4), "rt_cost": rt,
@@ -456,12 +456,12 @@ def premium_verdict(price: float, min_price: float = MIN_CONTRACT_PRICE) -> dict
     if p < min_price:
         # $0.60 is paid per ORDER (Rule 606 reports payment per contract on
         # orders routed), so a round trip is two of them: $1.20 against a $20
-        # premium on a $0.20 contract = 6%. Note 07 §I.1 states it explicitly —
-        # ">3% each way, >6% round trip" — as do this module's own header and
+        # premium on a $0.20 contract = 6%. Note 07 §I.1 states it explicitly -
+        # ">3% each way, >6% round trip" - as do this module's own header and
         # this function's docstring. The one-sided form silently halved it.
         pfof = 2.0 * 0.60 / (p * 100.0)
         return {"ok": False, "price": round(p, 2),
-                "reason": f"${p:.2f} contract < ${min_price:.2f} — $0.60/contract PFOF "
+                "reason": f"${p:.2f} contract < ${min_price:.2f} - $0.60/contract PFOF "
                           f"alone is {pfof*100:.1f}% round trip"}
     return {"ok": True, "price": round(p, 2), "reason": f"${p:.2f} contract"}
 
@@ -500,7 +500,7 @@ def lottery_verdict(closes: Sequence[float], threshold: float = MAX_LOTTERY_RETU
         return {"ok": True, "max_ret": None, "reason": "MAX not computable"}
     if mx > threshold:
         return {"ok": False, "max_ret": mx,
-                "reason": f"MAX {mx*100:.1f}% > {threshold*100:.0f}% in the last month — "
+                "reason": f"MAX {mx*100:.1f}% > {threshold*100:.0f}% in the last month - "
                           f"top-MAX-decile stocks underperform (Bali-Cakici-Whitelaw)"}
     return {"ok": True, "max_ret": mx, "reason": f"MAX {mx*100:.1f}%"}
 
@@ -571,7 +571,7 @@ def screen_entry(*, spot: float, strike: float, is_call: bool, dte: Optional[int
         checks["skew"] = skew_verdict(sk, _cfg(cfg, "max_skew", MAX_EX_ANTE_SKEW))
     else:
         checks["skew"] = {"ok": True, "skew": None,
-                          "reason": "no vol input — ex-ante skew skipped"}
+                          "reason": "no vol input - ex-ante skew skipped"}
 
     if closes:
         checks["lottery"] = lottery_verdict(closes, _cfg(cfg, "max_lottery", MAX_LOTTERY_RETURN))

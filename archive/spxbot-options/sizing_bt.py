@@ -1,8 +1,8 @@
-"""Edge-proportional sizing study — PRE-REGISTERED 2026-08-05 (Connor-approved).
+"""Edge-proportional sizing study - PRE-REGISTERED 2026-08-05 (Connor-approved).
 
 Proposal: "use more of it on high-confidence days." Operationalized the only
 way that survived this week's override study: confidence = the SYSTEM'S
-measured vol edge at entry (forecast minus implied, in vol points — the same
+measured vol edge at entry (forecast minus implied, in vol points - the same
 "+4.1pts" the live notes print), never the market's mood. Position budget
 becomes a function of that number; entry GATES are unchanged.
 
@@ -11,7 +11,7 @@ Cells (declared before running):
   TIER  $600 / $900 / $1200 at edge <3 / 3-5 / >=5 pts
   PROP  budget = clamp(600 * edge_pts/2, 600, 1500)
 
-All cells size qty = budget // (ask*100), min 1, P/L scales with qty — note
+All cells size qty = budget // (ask*100), min 1, P/L scales with qty - note
 the published per-name sims booked qty=1, so BASE here is the apples-to-
 apples baseline, not the published numbers. Raising a budget also ADMITS
 contracts the flat cap rejected (ask in ($600, budget]); that is part of the

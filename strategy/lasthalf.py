@@ -1,5 +1,5 @@
 """
-Sleeve 2 — last-half-hour momentum, and the volatility-regime switch.
+Sleeve 2 - last-half-hour momentum, and the volatility-regime switch.
 
 LAST HALF HOUR (Gao, Han, Li & Zhou, JFE 2018, "Market Intraday Momentum").
 Published finding: the first half-hour return (from the previous close to the
@@ -23,7 +23,7 @@ Zarattini et al. report Sharpe rising with VIX; our own year table agreed. A
 regime filter is a different animal from a signal-strength filter (which
 failed): it removes whole sessions from dead tape rather than skimming the
 strongest breakouts. Rule: session d is ON if the trailing 14-day mean |daily
-return| — measured through the PREVIOUS session's close, never d's own — is at
+return| - measured through the PREVIOUS session's close, never d's own - is at
 or above the EXPANDING median of that statistic over all prior sessions (first
 60 sessions always ON). Batch 4 (2026-09-09) shipped with d's own close inside
 the window; that leaked the day's move into the day's flag and was withdrawn.

@@ -2,18 +2,18 @@ name: SPX-Beater options bot
 
 # Runs hourly during US market hours (10:07–16:07 ET), Mon–Fri.
 # Cron is in UTC; 14:07–20:07 UTC = 10:07–16:07 ET (EDT). GitHub may delay
-# scheduled runs a few minutes under load — fine for an hourly bot.
+# scheduled runs a few minutes under load - fine for an hourly bot.
 on:
   schedule:
     # Hourly trading runs at :07 past the hour, 10:07–16:07 ET. :07 and not
-    # :00 because the top of the hour is GitHub's most congested cron slot —
+    # :00 because the top of the hour is GitHub's most congested cron slot -
     # the :00 schedule spent last week landing 40–45 minutes late (Fri 8/7)
     # or not at all (Thu 8/6). Off-hour minutes schedule far more reliably.
     - cron: "7 14-20 * * 1-5"
     # Close-the-book runs. Nothing is carried overnight, so a run MUST land in
     # the final 15 minutes or the flatten never fires. GitHub routinely delays
     # scheduled runs under load, so three attempts are scheduled rather than one
-    # — a single 19:45 job delayed past the bell would strand the whole book.
+    # - a single 19:45 job delayed past the bell would strand the whole book.
     - cron: "45,50,55 19 * * 1-5"
     # Same, for early-close sessions (13:00 ET bell: July 3rd, Black Friday,
     # Christmas Eve). On a normal day these land ~3 hours before the close and
@@ -84,7 +84,7 @@ jobs:
           # The close-the-book crons manage exits only. Any other trigger
           # (hourly schedule, or a manual Actions run) does a full cycle.
           # Spreads entries DISABLED by the 2026-07-31 backtest verdict
-          # (BACKTEST_REPORT.md). Flip to "1" to re-enable — owner decision.
+          # (BACKTEST_REPORT.md). Flip to "1" to re-enable - owner decision.
           SPXBOT_SPREADS: "0"
           # Alerting (owner-added secrets; unset = alerts are silently off)
           SPXBOT_WA_PHONE: ${{ secrets.SPXBOT_WA_PHONE }}
@@ -98,7 +98,7 @@ jobs:
           python main.py | tee run.log
           python reporting.py state.json > digest.txt
           {
-            echo '## SPX-Beater — latest run'
+            echo '## SPX-Beater - latest run'
             echo '```'
             cat digest.txt
             echo '```'

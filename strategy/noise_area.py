@@ -1,5 +1,5 @@
 """
-Intraday momentum with a time-of-day "noise area" — the primary strategy.
+Intraday momentum with a time-of-day "noise area" - the primary strategy.
 
 Lineage (see the research brief): Gao-Han-Li-Zhou 2018 (first/last half-hour
 predictability), Baltussen-Da-Lammers-Martens 2021 (mechanism: gamma-hedging
@@ -7,7 +7,7 @@ demand, measured in 60+ futures), Zarattini-Aziz-Barbon 2024 (the "noise
 area" implementation on SPY, Sharpe 1.33 net of costs 2007-2024), Quantitativo
 2024 (ES/NQ replication, +6 bps/trade, 38% win rate, 2.25 payoff).
 
-THE RULES WE IMPLEMENT (state them, then test them — a strategy you cannot
+THE RULES WE IMPLEMENT (state them, then test them - a strategy you cannot
 write down is one you cannot backtest):
 
   For session d with open O_d and previous session close C_{d-1}, decision

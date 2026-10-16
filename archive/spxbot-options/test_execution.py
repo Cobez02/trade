@@ -27,7 +27,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 def clean(v) -> bool:
@@ -164,7 +164,7 @@ check("recovers vol with a nonzero rate too",
 
 print()
 print("=" * 74)
-print("4. bs_greeks — bounds, signs, and the per-1.00-vol convention")
+print("4. bs_greeks - bounds, signs, and the per-1.00-vol convention")
 print("=" * 74)
 # Hull, "The Greek Letters": S=49, K=50, r=5%, sigma=20%, T=20 weeks.
 # Published: delta 0.522, gamma 0.066, vega 12.1, theta -4.31 per year.
@@ -232,7 +232,7 @@ check("t=0 -> delta is the expiry step function, second-order greeks are 0",
 
 print()
 print("=" * 74)
-print("5. roundtrip_cost_frac — note 07 §H.1's identity and worked examples")
+print("5. roundtrip_cost_frac - note 07 §H.1's identity and worked examples")
 print("=" * 74)
 
 
@@ -249,7 +249,7 @@ check("S=15%, c_e=0.5, c_x=0.0 -> ~11.0% of premium (note 07 §H.2)",
 
 # The closed form, isolated from fees by making the fee fraction vanish. The note's
 # own drop-in code gives 0.1125/1.0375 = 10.8434%; its summary TABLE prints 10.87%,
-# which is a rounding slip in the note — the identity and the note's code agree.
+# which is a rounding slip in the note - the identity and the note's code agree.
 spread_only = E.roundtrip_cost_frac(b15, a15, 0.5, 0.0, notional_per_contract=1e12)
 closed = 0.15 * (2 - 0.5 - 0.0) / (2 + 0.15 * (1 - 0.5))
 check("matches the closed form S(2-c_e-c_x)/(2+S(1-c_e)) exactly",
@@ -297,7 +297,7 @@ v_gate = E.cost_verdict(b15, a15, 1.00)
 v_ok = E.cost_verdict(*quote(1.00, 0.03), 1.00)
 v_mid = E.cost_verdict(*quote(1.00, 0.08), 1.00)
 check("cost_verdict: 15% gate is 'prohibitive'", v_gate["verdict"] == "prohibitive",
-      f"{v_gate['rt_cost']:.2%} — {v_gate['note']}")
+      f"{v_gate['rt_cost']:.2%} - {v_gate['note']}")
 check("cost_verdict: 3% spread is 'ok'", v_ok["verdict"] == "ok",
       f"{v_ok['rt_cost']:.2%}")
 check("cost_verdict: 8% spread is 'expensive'", v_mid["verdict"] == "expensive",
@@ -307,7 +307,7 @@ check("cost_verdict on a crossed quote is prohibitive, not a crash",
 
 print()
 print("=" * 74)
-print("6. timing_edge — the Muravyev-Pearson sign convention")
+print("6. timing_edge - the Muravyev-Pearson sign convention")
 print("=" * 74)
 # ATM 30-day, 20 vol, spot 100 -> BSM value 2.2872. Straddle the quote around it.
 SPOT, STRIKE, TT, RV = 100.0, 100.0, 30 / 365, 0.20
@@ -344,7 +344,7 @@ check("underlying ticks DOWN, option quote unchanged -> buy is refused",
       not E.should_cross(99.4, STRIKE, TT, RV, *stale, True, "buy"))
 check("...and the same down-tick makes the SELL favorable",
       E.should_cross(99.4, STRIKE, TT, RV, *stale, True, "sell"))
-# A +0.05% underlying tick produces a +1.12% option edge — real, but thin. It clears
+# A +0.05% underlying tick produces a +1.12% option edge - real, but thin. It clears
 # M&P's naive filter (min_edge_frac=0) and fails a 2% bar.
 check("min_edge_frac raises the bar: a 1.1% edge passes 0% and fails 2%",
       E.should_cross(100.05, STRIKE, TT, RV, *stale, True, "buy", min_edge_frac=0.0)
@@ -361,7 +361,7 @@ check("unknown side is refused, not guessed",
 
 print()
 print("=" * 74)
-print("7. stop_election_risk — Finding 2, the headline")
+print("7. stop_election_risk - Finding 2, the headline")
 print("=" * 74)
 # BPS retail average quoted spread: 13.7% (note 07 §A.4). Entry at the ask of a
 # 13.7%-wide quote around a $1.00 mid.
@@ -379,7 +379,7 @@ check("a -10% stop is elected by a bid print with the mid UNMOVED",
       f"anything shallower than -{drop_to_bid:.1%} is free money for the tape")
 check("a -15% stop is past the noise band (deeper than -12.8%)",
       not r15["electable_by_noise"], r15["note"])
-check("min_print is the bid — the lowest ordinary non-adverse print",
+check("min_print is the bid - the lowest ordinary non-adverse print",
       abs(r10["min_print"] - b) < 1e-12, f"{r10['min_print']:.4f}")
 
 # THE HEADLINE. exitrules.HARD_STOP_PCT = -0.60, so broker_stop_price rests a stop at
@@ -410,7 +410,7 @@ check("unusable quote fails SAFE (assumes electable)",
 
 print()
 print("=" * 74)
-print("8. safe_stop_price — monotone, never looser than requested")
+print("8. safe_stop_price - monotone, never looser than requested")
 print("=" * 74)
 s1 = E.safe_stop_price(b, a, 0.90)
 check("a -10% stop is pushed below the noise band", s1 < b,
@@ -498,7 +498,7 @@ check("unusable quote -> None, which cannot be mistaken for an order price",
 
 print()
 print("=" * 74)
-print("10. Garbage-input battery — nothing raises, nothing returns NaN")
+print("10. Garbage-input battery - nothing raises, nothing returns NaN")
 print("=" * 74)
 NAN, INF = float("nan"), float("inf")
 GARBAGE = [None, NAN, INF, -INF, -1.0, 0.0, "abc", [], {}, True, -0.0001]
@@ -532,7 +532,7 @@ for fn, good, positions in CASES:
             n_calls += 1
             try:
                 out = fn(*args)
-            except Exception as exc:                       # noqa: BLE001 — the point
+            except Exception as exc:                       # noqa: BLE001 - the point
                 raised.append(f"{fn.__name__}(pos={pos}, {junk!r}) raised {exc!r}")
                 continue
             if not clean(out):
@@ -576,7 +576,7 @@ check("should_cross returns a real bool, never a truthy sentinel",
 print()
 # ---------------------------------------------------------------------------
 print("=" * 74)
-print("9. best_quoted — tightest strike wins, near misses resample, gates untouched")
+print("9. best_quoted - tightest strike wins, near misses resample, gates untouched")
 print("=" * 74)
 BQ = E.best_quoted
 
@@ -628,7 +628,7 @@ c, q, _ = BQ(["A"], lambda c: mkq(0.12), max_spread=0.04, resample=2,
 check("wide miss (12% vs 4% cap, band 1.75x) skips resampling", calls["n"] == 0)
 check("wide miss still returned for the gate to reject", q is not None and q["spread_pct"] == 0.12)
 
-# 8) per-candidate minimum is monotone — a later WIDER read never replaces a tighter one
+# 8) per-candidate minimum is monotone - a later WIDER read never replaces a tighter one
 seq2 = {"A": [mkq(0.05), mkq(0.09), mkq(0.09)]}
 def qf2(c): return seq2[c].pop(0) if seq2[c] else mkq(0.09)
 c, q, _ = BQ(["A"], qf2, max_spread=0.04, resample=2, sleep_fn=None)
@@ -653,7 +653,7 @@ check("NaN/negative spread quotes excluded", c == "B")
 c, q, _ = BQ(["A"], lambda c: mkq(0.05), max_spread=0.04, resample=2, sleep_fn=None)
 check("un-tightened near miss returned wide (gate will reject)", q["spread_pct"] == 0.05)
 
-# 12) max_cost: affordability joins selection — tighter-but-unaffordable loses
+# 12) max_cost: affordability joins selection - tighter-but-unaffordable loses
 def mkq2(sp, mid):
     return {"bid": round(mid*(1-sp/2), 4), "ask": round(mid*(1+sp/2), 4),
             "mid": mid, "spread_pct": sp}

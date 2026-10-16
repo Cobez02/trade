@@ -48,7 +48,7 @@ year
 2026   170     122 -2085.0     -12.3   115.7 -373.0   633.0
 ```
 
-## IN-SAMPLE — 2009 sessions
+## IN-SAMPLE - 2009 sessions
 ```
 {
   "sessions": 2009,
@@ -77,7 +77,7 @@ year
 }
 ```
 
-## HOLDOUT (out-of-sample) — 672 sessions
+## HOLDOUT (out-of-sample) - 672 sessions
 ```
 {
   "sessions": 672,
@@ -121,7 +121,7 @@ paths that hit the target before touching the trailing floor (intraday-touch awa
 
 This exact history replayed once at 1x: **{'result': 'fail', 'days': 75, 'reason': 'drawdown (intraday touch)', 'balance': np.float64(-1727.0)}**  (intraday-low fraction used: 0.194)
 
-Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 23.1% — anything close to this number is luck, not edge.
+Zero-edge control (same daily P&L, mean removed) on MyFundedFutures Core $50K: P(pass) = 23.1% - anything close to this number is luck, not edge.
 
 ## Falsification gates (from the research brief)
 

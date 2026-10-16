@@ -2,7 +2,7 @@
 Run the backtest and score it against prop-firm rules.
 
 Examples
-  # smoke test, free data, no keys (60 days of SPY 5-minute bars — NOT research)
+  # smoke test, free data, no keys (60 days of SPY 5-minute bars - NOT research)
   python -m scripts.run_backtest --source yfinance --symbol SPY --instrument SPY
 
   # the real thing: MES continuous front month from Databento
@@ -80,7 +80,7 @@ def run(args) -> dict:
         oos_days = [d for d in rep.days if d.day >= args.holdout_from]
         for label, days in (("IN-SAMPLE", is_days), ("HOLDOUT (out-of-sample)", oos_days)):
             sub = Report([t for t in rep.trades if (t.day < args.holdout_from) == (label == "IN-SAMPLE")], days, inst)
-            lines += ["", f"## {label} — {len(days)} sessions", "```", json.dumps(sub.summary(), indent=2), "```"]
+            lines += ["", f"## {label} - {len(days)} sessions", "```", json.dumps(sub.summary(), indent=2), "```"]
 
     lines += ["", "## Prop-rule Monte Carlo (block bootstrap of this backtest's daily P&L)",
               "", "Scale = multiple of the sizing above. P(pass) is the share of bootstrapped",
@@ -111,7 +111,7 @@ def run(args) -> dict:
         m = st.mean(d); demeaned = [x - m for x in d]
         mc0 = R.monte_carlo(rules, demeaned, n=args.mc)
         lines += [f"Zero-edge control (same daily P&L, mean removed) on {rules.name}: "
-                  f"P(pass) = {mc0['pass']:.1%} — anything close to this number is luck, not edge.", ""]
+                  f"P(pass) = {mc0['pass']:.1%} - anything close to this number is luck, not edge.", ""]
     lines += ["## Falsification gates (from the research brief)", "",
               f"- days with intraday low <= -$700: **{summ.get('days_below_-700')}** of {summ.get('sessions')}",
               f"- days with intraday low <= -$1,000: **{summ.get('days_below_-1000')}**",

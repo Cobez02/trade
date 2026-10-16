@@ -1,5 +1,5 @@
 """
-Screen test harness — pins the ECONOMICS of the Tier-1 negative screens, not just
+Screen test harness - pins the ECONOMICS of the Tier-1 negative screens, not just
 their plumbing. Run: python3 test_screens.py
 
 No network, no broker, no Alpaca, standard library only. Every date-dependent
@@ -11,7 +11,7 @@ What is actually being tested:
   * `third_friday` against real calendar dates, including the two months that
     break the `(4 - weekday) % 7` formula if the modulus is misplaced: one whose
     1st IS a Friday and one whose 1st is a Saturday.
-  * `ex_ante_skewness` — the Boyer-Vorkink core — against an INDEPENDENT Monte
+  * `ex_ante_skewness` - the Boyer-Vorkink core - against an INDEPENDENT Monte
     Carlo of the same payoff moments. That is the single most valuable check in
     the file: the closed form is a truncated-moment expansion whose terms cancel
     catastrophically in the tail, and only a second method catches it.
@@ -19,8 +19,8 @@ What is actually being tested:
     OPEN by design (an uncomputable skew must not halt trading); `spread_verdict`
     fails CLOSED by design (an unreadable quote must not be traded). Both are
     asserted deliberately, because getting either backwards is silent.
-  * the regression case: the trade shape this bot actually shipped with — cheap,
-    short-dated, near-the-money, quoted 15% wide — is rejected, for more than one
+  * the regression case: the trade shape this bot actually shipped with - cheap,
+    short-dated, near-the-money, quoted 15% wide - is rejected, for more than one
     reason, with every screen reporting.
 """
 from __future__ import annotations
@@ -33,7 +33,7 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 
 def close(name, got, want, tol, detail=""):
@@ -49,7 +49,7 @@ def close(name, got, want, tol, detail=""):
 
 # The last two are not paranoia: an int wider than a float64 is what a bad JSON
 # payload or a units mix-up produces, and float()/int() raise OverflowError on it
-# — a *third* exception type that a `except (TypeError, ValueError)` guard misses.
+# - a *third* exception type that a `except (TypeError, ValueError)` guard misses.
 HUGE = 10 ** 400
 GARBAGE = [None, "abc", float("nan"), float("inf"), float("-inf"), -1, 0, [], {}, object(),
            HUGE, -HUGE]
@@ -57,7 +57,7 @@ GARBAGE = [None, "abc", float("nan"), float("inf"), float("-inf"), -1, 0, [], {}
 
 # --------------------------------------------------------------------------
 print("=" * 74)
-print("1. third_friday — against the real calendar")
+print("1. third_friday - against the real calendar")
 print("=" * 74)
 KNOWN = {
     (2026, 7):  dt.date(2026, 7, 17),
@@ -94,7 +94,7 @@ check(f"all {n} months land on day-of-month 15..21", not bad_dom, str(bad_dom[:3
 
 print()
 print("=" * 74)
-print("2. in_expiration_blackout — Garcia-Ares & Muravyev's two days")
+print("2. in_expiration_blackout - Garcia-Ares & Muravyev's two days")
 print("=" * 74)
 EXP = dt.date(2026, 7, 17)                    # July 2026 monthly expiration
 check("expiry Friday 2026-07-17 -> BLOCKED", SC.in_expiration_blackout(EXP)["ok"] is False,
@@ -133,7 +133,7 @@ r = SC.in_expiration_blackout(dt.datetime(2026, 7, 17, 15, 59))
 check("a datetime on expiry Friday -> BLOCKED", r["ok"] is False)
 
 # NOT garbage: 20260717 is ISO 8601 *basic* format, which date.fromisoformat()
-# has accepted since Python 3.11. It must be parsed, not shrugged off — a screen
+# has accepted since Python 3.11. It must be parsed, not shrugged off - a screen
 # that silently passed a real expiry Friday because it arrived unhyphenated would
 # be the exact failure this blackout exists to prevent. Guarded by version so the
 # suite states the right expectation on either side of 3.11.
@@ -146,7 +146,7 @@ r = SC.in_expiration_blackout("20260717")
 check("ISO-basic '20260717' is parsed as the expiry Friday, not treated as garbage",
       (r["ok"] is False) if _basic_iso_parses else (r["ok"] is True),
       f"py{sys.version_info.major}.{sys.version_info.minor} basic-ISO "
-      f"{'supported' if _basic_iso_parses else 'unsupported'} — {r['reason']}")
+      f"{'supported' if _basic_iso_parses else 'unsupported'} - {r['reason']}")
 
 # The string form of the dt.datetime trap. An ISO *timestamp* is what a data API
 # hands back, and date.fromisoformat() rejects every one of these. Failing open
@@ -174,7 +174,7 @@ for g in GARBAGE + ["2026-13-45", "next tuesday", 3.5, "", "2026-07-17T25:99:99"
 
 print()
 print("=" * 74)
-print("3. ex_ante_skewness — sign, magnitude and ordering")
+print("3. ex_ante_skewness - sign, magnitude and ordering")
 print("=" * 74)
 far = SC.ex_ante_skewness(100, 120, 3 / 365, 0.35, True)      # 20% OTM, 3 DTE
 near = SC.ex_ante_skewness(100, 100, 90 / 365, 0.35, True)    # ATM, 90 DTE
@@ -213,7 +213,7 @@ for is_call in (True, False):
 lo = SC.ex_ante_skewness(100, 101, 120 / 365, 0.60, True)
 hi = SC.ex_ante_skewness(100, 101, 10 / 365, 0.60, True)
 check("documented: at 120 DTE / 60% vol the call curve has turned back UP",
-      lo > hi, f"10 DTE {hi} vs 120 DTE {lo} — lognormal's own skew takes over")
+      lo > hi, f"10 DTE {hi} vs 120 DTE {lo} - lognormal's own skew takes over")
 
 # Positivity: a long option payoff is non-negative with an atom at zero, so its
 # skewness is positive by construction. A negative value would PASS skew_verdict.
@@ -242,8 +242,8 @@ check("OTM put returns a LARGE POSITIVE skew (20% OTM, 7 DTE)",
 check("near-ATM put skew is small and positive", 0 < p_near < 5, f"{p_near}")
 check("deep-OTM put >> near-ATM put", p_far / p_near > 20, f"ratio {p_far/p_near:.0f}x")
 
-# Put/call sanity at equal ABSOLUTE distance from spot. They are not identical —
-# ln(115/100) != -ln(85/100), so the lognormal does not treat them symmetrically —
+# Put/call sanity at equal ABSOLUTE distance from spot. They are not identical -
+# ln(115/100) != -ln(85/100), so the lognormal does not treat them symmetrically -
 # but a sign-flipped expansion shows up as orders of magnitude, not tens of percent.
 for dist in (2, 5, 8, 10, 12, 15):
     c = SC.ex_ante_skewness(100, 100 + dist, 7 / 365, 0.35, True)
@@ -297,7 +297,7 @@ for label, args in [("K = 3*S, 1 DTE", (100, 300, 1 / 365, 0.35, True)),
 
 # Where None is the RIGHT answer: past roughly K/S = 1.5 at 1 DTE the exercise
 # probability is below e^-1500, so the true skewness (~exp(-logP/2)) is larger
-# than a float64 can hold. Returning None there is honest — but skew_verdict
+# than a float64 can hold. Returning None there is honest - but skew_verdict
 # fails OPEN on None, so this is the one place the skew screen has a blind spot.
 # It matters only if nothing else catches the contract, so assert that something
 # does: at that distance the moneyness gate has already rejected it outright.
@@ -321,7 +321,7 @@ check("  ...and screen_entry REJECTS it despite the skew screen abstaining",
 
 print()
 print("=" * 74)
-print("4. ex_ante_skewness vs MONTE CARLO — independent verification")
+print("4. ex_ante_skewness vs MONTE CARLO - independent verification")
 print("=" * 74)
 
 
@@ -346,7 +346,7 @@ def mc_payoff_skewness(spot, strike, t, vol, is_call, n, seed):
     return (m3 - 3 * m1 * m2 + 2 * m1 ** 3) / var ** 1.5
 
 
-# Tolerance: Monte-Carlo skewness converges like n^-1/2 with a large constant —
+# Tolerance: Monte-Carlo skewness converges like n^-1/2 with a large constant -
 # the estimator is a ratio of third to 3/2-power second moments of a variable
 # that is zero most of the time. Measured across five seeds at 400k paths, every
 # case below lands within 2.0% of the closed form. 6% is 3x the worst observed
@@ -370,7 +370,7 @@ for label, args, seed in MC_CASES:
 
 print()
 print("=" * 74)
-print("5. skew_verdict — fails OPEN, deliberately")
+print("5. skew_verdict - fails OPEN, deliberately")
 print("=" * 74)
 r = SC.skew_verdict(None)
 check("None -> ok True (DESIGN CHOICE: an uncomputable skew must not halt trading)",
@@ -410,7 +410,7 @@ check("NaN skew -> ok True, 'not computable' (same branch as None)",
       r["ok"] is True and "not computable" in r["reason"] and r["skew"] is None, r["reason"])
 check("+inf skew -> BLOCKED, NOT shrugged off as 'not computable'",
       SC.skew_verdict(float("inf"))["ok"] is False,
-      "inf is ordered, so the comparison is meaningful — the most extreme "
+      "inf is ordered, so the comparison is meaningful - the most extreme "
       "lottery there is must not fail open")
 check("-inf skew -> ok (a very NEGATIVE skew is not a lottery)",
       SC.skew_verdict(float("-inf"))["ok"] is True)
@@ -425,7 +425,7 @@ check("a None threshold falls back to the default", SC.skew_verdict(9.0, None)["
 
 print()
 print("=" * 74)
-print("6. moneyness_verdict — Ni (2009), symmetric across calls and puts")
+print("6. moneyness_verdict - Ni (2009), symmetric across calls and puts")
 print("=" * 74)
 r = SC.moneyness_verdict(100, 120, True)
 check("20%-OTM call -> BLOCKED", r["ok"] is False, r["reason"][:56])
@@ -476,7 +476,7 @@ for label, args in [("spot None", (None, 105, True)), ("strike None", (100, None
 
 print()
 print("=" * 74)
-print("7. dte_verdict — 0DTE is the most-condemned bucket in the literature")
+print("7. dte_verdict - 0DTE is the most-condemned bucket in the literature")
 print("=" * 74)
 r = SC.dte_verdict(0)
 check("0 DTE -> BLOCKED", r["ok"] is False, r["reason"][:60])
@@ -498,7 +498,7 @@ check("unparseable DTE -> ok True with a reason (fails open, like an unknown DTE
 
 print()
 print("=" * 74)
-print("8. spread_verdict — this one FAILS CLOSED, unlike skew")
+print("8. spread_verdict - this one FAILS CLOSED, unlike skew")
 print("=" * 74)
 BLIND = [
     ("unparseable bid", ("abc", 1.02)),
@@ -556,13 +556,13 @@ check("custom max_spread=0.01 blocks the 2% quote",
 
 print()
 print("=" * 74)
-print("9. premium_verdict — fixed costs on a cheap contract")
+print("9. premium_verdict - fixed costs on a cheap contract")
 print("=" * 74)
 r = SC.premium_verdict(0.20)
 check("$0.20 contract -> BLOCKED", r["ok"] is False, r["reason"])
 # $0.60 is paid per ORDER (Rule 606 reports payment per contract on routed
 # orders), so a ROUND TRIP is two of them: $1.20 on a $20 premium = 6.0%.
-# Note 07 §I.1 states it outright — ">3% each way, >6% round trip" — and so do
+# Note 07 §I.1 states it outright - ">3% each way, >6% round trip" - and so do
 # this module's own header and premium_verdict's docstring.
 want_pfof = 2.0 * 0.60 / (0.20 * 100.0)
 close("the arithmetic itself: 2 x $0.60 / $20 premium", want_pfof, 0.06, 1e-12,
@@ -589,7 +589,7 @@ for label, p in [("zero", 0.0), ("negative", -1.0), ("None", None), ("'abc'", "a
 
 print()
 print("=" * 74)
-print("10. max_daily_return / lottery_verdict — the MAX factor")
+print("10. max_daily_return / lottery_verdict - the MAX factor")
 print("=" * 74)
 JUMP = [100.0] * 15 + [120.0] * 5              # one +20% day, inside the window
 CALM = [100.0 * 1.003 ** i for i in range(40)]  # +0.3%/day, forever
@@ -641,7 +641,7 @@ check("custom lookback=5 also ignores a jump 10 bars back",
 
 print()
 print("=" * 74)
-print("11. screen_entry — the combiner")
+print("11. screen_entry - the combiner")
 print("=" * 74)
 WED = dt.date(2026, 7, 8)          # a Wednesday; July 2026 expiry is Fri the 17th
 SEVEN = {"spread", "premium", "dte", "moneyness", "expiration", "skew", "lottery"}

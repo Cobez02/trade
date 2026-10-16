@@ -1,5 +1,5 @@
 """
-Session clock — every time-of-day rule in the project goes through here.
+Session clock - every time-of-day rule in the project goes through here.
 
 WHY THIS FILE EXISTS. The options bot's flatten crons were written in fixed
 UTC. From the first Monday of November they would have fired an hour early
@@ -94,7 +94,7 @@ def resample_bars(bars_1m: pd.DataFrame, minutes: int) -> pd.DataFrame:
     """Aggregate 1-minute RTH bars into N-minute bars anchored on the session open.
 
     Anchoring matters: a 30-minute grid anchored at midnight would put bar
-    boundaries at :00/:30, which happen to coincide with 08:30 CT — but an
+    boundaries at :00/:30, which happen to coincide with 08:30 CT - but an
     early-close day or a different bar size would not. We anchor per day.
     """
     if bars_1m.empty:

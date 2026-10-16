@@ -35,25 +35,25 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: python -m tests.test_core
-      - name: overnight A — IWM as 1 M2K
+      - name: overnight A - IWM as 1 M2K
         if: always()
         run: |
           set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-A-IWM-M2K; mkdir -p "$OUT"
           python -u -m backtest.overnight --source alpaca --symbol IWM --notional 12000 --slip-side 0.035 \
             --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
-      - name: overnight B — DIA as 1 MYM
+      - name: overnight B - DIA as 1 MYM
         if: always()
         run: |
           set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-B-DIA-MYM; mkdir -p "$OUT"
           python -u -m backtest.overnight --source alpaca --symbol DIA --notional 23000 --slip-side 0.030 \
             --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
-      - name: overnight C — QQQ as 1 MNQ (sizing counter-example)
+      - name: overnight C - QQQ as 1 MNQ (sizing counter-example)
         if: always()
         run: |
           set -o pipefail; OUT=research/$(date -u +%F)-overnight/ON-C-QQQ-MNQ; mkdir -p "$OUT"
           python -u -m backtest.overnight --source alpaca --symbol QQQ --notional 50000 --slip-side 0.019 \
             --start "$START" --end "$END" --holdout-from "$HOLDOUT" --mc 4000 --out "$OUT" 2>&1 | tee "$OUT/run.log" | tail -40
-      - name: portfolios — intraday Nasdaq + overnight micros, TradeDay presets
+      - name: portfolios - intraday Nasdaq + overnight micros, TradeDay presets
         if: always()
         run: |
           set -o pipefail; D=research/$(date -u +%F)-overnight

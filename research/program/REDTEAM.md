@@ -1,4 +1,4 @@
-# RED-TEAM CHECKLIST — run against a test's code before any candidate touches the holdout (PROGRAM.md §0)
+# RED-TEAM CHECKLIST - run against a test's code before any candidate touches the holdout (PROGRAM.md §0)
 Written 2026-10-14 (P0-4). A separate session answers every line in writing in the prereg's "Red-team" section. "n/a" needs a reason.
 
 ## 1. Look-ahead

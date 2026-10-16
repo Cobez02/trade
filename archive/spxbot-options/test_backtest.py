@@ -1,5 +1,5 @@
 """
-Backtest harness tests — pure logic only, no network. Run: python3 test_backtest.py
+Backtest harness tests - pure logic only, no network. Run: python3 test_backtest.py
 
 Pins the three ways a backtest lies: config drift (testing rules production
 does not run), optimistic fills, and scoring arithmetic.
@@ -14,10 +14,10 @@ PASS, FAIL = [], []
 
 def check(name, cond, detail=""):
     (PASS if cond else FAIL).append(name)
-    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  — ' + detail if detail else ''}")
+    print(f"  {'PASS' if cond else 'FAIL'}  {name}{'  - ' + detail if detail else ''}")
 
 print("=" * 74)
-print("1. Config mirror — the backtest tests THE SHIPPED RULES, not a cousin")
+print("1. Config mirror - the backtest tests THE SHIPPED RULES, not a cousin")
 print("=" * 74)
 pairs = [
     ("SPREADS_RICH_PTS", B.SPREADS_RICH_PTS, E.SPREADS_RICH_PTS),

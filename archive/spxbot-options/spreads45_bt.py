@@ -1,4 +1,4 @@
-"""30-45 DTE credit-spreads redesign study — PRE-REGISTERED 2026-08-01.
+"""30-45 DTE credit-spreads redesign study - PRE-REGISTERED 2026-08-01.
 
 Every rule below was fixed before any 30-45 DTE option data was examined
 (this commit predates the result file). The 5-10 DTE sleeve failed its
@@ -39,7 +39,7 @@ from strategies import trend_up
 
 RICH_PRIMARY, FLOOR_PRIMARY = 0.02, 0.20      # decimals (vol pts /100, frac)
 GRID = [(0.02, 0.20), (0.01, 0.20), (0.02, 0.15), (0.01, 0.15)]
-# EXTENSION GRID — declared 2026-08-01 AFTER the original grid returned zero
+# EXTENSION GRID - declared 2026-08-01 AFTER the original grid returned zero
 # trades in every cell (only gate counters existed; no P/L was ever produced,
 # so there was nothing to tune toward). The floor turned out to be DELTA-
 # mismatched, not tenor-mismatched: a 1.1-EM short (~10 delta) cannot collect
@@ -51,7 +51,7 @@ EXT_GRID = [(0.75, 0.02), (0.75, 0.01), (0.50, 0.02), (0.50, 0.01)]
 def pick_exp45(exps, day):
     """Nearest-38 FRIDAY expiry in [30,45]. Mon/Wed weeklies at this range
     were often not yet listed on the pick date (the full historical expiry
-    list is retrospective — a look-ahead the original run hit as 689 empty
+    list is retrospective - a look-ahead the original run hit as 689 empty
     snapshots); Fridays are listed months ahead, so this pick is honest."""
     import datetime as _dt
     best = None

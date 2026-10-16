@@ -1,5 +1,5 @@
 """
-SPX-Beater / futures — single source of truth for every knob.
+SPX-Beater / futures - single source of truth for every knob.
 
 Everything here is env-overridable (SPXF_*) so the same code runs research,
 paper (Alpaca SPY/QQQ proxy) and live (Tradovate / ProjectX) without edits.
@@ -86,7 +86,7 @@ INSTRUMENT = INSTRUMENTS[_env("INSTRUMENT", "MES", str).upper()]
 # ---------------------------------------------------------------------------
 SESSION_TZ = "America/Chicago"           # CME clock. NEVER hardcode UTC offsets.
 RTH_OPEN = "08:30"                        # CT (= 09:30 ET)
-RTH_CLOSE = "15:00"                       # CT (= 16:00 ET) — cash close / settlement
+RTH_CLOSE = "15:00"                       # CT (= 16:00 ET) - cash close / settlement
 FLATTEN_AT = _env("FLATTEN_AT", "14:52", str)   # CT. Every prop firm force-flattens
                                                # later (Topstep 15:10, MFFU 15:10 CT);
                                                # we leave 8 min for a fill + retry.
