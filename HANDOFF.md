@@ -211,3 +211,12 @@ Load keys first: `set -a; . ~/.spxf.env; set +a` (then `PYTHONPATH=$PWD ./venv/b
 test ever run (48 lines, 0 passes, Phase 1 catalog complete, Databento credit $122.96 of $125 spent, the loader now
 refuses every request). `cache/research/` (gitignored, 467 MB) is the ONLY copy of that data. DATABENTO_API_KEY is in
 ~/.spxf.env. CREDIT RULE: stop and report when the loader refuses a request for budget; never raise the budget yourself.
+
+## 10. Moving to a new machine
+Follow `deploy/NEW-MACHINE.md` step by step. The short form: stop the OLD Mac's agent first (one runner per account);
+copy `~/.spxf.env` by hand (never packaged); run `deploy/install_mac.sh`; restore `cache/research/` from the package
+(the only copy of the purchased Databento data; the loader refuses to buy it again); `gh auth login` for pushes;
+optionally restore the Claude memory files; then verify (83 tests, dry run, launchd state, broker truth) and watch for
+`tick: starting a session` on the next weekday. The package folder `spxf-handoff-<date>` in Connor's Downloads
+carries copies of this file, the research handoff, the installer, a `git bundle` of the repo, the frozen
+requirements, the data cache, the memory files and a checksum manifest.
