@@ -47,7 +47,7 @@ from scratch. The short version:
 ## Tests
 `./venv/bin/python -m tests.test_core` -> 77 passed. Run before every commit.
 
-## Research program (added 2026-10-14)
+## Research program (added 2026-10-14; full state handoff in research/program/HANDOFF-PROGRAM.md — read that first for a research session)
 `research/program/PROGRAM.md` is the 500-hour plan; `QUEUE.md` is the next work; `SCOREBOARD.md` is the ledger of every
 test ever run. Phase 0 code exists: `data.py` (budgeted, holdout-sealed Databento loader), `stats.py` (deflated Sharpe,
 PBO, purged folds), `run_test.py` (harness; anchor test 3A-1 registered). DATABENTO_API_KEY is in ~/.spxf.env.
