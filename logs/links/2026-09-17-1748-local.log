@@ -1,0 +1,8 @@
+[09:34:33] session 2026-09-17: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[10:00:02] slot 2 close 715.17 band [702.44, 718.33] pos +0 -> +0 (inside noise)
+[10:30:02] slot 3 close 715.86 band [702.09, 718.68] pos +0 -> +0 (inside noise)
+[11:00:02] slot 4 close 716.70 band [702.10, 718.68] pos +0 -> +0 (inside noise)
+[11:30:02] slot 5 close 716.82 band [702.36, 718.40] pos +0 -> +0 (inside noise)
+[12:00:02] slot 6 close 716.70 band [702.21, 718.56] pos +0 -> +0 (inside noise)
+[12:30:02] slot 7 close 716.33 band [702.12, 718.65] pos +0 -> +0 (inside noise)
+[13:00:02] slot 8 close 716.70 band [702.19, 718.59] pos +0 -> +0 (inside noise)

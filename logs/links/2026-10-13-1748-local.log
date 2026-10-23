@@ -1,0 +1,15 @@
+[04:57:20] session 2026-10-13: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[05:00:02] waiting for the open (210 min)
+[05:30:02] waiting for the open (180 min)
+[06:00:02] waiting for the open (150 min)
+[06:30:02] waiting for the open (120 min)
+[07:00:02] waiting for the open (90 min)
+[07:30:02] waiting for the open (60 min)
+[08:00:02] waiting for the open (30 min)
+[08:32:29] OVERNIGHT EXIT 162 QQQM @ ~304.68 (entry 307.11) -> False FLATTEN NOT CONFIRMED: 
+[08:33:51] OVERNIGHT EXIT 162 QQQM @ ~304.46 (entry 307.11) -> False FLATTEN NOT CONFIRMED: 
+[08:34:48] OVERNIGHT EXIT 162 QQQM @ ~304.74 (entry 307.11) -> True closed (attempt 5)
+[10:32:21] session 2026-10-13: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[12:54:35] session 2026-10-13: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[13:32:03] session 2026-10-13: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[14:45:44] session 2026-10-13: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT

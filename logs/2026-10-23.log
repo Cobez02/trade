@@ -1,0 +1,3 @@
+[11:33:35] session 2026-10-23: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[12:00:04] slot 6 close 706.33 band [698.23, 708.54] pos +0 -> +0 (inside noise)
+[12:30:03] slot 7 close 705.24 band [697.36, 709.41] pos +0 -> +0 (inside noise)

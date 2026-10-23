@@ -1,0 +1,12 @@
+[11:07:45] session 2026-09-21: open 08:30 flatten 14:52 CT | instrument=QQQ tick=0.01/$0.2 point=$20.0 rt_cost=$0.40 | bars=30m lookback=14d mult=1.0 trail=band | risk/trade=$200 kill=$700 cap=$1200 maxq=5 | flatten 14:52 CT, no entries after 14:00 CT
+[11:30:02] slot 5 close 738.75 band [719.03, 730.20] pos +0 -> +1 (long: close 738.75 > upper 730.20)
+[11:30:02] ENTER +1x1 QQQ (long: close 738.75 > upper 730.20) -> True OrderStatus.PENDING_NEW
+[11:31:02] stop 1x @ 733.19 (5.59 pts) -> True OrderStatus.PENDING_NEW
+[12:00:02] slot 6 close 738.84 band [718.98, 730.25] pos +1 -> +1 (hold long)
+[12:30:02] slot 7 close 738.98 band [718.98, 730.25] pos +1 -> +1 (hold long)
+[13:00:02] slot 8 close 739.56 band [718.93, 730.30] pos +1 -> +1 (hold long)
+[13:30:02] slot 9 close 740.55 band [719.18, 730.05] pos +1 -> +1 (hold long)
+[14:00:02] slot 10 close 741.34 band [718.96, 730.27] pos +1 -> +1 (hold long)
+[14:30:02] slot 11 close 741.75 band [718.92, 730.31] pos +1 -> +1 (hold long)
+[14:52:02] FLATTEN +1 QQQ: session flatten -> True closed
+[14:52:02] END OF DAY {'day': '2026-09-21', 'symbol': 'QQQ', 'day_pnl': 63.8, 'entries': 1, 'halted': '', 'acct_balance': 63.8, 'floor': -1936.2, 'buffer': 2000.0}

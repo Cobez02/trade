@@ -1,12 +1,12 @@
 {
-  "day": "2026-10-13",
+  "day": "2026-10-23",
   "symbol": "QQQ",
   "overnight_exit_done": true,
   "entries": 0,
   "halted": false,
   "halt_reason": "",
-  "last_slot": -1,
+  "last_slot": 7,
   "stop_pts": 0.0,
   "start_day_pnl": null,
-  "updated": "2026-10-13T08:34:48.700544-05:00"
+  "updated": "2026-10-23T12:30:03.969252-05:00"
 }
